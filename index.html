@@ -1,0 +1,2074 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>日迹 · 冬学期日程与生活</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F7F6F3;
+      --surface: #FFFFFF;
+      --surface-2: #F2F0EC;
+      --ink: #1C1F2B;
+      --ink-soft: #5C6274;
+      --ink-faint: #8E93A4;
+      --line: #E7E5E0;
+      --ana: #1E5663;
+      --alg: #5B4386;
+      --due: #A6512B;
+      --font-serif: "Source Han Serif SC", "Source Han Serif CN", "Noto Serif SC", "Songti SC", "STSong", serif;
+    }
+    html.dark {
+      --bg: #141519;
+      --surface: #1D1F25;
+      --surface-2: #262932;
+      --ink: #EAECEF;
+      --ink-soft: #A0A6B5;
+      --ink-faint: #6D7382;
+      --line: #2C2F3A;
+    }
+    body {
+      font-family: var(--font-serif);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    .surf { background: var(--surface); border-color: var(--line); }
+    .surf-2 { background: var(--surface-2); }
+    .txt-main { color: var(--ink); }
+    .txt-soft { color: var(--ink-soft); }
+    .txt-faint { color: var(--ink-faint); }
+    .num-tab { font-variant-numeric: tabular-nums; }
+    .nav-item-active { color: var(--ink); font-weight: 700; }
+    .nav-item-active .nav-dot { opacity: 1; }
+    .day-active { background: var(--ink); color: var(--bg); }
+    .subtab-active { color: var(--ink); font-weight: 700; border-bottom: 2px solid var(--ink); }
+    .overdue-block {
+      background: rgba(217, 83, 56, 0.12) !important;
+      border-color: #D95338 !important;
+      color: #C43E22 !important;
+    }
+    html.dark .overdue-block { color: #FCA5A5 !important; }
+    .done-block { opacity: 0.42; filter: saturate(0.4); }
+    .fade-in { animation: fadeIn 0.16s ease-out; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(3px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+  <meta name="theme-color" content="#F7F6F3">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Study OS">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+</head>
+<body class="min-h-screen pb-24">
+
+  <!-- Quiet Top Bar -->
+  <header class="sticky top-0 z-20 backdrop-blur border-b" style="background: color-mix(in srgb, var(--bg) 90%, transparent); border-color: var(--line);">
+    <div class="max-w-2xl mx-auto px-5 h-14 flex items-center justify-between gap-2">
+      <div class="flex items-baseline gap-2 min-w-0">
+        <span id="top-date-title" class="text-base font-bold txt-main truncate">11月28日</span>
+        <span id="top-day-sub" class="text-xs txt-soft truncate">第 1 周 · 周六 · 十月十九</span>
+      </div>
+      <div class="flex items-center gap-1 shrink-0">
+        <button type="button" id="btn-open-focus" class="px-2.5 py-1 rounded-full surf border text-xs txt-main flex items-center gap-1.5 transition">
+          <span id="top-focus-dot" class="w-1.5 h-1.5 rounded-full bg-stone-400"></span>
+          <span id="top-focus-label" class="num-tab">专注</span>
+        </button>
+        <button type="button" id="btn-open-search" title="全局搜索" class="w-8 h-8 rounded-full hover:opacity-75 txt-soft flex items-center justify-center transition" aria-label="全局搜索">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        </button>
+        <button type="button" id="btn-toggle-theme" title="切换深浅色" class="w-8 h-8 rounded-full hover:opacity-75 txt-soft flex items-center justify-center transition" aria-label="深浅色">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </button>
+        <button type="button" id="btn-quick-add" title="新建待办或突发事项" class="w-8 h-8 rounded-full hover:opacity-75 txt-soft flex items-center justify-center text-lg leading-none transition">+</button>
+        <button type="button" id="btn-open-settings" title="设置与提醒" class="w-8 h-8 rounded-full hover:opacity-75 txt-soft flex items-center justify-center transition" aria-label="设置">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Flow -->
+  <main class="max-w-2xl mx-auto px-5 pt-5">
+
+    <!-- ==================== TAB 1: 今天 ==================== -->
+    <section id="view-today" class="tab-view space-y-6 fade-in">
+      <div class="flex items-center justify-between gap-1" id="day-strip"></div>
+
+      <!-- Quiet Health / Launch Notice (Cross-linked from SleepModel & Start Date) -->
+      <div id="today-health-hint" class="hidden px-3.5 py-2.5 rounded-xl surf-2 text-xs txt-soft flex items-center justify-between gap-2">
+        <span id="today-health-hint-text"></span>
+        <button type="button" id="btn-goto-sleep" class="txt-main underline shrink-0">查看睡眠</button>
+      </div>
+
+      <!-- Now Highlight -->
+      <div class="surf rounded-2xl p-5 border">
+        <div class="flex items-center justify-between text-xs txt-faint mb-2">
+          <span id="now-tag-label">11月28日（周六）正式启动</span>
+          <span id="now-time" class="num-tab">08:20–14:45</span>
+        </div>
+        <div id="now-title" class="text-[15px] font-semibold txt-main leading-snug">周六出游（含在外午饭与通勤）</div>
+        <div class="mt-4 flex flex-wrap items-center gap-2">
+          <button type="button" id="btn-now-focus" class="px-3.5 py-1.5 rounded-full text-xs font-medium transition" style="background:var(--ink);color:var(--bg)">开始专注</button>
+          <a id="btn-now-read" href="https://faust275.github.io/math-course-hub/textbook-analysis-lichengzhang-ch05.html" target="_blank" rel="noopener noreferrer" class="px-3.5 py-1.5 rounded-full surf-2 txt-soft text-xs font-medium transition">打开教材（含批注/时间戳）</a>
+        </div>
+      </div>
+
+      <!-- Light Habits + English Hub Link -->
+      <div class="flex items-center gap-2.5 flex-wrap">
+        <button type="button" id="habit-vocab" class="flex items-center gap-2 px-3.5 py-2 rounded-full text-xs border transition"></button>
+        <a href="https://faust275.github.io/math-course-hub/english.html" target="_blank" rel="noopener noreferrer" class="text-xs txt-soft hover:underline px-1">英语课文与听写 ↗</a>
+        <div class="flex-1"></div>
+        <button type="button" id="habit-sleep" class="flex items-center gap-2 px-3.5 py-2 rounded-full text-xs border transition"></button>
+      </div>
+
+      <!-- Near Due List -->
+      <div>
+        <div class="flex items-center justify-between mb-2.5">
+          <h2 class="text-xs font-medium txt-soft">近期要交</h2>
+          <button type="button" id="btn-toggle-all-due" class="text-xs txt-faint hover:underline transition">本周全部</button>
+        </div>
+        <div id="due-list" class="surf rounded-2xl border divide-y overflow-hidden" style="border-color:var(--line)"></div>
+      </div>
+
+      <!-- Quick Add / Surprise Event Box -->
+      <div id="quick-add-box" class="hidden surf rounded-2xl border p-4 space-y-3 fade-in">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold txt-main">新建待办 / 突发事项</span>
+          <button type="button" id="btn-close-quick-add" class="text-xs txt-faint">取消</button>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <input id="qa-time" type="text" value="09:00–11:30" class="w-28 px-3 py-1.5 rounded-lg surf-2 border text-xs num-tab focus:outline-none" style="border-color:var(--line)">
+          <input id="qa-title" type="text" placeholder="比如：突发事项 / 拿快递" class="flex-1 min-w-[160px] px-3 py-1.5 rounded-lg surf-2 border text-xs focus:outline-none" style="border-color:var(--line)">
+          <button type="button" id="btn-save-quick-add" class="px-3.5 py-1.5 rounded-lg text-xs font-medium shrink-0" style="background:var(--ink);color:var(--bg)">加入并避让</button>
+        </div>
+        <div class="text-[11px] txt-faint leading-relaxed">
+          自动避让规则：上课、跑步、练琴与电影不动；若撞上作业则顺延至兜底槽，被挤出的弹性自学块自动进入「待补池」。
+        </div>
+      </div>
+
+      <!-- Deferred / Makeup Pool -->
+      <div id="makeup-pool-wrap" class="hidden space-y-2.5 fade-in">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xs font-medium text-[#C43E22]">被突发事项挤出的待补块</h2>
+          <button type="button" id="btn-clear-makeup" class="text-[11px] txt-faint">清空</button>
+        </div>
+        <div id="makeup-pool-list" class="space-y-2"></div>
+      </div>
+
+      <!-- Schedule Flow -->
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <h2 id="schedule-title" class="text-xs font-medium txt-soft">周六安排</h2>
+          <span class="text-[11px] txt-faint">点课程记考勤与课内自学 · 过期未做高亮</span>
+        </div>
+        <div id="schedule-flow" class="space-y-2"></div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: 清单（整周时间轴 · 立体月历 · 四象限与子任务 · 日记与灵感） ==================== -->
+    <section id="view-list" class="tab-view hidden space-y-5 fade-in">
+      <div class="flex items-center gap-5 border-b text-xs overflow-x-auto" style="border-color:var(--line)">
+        <button type="button" data-list-sub="timetable" class="list-sub-btn pb-2.5 txt-soft subtab-active shrink-0">整周时间轴</button>
+        <button type="button" data-list-sub="calendar" class="list-sub-btn pb-2.5 txt-soft shrink-0">月历与档案</button>
+        <button type="button" data-list-sub="quadrant" class="list-sub-btn pb-2.5 txt-soft shrink-0">四象限与子任务</button>
+        <button type="button" data-list-sub="diary" class="list-sub-btn pb-2.5 txt-soft shrink-0">日记 · 反例 · 灵感</button>
+      </div>
+
+      <!-- Sub 1: Multi-Week 7-Day Time-Axis Grid -->
+      <div id="list-sub-timetable" class="list-sub-panel space-y-3">
+        <div class="surf rounded-2xl border px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <button type="button" id="btn-week-prev" class="w-7 h-7 rounded-full hover:opacity-75 txt-soft flex items-center justify-center text-sm">‹</button>
+            <div>
+              <div id="week-axis-title" class="text-xs font-bold txt-main">第 1 周 · 11.28–12.04</div>
+              <div id="week-axis-sub" class="text-[11px] txt-faint">周六正式开机 · 周三五日中午充分利用</div>
+            </div>
+            <button type="button" id="btn-week-next" class="w-7 h-7 rounded-full hover:opacity-75 txt-soft flex items-center justify-center text-sm">›</button>
+          </div>
+          <div class="flex items-center gap-2.5 text-[11px] txt-soft">
+            <span class="flex items-center gap-1"><i class="w-2 h-2 rounded-full bg-[#D95338] inline-block"></i>过时未做</span>
+            <span class="flex items-center gap-1"><i class="w-2 h-2 rounded-full bg-stone-400 inline-block"></i>已完成</span>
+          </div>
+        </div>
+
+        <div class="surf rounded-2xl border p-3 overflow-x-auto">
+          <div id="week-axis-wrap" class="min-w-[700px]"></div>
+        </div>
+
+        <div id="week-block-detail" class="hidden surf rounded-2xl border p-3.5 flex flex-wrap items-center justify-between gap-2 text-xs fade-in">
+          <div>
+            <span id="wbd-daytime" class="num-tab txt-faint mr-2"></span>
+            <span id="wbd-title" class="font-semibold txt-main"></span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" id="wbd-toggle-done" class="px-3 py-1 rounded-full text-xs" style="background:var(--ink);color:var(--bg)">标记已完成</button>
+            <a id="wbd-hub" href="https://faust275.github.io/math-course-hub/" target="_blank" rel="noopener noreferrer" class="hidden px-3 py-1 rounded-full surf-2 txt-soft">打开教材 ↗</a>
+            <button type="button" id="wbd-toggle-cancel" class="px-3 py-1 rounded-full surf-2 txt-soft">本周停课/跳过</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub 2: Enriched Living Calendar (Lunar + Retrospective Capsules + Backfill + Countdowns & Free-Slots) -->
+      <div id="list-sub-calendar" class="list-sub-panel hidden space-y-4">
+        <div class="surf rounded-2xl border p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <div id="cal-month-title" class="text-sm font-bold txt-main">2026 年 11 月</div>
+              <div class="text-[11px] txt-faint">农历 · 节假调休 · 当日全维回顾与时间块补录</div>
+            </div>
+            <div class="flex items-center gap-1.5 text-xs">
+              <button type="button" data-cal-m="11" class="cal-m-btn px-2.5 py-1 rounded-full surf-2 txt-main font-medium">11月</button>
+              <button type="button" data-cal-m="12" class="cal-m-btn px-2.5 py-1 rounded-full txt-soft">12月</button>
+              <button type="button" data-cal-m="1" class="cal-m-btn px-2.5 py-1 rounded-full txt-soft">1月</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-7 text-center text-[11px] txt-faint py-1 border-b" style="border-color:var(--line)">
+            <div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div>
+          </div>
+          <div id="cal-grid" class="grid grid-cols-7 gap-1"></div>
+        </div>
+
+        <!-- Day Retrospective Capsule + Time-Block Backfill -->
+        <div class="surf rounded-2xl border p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <div id="cal-day-header" class="text-xs font-semibold txt-main">2026-11-28 · 计划正式启动</div>
+            <button type="button" id="btn-copy-freeslots" class="text-[11px] txt-soft hover:underline">复制本周空闲时段</button>
+          </div>
+          <div id="cal-capsules" class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs"></div>
+          <div id="cal-backfill-list" class="space-y-1.5"></div>
+          <div class="pt-2 border-t flex flex-wrap gap-2" style="border-color:var(--line)">
+            <input id="bf-time" type="text" value="10:00–12:00" class="w-24 px-2.5 py-1 rounded-lg surf-2 border text-xs num-tab focus:outline-none" style="border-color:var(--line)">
+            <input id="bf-title" type="text" placeholder="事后补录时间块，如：西湖出游 / 补一道证明" class="flex-1 min-w-[140px] px-2.5 py-1 rounded-lg surf-2 border text-xs focus:outline-none" style="border-color:var(--line)">
+            <button type="button" id="btn-add-backfill" class="px-3 py-1 rounded-lg text-xs shrink-0" style="background:var(--ink);color:var(--bg)">补录</button>
+          </div>
+        </div>
+
+        <!-- Upcoming Key Countdowns -->
+        <div class="surf rounded-2xl border p-4 space-y-2.5">
+          <div class="text-xs font-semibold txt-main">近期关键倒数</div>
+          <div class="grid grid-cols-3 gap-2 text-center text-xs">
+            <div class="p-2.5 rounded-xl surf-2">
+              <div class="text-[11px] txt-faint">冬学期期末周</div>
+              <div class="text-sm font-bold num-tab txt-main mt-0.5">25 天后</div>
+              <div class="text-[10px] txt-faint">12月23日</div>
+            </div>
+            <div class="p-2.5 rounded-xl surf-2">
+              <div class="text-[11px] txt-faint">C 程结课/放寒假</div>
+              <div class="text-sm font-bold num-tab txt-main mt-0.5">46 天后</div>
+              <div class="text-[10px] txt-faint">1月13日</div>
+            </div>
+            <div class="p-2.5 rounded-xl surf-2">
+              <div class="text-[11px] txt-faint">春节休整周</div>
+              <div class="text-sm font-bold num-tab txt-main mt-0.5">70 天后</div>
+              <div class="text-[10px] txt-faint">2月6日</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub 3: Quadrant + Subtasks -->
+      <div id="list-sub-quadrant" class="list-sub-panel hidden space-y-4">
+        <div class="surf rounded-2xl border p-3 flex items-center gap-2">
+          <input id="nlp-task-input" type="text" placeholder="记一条待办，如：分析作业 / 周日午 / 周日晚 #重要" class="flex-1 text-xs bg-transparent px-1 py-1 focus:outline-none">
+          <button type="button" id="btn-add-nlp" class="px-3 py-1 rounded-full text-xs shrink-0" style="background:var(--ink);color:var(--bg)">记下</button>
+        </div>
+        <div id="quadrant-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+      </div>
+
+      <!-- Sub 4: Diary, Counterexamples & Inspiration -->
+      <div id="list-sub-diary" class="list-sub-panel hidden space-y-4">
+        <div class="surf rounded-2xl border p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium txt-main">随手记下今天的事、反例或灵感</span>
+            <select id="diary-kind" class="text-xs surf-2 border rounded-lg px-2 py-1 txt-soft" style="border-color:var(--line)">
+              <option value="反例">反例 / 定理</option>
+              <option value="灵感">灵感速记</option>
+              <option value="日记">日常日记</option>
+            </select>
+          </div>
+          <textarea id="diary-input" rows="2" placeholder="比如：x^n 在 [0,1] 逐点收敛但不一致收敛..." class="w-full text-xs surf-2 border rounded-xl p-2.5 focus:outline-none" style="border-color:var(--line)"></textarea>
+          <div class="flex justify-end">
+            <button type="button" id="btn-save-diary" class="px-3.5 py-1.5 rounded-full text-xs" style="background:var(--ink);color:var(--bg)">存起来</button>
+          </div>
+        </div>
+        <div id="diary-feed" class="space-y-2"></div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: 进度（周期额度 · OKR含GPA联动 · 双图统计 · 17周） ==================== -->
+    <section id="view-progress" class="tab-view hidden space-y-6 fade-in">
+      <div class="surf rounded-2xl border p-5 space-y-4">
+        <div class="flex items-baseline justify-between">
+          <div>
+            <h1 class="text-[15px] font-semibold txt-main">本周额度计划</h1>
+            <p class="text-[11px] txt-faint mt-0.5">按原版周期额度与偏离度追踪，点圆点打卡</p>
+          </div>
+          <span id="quota-week-label" class="text-xs txt-soft">第 1 周</span>
+        </div>
+        <div id="quota-plans-list" class="space-y-3.5"></div>
+      </div>
+
+      <div class="surf rounded-2xl border p-5 space-y-4">
+        <div class="flex items-baseline justify-between">
+          <span class="text-xs font-semibold txt-main">学期目标（OKR · 自动联动成绩与章节）</span>
+          <span class="text-[11px] txt-faint">含实时 GPA 目标</span>
+        </div>
+        <div id="okr-list" class="space-y-3"></div>
+      </div>
+
+      <!-- Cross-linked Stats: Course Focus Investment + Ledger Breakdown -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="surf rounded-2xl border p-4 space-y-2.5">
+          <div class="text-xs font-semibold txt-main">各科真实投入（含番茄专注）</div>
+          <svg id="stats-course-svg" viewBox="0 0 280 140" class="w-full h-auto" role="img" aria-label="各科时间投入统计"></svg>
+        </div>
+        <div class="surf rounded-2xl border p-4 space-y-2.5">
+          <div class="text-xs font-semibold txt-main">本月消费构成（联动账本）</div>
+          <svg id="stats-ledger-svg" viewBox="0 0 280 140" class="w-full h-auto" role="img" aria-label="本月消费分类构成"></svg>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1" id="phase-strip">
+          <button type="button" data-phase="all" class="phase-pill px-3 py-1 rounded-full text-xs shrink-0" style="background:var(--ink);color:var(--bg)">全部</button>
+          <button type="button" data-phase="winter" class="phase-pill px-3 py-1 rounded-full text-xs surf border txt-soft shrink-0">冬学期</button>
+          <button type="button" data-phase="exam" class="phase-pill px-3 py-1 rounded-full text-xs surf border txt-soft shrink-0">考试周</button>
+          <button type="button" data-phase="break" class="phase-pill px-3 py-1 rounded-full text-xs surf border txt-soft shrink-0">寒假</button>
+          <button type="button" data-phase="spring" class="phase-pill px-3 py-1 rounded-full text-xs surf border txt-soft shrink-0">春学期</button>
+        </div>
+        <div id="chapters-list" class="space-y-3"></div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: 生活（睡眠10维 · 记账 · 饮食 · 多层成绩与What-If · 白皮书） ==================== -->
+    <section id="view-life" class="tab-view hidden space-y-5 fade-in">
+      <div class="flex items-center gap-5 border-b text-xs overflow-x-auto" style="border-color:var(--line)">
+        <button type="button" data-life-sub="sleep" class="life-sub-btn pb-2.5 txt-soft subtab-active shrink-0">睡眠与健康</button>
+        <button type="button" data-life-sub="grades" class="life-sub-btn pb-2.5 txt-soft shrink-0">成绩与构成</button>
+        <button type="button" data-life-sub="ledger" class="life-sub-btn pb-2.5 txt-soft shrink-0">记账</button>
+        <button type="button" data-life-sub="diet" class="life-sub-btn pb-2.5 txt-soft shrink-0">饮食</button>
+        <button type="button" data-life-sub="whitepaper" class="life-sub-btn pb-2.5 txt-soft shrink-0">白皮书</button>
+      </div>
+
+      <!-- Life Sub 1: Sleep & 10D Health -->
+      <div id="life-sub-sleep" class="life-sub-panel space-y-4">
+        <div class="surf rounded-2xl border p-5 space-y-4">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="text-xs txt-faint">昨夜睡眠 · 小米运动健康同步</div>
+              <div class="mt-1 flex items-baseline gap-2.5">
+                <span id="sl-total-str" class="text-2xl font-bold num-tab txt-main">7小时26分</span>
+                <span id="sl-range-str" class="text-xs num-tab txt-soft">23:54 – 07:20</span>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs txt-faint">睡眠评分</div>
+              <div id="sl-score" class="text-2xl font-bold num-tab text-[#1E5663]">89</div>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <div id="sl-stage-bar" class="h-3 rounded-full overflow-hidden flex surf-2"></div>
+            <div id="sl-stage-legend" class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] txt-soft"></div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2 border-t text-xs" style="border-color:var(--line)">
+            <div class="p-2.5 rounded-xl surf-2">
+              <div class="text-[11px] txt-faint">睡眠效率</div>
+              <div id="sl-eff" class="font-semibold num-tab txt-main mt-0.5">97%</div>
+            </div>
+            <div class="p-2.5 rounded-xl surf-2">
+              <div class="text-[11px] txt-faint">夜间清醒</div>
+              <div id="sl-awake-cnt" class="font-semibold num-tab txt-main mt-0.5">1 次 · 12m</div>
+            </div>
+            <div class="p-2.5 rounded-xl surf-2">
+              <div class="text-[11px] txt-faint">近7天睡眠债</div>
+              <div id="sl-debt" class="font-semibold num-tab txt-main mt-0.5">-1.2 小时</div>
+            </div>
+            <div class="p-2.5 rounded-xl surf-2">
+              <div class="text-[11px] txt-faint">今日步数 · 消耗</div>
+              <div id="sl-activity" class="font-semibold num-tab txt-main mt-0.5">6,840 步 · 245 kcal</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="surf rounded-2xl border p-5 space-y-3">
+          <div>
+            <div class="text-xs font-semibold txt-main">今日昼夜警觉度与精力曲线</div>
+            <div id="sl-coffee-win" class="text-[11px] txt-faint mt-0.5">上午高峰 ~10:30 · 午后小谷 ~15:00 · 咖啡建议窗 08:50–18:00</div>
+          </div>
+          <svg id="sl-alertness-svg" viewBox="0 0 560 150" class="w-full h-auto" role="img" aria-label="今日昼夜警觉度曲线"></svg>
+        </div>
+
+        <div class="surf rounded-2xl border p-4 space-y-3">
+          <button type="button" id="btn-toggle-10d" class="w-full flex items-center justify-between text-xs font-semibold txt-main">
+            <span>完整健康 10 维洞察（早八对比 · 社交时差 · TDEE · 规律性）</span>
+            <span id="toggle-10d-lbl" class="txt-faint font-normal">展开 ▾</span>
+          </button>
+          <div id="health-10d-grid" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 border-t text-xs" style="border-color:var(--line)"></div>
+        </div>
+
+        <div class="surf rounded-2xl border p-4 space-y-2.5">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-medium txt-main">补录或调整昨夜睡眠（低于 6.5h 将在首页轻提示）</span>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <input id="sl-nlp-input" type="text" value="23:54-07:20 深睡108 浅睡236 REM90 清醒12" class="flex-1 min-w-[200px] text-xs surf-2 border rounded-lg px-3 py-1.5 num-tab focus:outline-none" style="border-color:var(--line)">
+            <button type="button" id="btn-parse-sleep" class="px-3.5 py-1.5 rounded-lg text-xs shrink-0" style="background:var(--ink);color:var(--bg)">更新推算</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Life Sub 2: Multi-Component Grades + Attendance Coupling + What-If Calculator -->
+      <div id="life-sub-grades" class="life-sub-panel hidden space-y-4">
+        <div class="surf rounded-2xl border p-4 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div class="text-xs txt-faint">冬学期加权均绩（实时联动 OKR）</div>
+            <div class="flex items-baseline gap-2.5 mt-0.5">
+              <span id="gpa-val" class="text-2xl font-bold num-tab txt-main">4.42</span>
+              <span id="avg-score-val" class="text-xs num-tab txt-soft">加权均分 89.6</span>
+            </div>
+          </div>
+          <button type="button" id="btn-toggle-att-grade" class="px-3 py-1.5 rounded-full text-xs border transition surf txt-soft">
+            平时分联动考勤/作业：关
+          </button>
+        </div>
+
+        <div id="grades-list" class="space-y-3"></div>
+      </div>
+
+      <!-- Life Sub 3: Ledger with Categories -->
+      <div id="life-sub-ledger" class="life-sub-panel hidden space-y-4">
+        <div class="surf rounded-2xl border p-4 flex items-center justify-between">
+          <div>
+            <div class="text-xs txt-faint">本月支出（同步至统计消费构成）</div>
+            <div id="ledger-total" class="text-xl font-semibold num-tab txt-main mt-0.5">¥ 0.00</div>
+          </div>
+          <div class="text-right text-xs txt-soft">
+            <div>预算参考</div>
+            <div class="num-tab">¥ 1500 / 月</div>
+          </div>
+        </div>
+        <div class="surf rounded-2xl border p-3 flex flex-wrap gap-2">
+          <select id="ledger-cat" class="text-xs surf-2 border rounded-lg px-2 py-1.5 txt-soft" style="border-color:var(--line)">
+            <option value="餐饮">餐饮</option>
+            <option value="学习">学习</option>
+            <option value="出游">出游</option>
+            <option value="其他">其他</option>
+          </select>
+          <input id="ledger-note" type="text" placeholder="一笔开销，如：食堂午饭" class="flex-1 min-w-[120px] text-xs surf-2 border rounded-lg px-2.5 py-1.5 focus:outline-none" style="border-color:var(--line)">
+          <input id="ledger-amt" type="number" step="0.5" placeholder="金额" class="w-20 text-xs surf-2 border rounded-lg px-2.5 py-1.5 num-tab focus:outline-none" style="border-color:var(--line)">
+          <button type="button" id="btn-add-ledger" class="px-3 py-1.5 rounded-lg text-xs shrink-0" style="background:var(--ink);color:var(--bg)">记一笔</button>
+        </div>
+        <div id="ledger-list" class="surf rounded-2xl border divide-y overflow-hidden" style="border-color:var(--line)"></div>
+      </div>
+
+      <!-- Life Sub 4: Diet -->
+      <div id="life-sub-diet" class="life-sub-panel hidden space-y-4">
+        <div class="surf rounded-2xl border p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium txt-main">今日饮食</span>
+            <span id="diet-kcal-total" class="text-xs num-tab txt-soft">0 / 2100 kcal</span>
+          </div>
+          <div class="flex gap-2">
+            <input id="diet-name" type="text" placeholder="吃了什么，如：鸡腿饭" class="flex-1 text-xs surf-2 border rounded-lg px-2.5 py-1.5 focus:outline-none" style="border-color:var(--line)">
+            <input id="diet-kcal" type="number" placeholder="千卡" class="w-20 text-xs surf-2 border rounded-lg px-2.5 py-1.5 num-tab focus:outline-none" style="border-color:var(--line)">
+            <button type="button" id="btn-add-diet" class="px-3 py-1.5 rounded-lg text-xs shrink-0" style="background:var(--ink);color:var(--bg)">记录</button>
+          </div>
+          <div id="diet-list" class="divide-y" style="border-color:var(--line)"></div>
+        </div>
+      </div>
+
+      <!-- Life Sub 5: Whitepaper -->
+      <div id="life-sub-whitepaper" class="life-sub-panel hidden space-y-4">
+        <div class="surf rounded-2xl border p-5 space-y-4">
+          <div class="flex items-baseline justify-between">
+            <h2 class="text-sm font-semibold txt-main">学业生活白皮书 · 本周切片</h2>
+            <span class="text-xs txt-faint">自动汇总</span>
+          </div>
+          <div id="wp-summary" class="space-y-3 text-xs txt-soft leading-relaxed"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Quiet Bottom Navigation (4 Tabs) -->
+  <nav class="fixed bottom-0 inset-x-0 z-20 surf border-t backdrop-blur" aria-label="底部导航">
+    <div class="max-w-2xl mx-auto px-4 h-16 grid grid-cols-4 items-center">
+      <button type="button" data-tab="today" class="nav-btn flex flex-col items-center justify-center gap-1 text-xs txt-faint nav-item-active">
+        <span>今天</span>
+        <span class="nav-dot w-1 h-1 rounded-full opacity-0 transition" style="background:var(--ink)"></span>
+      </button>
+      <button type="button" data-tab="list" class="nav-btn flex flex-col items-center justify-center gap-1 text-xs txt-faint">
+        <span>清单</span>
+        <span class="nav-dot w-1 h-1 rounded-full opacity-0 transition" style="background:var(--ink)"></span>
+      </button>
+      <button type="button" data-tab="progress" class="nav-btn flex flex-col items-center justify-center gap-1 text-xs txt-faint">
+        <span>进度</span>
+        <span class="nav-dot w-1 h-1 rounded-full opacity-0 transition" style="background:var(--ink)"></span>
+      </button>
+      <button type="button" data-tab="life" class="nav-btn flex flex-col items-center justify-center gap-1 text-xs txt-faint">
+        <span>生活</span>
+        <span class="nav-dot w-1 h-1 rounded-full opacity-0 transition" style="background:var(--ink)"></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Global Search Modal -->
+  <div id="search-modal" class="hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-[1px] flex items-start justify-center p-4 pt-16">
+    <div class="surf w-full max-w-lg rounded-2xl border p-4 space-y-3 shadow-xl">
+      <div class="flex items-center gap-2 border-b pb-2.5" style="border-color:var(--line)">
+        <input id="global-search-input" type="text" placeholder="搜章节 / 反例 / 待办 / 或输入例题与时间戳（如 01:14:30）..." class="flex-1 text-xs bg-transparent focus:outline-none txt-main">
+        <button type="button" id="btn-close-search" class="text-xs txt-faint">关闭</button>
+      </div>
+      <div id="global-search-results" class="max-h-72 overflow-y-auto space-y-1.5 text-xs"></div>
+    </div>
+  </div>
+
+  <!-- Focus Drawer Modal (with Course Attribution) -->
+  <div id="focus-modal" class="hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-[1px] flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="surf w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl border p-6 space-y-5 shadow-xl text-center">
+      <div class="flex items-center justify-between text-xs txt-faint">
+        <span>专注计时（自动计入课程投入）</span>
+        <button type="button" id="btn-close-focus" class="hover:opacity-80">收起</button>
+      </div>
+      <div class="flex items-center justify-center gap-2">
+        <select id="focus-course-sel" class="text-xs surf-2 border rounded-full px-3 py-1 txt-main" style="border-color:var(--line)">
+          <option value="数学分析">数学分析</option>
+          <option value="代数学">代数学</option>
+          <option value="几何学">几何学</option>
+          <option value="C 程">C 程</option>
+        </select>
+        <span id="focus-title" class="text-xs txt-soft truncate max-w-[200px]">南开 ch05 导数应用</span>
+      </div>
+      <div id="focus-display" class="num-tab text-5xl font-medium tracking-tight txt-main">45:00</div>
+      <div class="flex items-center justify-center gap-2">
+        <button type="button" data-mins="45" class="dur-btn px-3 py-1 rounded-full text-xs" style="background:var(--ink);color:var(--bg)">45 分钟</button>
+        <button type="button" data-mins="20" class="dur-btn px-3 py-1 rounded-full text-xs surf-2 txt-soft">20 分钟</button>
+        <button type="button" data-mins="25" class="dur-btn px-3 py-1 rounded-full text-xs surf-2 txt-soft">25 分钟</button>
+      </div>
+      <div class="flex items-center justify-center gap-3">
+        <button type="button" id="btn-timer-toggle" class="px-7 py-2 rounded-full text-xs font-medium" style="background:var(--ink);color:var(--bg)">开始</button>
+        <button type="button" id="btn-timer-reset" class="px-5 py-2 rounded-full surf-2 txt-soft text-xs">重置</button>
+      </div>
+      <div class="pt-3 border-t flex items-center justify-between text-xs txt-faint" style="border-color:var(--line)">
+        <span>今天已专注 <strong id="focus-today-mins" class="txt-main num-tab">0</strong> 分钟</span>
+        <button type="button" id="btn-white-noise" class="txt-soft">白噪音：关</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-[1px] flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="surf w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl border p-6 space-y-4 shadow-xl max-h-[85vh] overflow-y-auto">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-semibold txt-main">设置与联动</h2>
+        <button type="button" id="btn-close-settings" class="text-xs txt-faint">关闭</button>
+      </div>
+      <div class="space-y-3 text-xs txt-soft">
+        <div class="p-3.5 rounded-xl surf-2 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-medium txt-main">日历与小米手环提醒</span>
+            <button type="button" id="btn-export-ics" class="px-3 py-1 rounded-full text-xs" style="background:var(--ink);color:var(--bg)">导出 .ics</button>
+          </div>
+          <p class="leading-relaxed">11 月 28 日（周六）正式启动；上课、作业、周日家教与 23:30 收尾设为震动提醒。</p>
+        </div>
+        <div class="p-3.5 rounded-xl surf-2 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-medium txt-main">直连知识库全套阅读器</span>
+            <a href="https://faust275.github.io/math-course-hub/" target="_blank" rel="noopener noreferrer" class="px-3 py-1 rounded-full surf border txt-main text-xs">打开汇总站 ↗</a>
+          </div>
+          <p class="leading-relaxed">荧光笔、波浪线、课堂时间戳检索与英语课文音频继续使用云端知识库。</p>
+        </div>
+        <div class="p-3.5 rounded-xl surf-2 flex items-center justify-between">
+          <span class="font-medium txt-main">数据备份</span>
+          <button type="button" id="btn-copy-backup" class="px-3 py-1 rounded-full surf border txt-main text-xs">复制存档</button>
+        </div>
+        <div class="pt-2 flex items-center justify-between border-t" style="border-color:var(--line)">
+          <span>新的一周开始了？</span>
+          <button type="button" id="btn-reset-week" class="txt-main underline">重置本周作业勾选</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Undo / Quiet Toast -->
+  <div id="toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 opacity-0 pointer-events-none transition-opacity duration-200 px-4 py-2 rounded-full text-xs shadow-md flex items-center gap-3" style="background:var(--ink);color:var(--bg)">
+    <span id="toast-msg"></span>
+    <button type="button" id="btn-undo" class="hidden underline font-semibold">撤销</button>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var HUB = 'https://faust275.github.io/math-course-hub/';
+      var KEY = 'riji_study_v7';
+
+      // Plan officially starts Saturday, 2026-11-28 (dayIdx=5 in W1)
+      var NOW_WEEK_IDX = 0;
+      var NOW_DAY_IDX = 5;
+      var NOW_MIN = 8 * 60 + 20;
+
+      var DUE_ITEMS = [
+        { id: 'geo', title: '几何学作业', dueText: '周一课前', dayIdx: 0 },
+        { id: 'log', title: '交周志', dueText: '周一晚', dayIdx: 0 },
+        { id: 'ana', title: '分析学作业', dueText: '周二课前', dayIdx: 1 },
+        { id: 'alg', title: '代数学作业', dueText: '周四课前', dayIdx: 3 },
+        { id: 'cprog', title: 'C 程作业', dueText: '周六晚前', dayIdx: 5 },
+        { id: 'tutor', title: '家教备课', dueText: '周日 10:00 前', dayIdx: 6 }
+      ];
+
+      var WEEKS = [
+        { id: 'w1', label: '第 1 周', dates: '11.28–12.04', phase: 'winter', anaShort: '南开 ch05 导数应用', ana: '南开 ch05 导数应用 · 陶 ch10', anaUrl: 'textbook-analysis-lichengzhang-ch05.html', algShort: '101 ch04 矩阵', alg: '101 ch04 矩阵与初等变换', algUrl: 'textbook-algebra-101-ch04.html', cShort: 'C程 · 指针与数组' },
+        { id: 'w2', label: '第 2 周', dates: '12.05–12.11', phase: 'winter', anaShort: '南开 ch06–07 积分', ana: '南开 ch06–07 积分与可积性 · 陶 ch11', anaUrl: 'textbook-analysis-lichengzhang-ch07.html', algShort: '101 ch05 基与维数', alg: '101 ch05 线性空间的基和维数', algUrl: 'textbook-algebra-101-ch05.html', cShort: 'C程 · 字符串与递归' },
+        { id: 'w3', label: '第 3 周', dates: '12.12–12.18', phase: 'winter', anaShort: '南开 ch08/10 广义积分', ana: '南开 ch08 积分应用 · ch10 广义积分', anaUrl: 'textbook-analysis-lichengzhang-ch10.html', algShort: '101 ch06 方程组与秩', alg: '101 ch06 线性方程组与矩阵的秩', algUrl: 'textbook-algebra-101-ch06.html', cShort: 'C程 · 结构体与文件' },
+        { id: 'w4', label: '第 4 周', dates: '12.19–12.25', phase: 'winter', anaShort: '南开 ch09 数项级数', ana: '南开 ch09 数项级数 · 陶 ch07', anaUrl: 'textbook-analysis-lichengzhang-ch09.html', algShort: '101 ch07 行列式', alg: '101 ch07 矩阵与行列式', algUrl: 'textbook-algebra-101-ch07.html', cShort: 'C程 · 机考模拟卷' },
+        { id: 'w5', label: '考试周', dates: '12.26–01.12', phase: 'exam', anaShort: '分析I 期末复习', ana: '冬学期期末复习（南开 ch01–09）', anaUrl: 'course-analysis.html', algShort: '代数I 期末复习', alg: '代数学I期末复习 · C程结课', algUrl: 'course-algebra.html', cShort: 'C程期末冲刺' },
+        { id: 'w8', label: '寒假 1', dates: '01.13–01.19', phase: 'break', anaShort: '南开 ch11 一致收敛', ana: '南开 ch11 一致收敛 · 陶 ch14', anaUrl: 'textbook-analysis-lichengzhang-ch11.html', algShort: '101 ch08 线性变换', alg: '101 ch08 线性映射与线性变换', algUrl: 'textbook-algebra-101-ch08.html', cShort: '已结课' },
+        { id: 'w9', label: '寒假 2', dates: '01.20–01.26', phase: 'break', anaShort: '幂级数与 Fourier', ana: '幂级数与 Fourier 级数 · 陶 ch15–16', anaUrl: 'textbook-analysis-taozhexuan-ch16.html', algShort: '101 ch09 特征理论', alg: '101 ch09 特征值与对角化', algUrl: 'textbook-algebra-101-ch09.html', cShort: '已结课' },
+        { id: 'w11', label: '寒假 3', dates: '01.27–02.02', phase: 'break', anaShort: '多元拓扑与多元微分', ana: '多元拓扑与多元微分 · 陶 ch12–13, 17', anaUrl: 'textbook-analysis-taozhexuan-ch17.html', algShort: '二次型与欧氏空间', alg: '二次型、欧氏空间与谱定理', algUrl: 'course-algebra.html', cShort: '已结课' },
+        { id: 'w10', label: '春节', dates: '02.03–02.09', phase: 'break', rest: true, anaShort: '春节全休', ana: '春节前后七天休息，不排计划', algShort: '全休', alg: '彻底休息', cShort: '' },
+        { id: 'w12', label: '寒假 4', dates: '02.10–02.16', phase: 'break', anaShort: '隐函数与含参积分', ana: '隐函数、反函数与含参变量积分', anaUrl: 'textbook-analysis-taozhexuan-ch17.html', algShort: 'Jordan 形与 SVD', alg: 'Jordan 标准形、酉空间与 SVD', algUrl: 'course-algebra.html', cShort: '已结课' },
+        { id: 'w13', label: '春学期 1', dates: '02.17–02.23', phase: 'spring', anaShort: '二重与三重积分', ana: '二重与三重积分、变量替换', anaUrl: 'course-analysis.html', algShort: '群论入门', alg: '群论入门或高代专题深化', algUrl: 'course-algebra.html', cShort: '' },
+        { id: 'w14', label: '春学期 2', dates: '02.24–03.02', phase: 'spring', anaShort: '曲线与曲面积分', ana: '第一、二型曲线与曲面积分', anaUrl: 'course-analysis.html', algShort: '群同态与同构', alg: '群同态与同构定理', algUrl: 'course-algebra.html', cShort: '' },
+        { id: 'w15', label: '春学期 3', dates: '03.03–03.09', phase: 'spring', anaShort: '三大积分定理', ana: 'Green、Gauss 与 Stokes 定理', anaUrl: 'course-analysis.html', algShort: '环与理想基础', alg: '环与理想基础', algUrl: 'course-algebra.html', cShort: '' },
+        { id: 'w16', label: '收尾周', dates: '03.10–03.25', phase: 'spring', anaShort: '全书定理总复盘', ana: '全书核心定理复盘与查漏', anaUrl: 'course-analysis.html', algShort: '高代综合复盘', alg: '高代综合复盘与反例归档', algUrl: 'course-algebra.html', cShort: '' }
+      ];
+
+      var DAY_META = [
+        { short: '一', full: '周一', dateLabel: '11月30日', lunar: '十月廿一' },
+        { short: '二', full: '周二', dateLabel: '12月1日', lunar: '十月廿二' },
+        { short: '三', full: '周三', dateLabel: '12月2日', lunar: '十月廿三' },
+        { short: '四', full: '周四', dateLabel: '12月3日', lunar: '十月廿四' },
+        { short: '五', full: '周五', dateLabel: '12月4日', lunar: '十月廿五' },
+        { short: '六', full: '周六', dateLabel: '11月28日', lunar: '十月十九' },
+        { short: '日', full: '周日', dateLabel: '11月29日', lunar: '十月二十' }
+      ];
+
+      function buildDayItemsForWeek(weekObj, dIdx) {
+        if (weekObj.rest) {
+          return [
+            { id: 'rest-' + dIdx, t: '10:00–12:00', title: '春节休整 · 自由安排', type: 'rest' },
+            { id: 'rest-div-' + dIdx, divider: '春节前后七天不排学习任务' }
+          ];
+        }
+        var isBreak = (weekObj.phase === 'break');
+        var anaT = weekObj.anaShort;
+        var algT = weekObj.algShort;
+        var cT = weekObj.cShort || 'C程复习';
+
+        if (isBreak) {
+          if (dIdx === 5) {
+            return [
+              { id: 'b-sa0', t: '08:20–14:45', title: '周六出游 / 自由整块', type: 'rest' },
+              { id: 'b-sa1', t: '15:00–17:00', title: '练习钢琴', type: 'rest' },
+              { id: 'b-sa-d2', divider: '晚饭 · 17:00–18:10' },
+              { id: 'b-sa2', t: '18:15–20:15', title: '准备周日家教', type: 'due' },
+              { id: 'b-sa3', t: '20:30–23:00', title: '看部电影', type: 'rest' }
+            ];
+          }
+          if (dIdx === 6) {
+            return [
+              { id: 'b-su1', t: '10:00–12:00', title: '带家教', type: 'class' },
+              { id: 'b-su-d1', divider: '午饭 · 12:00–12:40' },
+              { id: 'b-su2', t: '12:40–14:10', title: '代数学 · ' + algT, type: 'alg', course: '代数学', hub: weekObj.algUrl },
+              { id: 'b-su3', t: '14:20–17:30', title: '本周定理闭卷自测与反例复盘', type: 'ana', course: '数学分析', hub: weekObj.anaUrl },
+              { id: 'b-su-d2', divider: '晚饭 · 17:30–18:15' },
+              { id: 'b-su4', t: '18:15–21:30', title: '下周章节预读与习题', type: 'alg', course: '代数学', hub: weekObj.algUrl }
+            ];
+          }
+          return [
+            { id: 'b-' + dIdx + '-1', t: '08:30–11:45', title: '数学分析 · ' + anaT, type: 'ana', course: '数学分析', hub: weekObj.anaUrl },
+            { id: 'b-' + dIdx + '-d1', divider: '午饭 · 12:00–12:40' },
+            { id: 'b-' + dIdx + '-2', t: '13:30–17:00', title: '代数学 · ' + algT, type: 'alg', course: '代数学', hub: weekObj.algUrl },
+            { id: 'b-' + dIdx + '-d2', divider: '晚饭 · 17:30–18:15' },
+            { id: 'b-' + dIdx + '-3', t: '18:45–21:45', title: '习题与证明消化', type: 'ana', course: '数学分析', hub: weekObj.anaUrl }
+          ];
+        }
+
+        var templates = [
+          [
+            { id: 'm1', t: '08:00–09:35', title: '几何学', type: 'class', attendable: true, course: '几何学' },
+            { id: 'm2', t: '10:00–12:25', title: '代数学I', type: 'class', attendable: true, course: '代数学', sub: '课上先跟进度' },
+            { id: 'm-b1', divider: '午饭 · 12:25–13:25' },
+            { id: 'm3', t: '13:25–15:50', title: '打开艺术之门', type: 'class', attendable: true },
+            { id: 'm4', t: '16:15–17:50', title: '匹克球', type: 'class', attendable: true },
+            { id: 'm-b2', divider: '晚饭 · 17:50–18:45' },
+            { id: 'm5', t: '18:50–19:15', title: '交周志', type: 'due' },
+            { id: 'm6', t: '19:20–20:55', title: '分析学作业收尾（1.5h）', type: 'due', course: '数学分析' },
+            { id: 'm7', t: '21:00–21:30', title: '校园跑', type: 'rest' },
+            { id: 'm8', t: '21:40–22:30', title: '练习钢琴', type: 'rest' },
+            { id: 'm9', t: '22:35–23:30', title: anaT + ' 预读', type: 'ana', course: '数学分析', hub: weekObj.anaUrl }
+          ],
+          [
+            { id: 't1', t: '08:00–09:40', title: '分析学作业核对', type: 'due', course: '数学分析' },
+            { id: 't2', t: '10:00–12:25', title: '分析学I', type: 'class', attendable: true, course: '数学分析' },
+            { id: 't-b1', divider: '午饭 · 12:25–13:25' },
+            { id: 't3', t: '13:25–15:50', title: anaT, type: 'ana', attendable: true, course: '数学分析', sub: 'C程课上自学', hub: weekObj.anaUrl },
+            { id: 't4', t: '16:15–17:50', title: cT, type: 'due', attendable: true, course: 'C 程', sub: '思政课上自学', hub: 'course-cprog.html' },
+            { id: 't-b2', divider: '晚饭 · 17:50–18:45' },
+            { id: 't5', t: '18:50–20:25', title: '新工科大学英语', type: 'class', attendable: true },
+            { id: 't6', t: '20:40–23:30', title: algT, type: 'alg', course: '代数学', hub: weekObj.algUrl }
+          ],
+          [
+            { id: 'w1', t: '08:00–09:35', title: '百万立方未来世界', type: 'class', attendable: true },
+            { id: 'w2', t: '09:55–12:00', title: '写代数学作业', type: 'due', course: '代数学' },
+            { id: 'w-b1', divider: '午饭 · 12:00–12:40' },
+            { id: 'w2b', t: '12:40–14:00', title: '代数学作业收尾（午间清零）', type: 'due', course: '代数学' },
+            { id: 'w3', t: '14:15–15:50', title: '几何学', type: 'class', attendable: true, course: '几何学' },
+            { id: 'w4', t: '16:10–17:30', title: anaT + ' 预热与例题', type: 'ana', course: '数学分析', hub: weekObj.anaUrl },
+            { id: 'w-b2', divider: '晚饭 · 17:30–18:10' },
+            { id: 'w5', t: '18:10–20:55', title: anaT + ' · 陶哲轩对照', type: 'ana', course: '数学分析', hub: weekObj.anaUrl },
+            { id: 'w6', t: '21:00–21:30', title: '校园跑', type: 'rest' },
+            { id: 'w7', t: '21:40–22:30', title: '练习钢琴', type: 'rest' },
+            { id: 'w8', t: '22:35–23:30', title: '数分定理默证与习题', type: 'ana', course: '数学分析', hub: weekObj.anaUrl }
+          ],
+          [
+            { id: 'th1', t: '08:00–09:35', title: '写完本周 C 程作业', type: 'due', attendable: true, course: 'C 程', sub: '机房课上', hub: 'course-cprog.html' },
+            { id: 'th2', t: '10:00–12:25', title: '分析学I', type: 'class', attendable: true, course: '数学分析' },
+            { id: 'th-b1', divider: '午饭与通勤 · 12:25–13:25' },
+            { id: 'th3', t: '13:25–15:50', title: '代数学I', type: 'class', attendable: true, course: '代数学', sub: '课上先跟进度' },
+            { id: 'th4', t: '16:15–17:00', title: '身体素质', type: 'class', attendable: true },
+            { id: 'th5', t: '17:00–17:20', title: '校园跑', type: 'rest' },
+            { id: 'th-b2', divider: '晚饭 · 17:20–18:00' },
+            { id: 'th6', t: '18:05–21:25', title: algT + ' 精读', type: 'alg', course: '代数学', hub: weekObj.algUrl },
+            { id: 'th7', t: '21:30–23:30', title: '分析学当天习题整理', type: 'ana', course: '数学分析', hub: weekObj.anaUrl }
+          ],
+          [
+            { id: 'f1', t: '08:00–09:40', title: algT + ' 习题', type: 'alg', course: '代数学', hub: weekObj.algUrl },
+            { id: 'f2', t: '10:00–11:35', title: '百万立方未来世界', type: 'class', attendable: true },
+            { id: 'f-b1', divider: '午饭 · 11:35–12:15' },
+            { id: 'f2b', t: '12:15–13:35', title: '本周双科错题与习题巩固', type: 'alg', course: '代数学', hub: weekObj.algUrl },
+            { id: 'f3', t: '13:50–17:40', title: anaT + ' 习题与证明', type: 'ana', course: '数学分析', hub: weekObj.anaUrl },
+            { id: 'f-b2', divider: '晚饭 · 17:40–18:20' },
+            { id: 'f4', t: '18:20–21:55', title: algT + ' 推进', type: 'alg', course: '代数学', hub: weekObj.algUrl },
+            { id: 'f5', t: '22:00–23:30', title: cT + ' 练习', type: 'due', course: 'C 程', hub: 'course-cprog.html' }
+          ],
+          [
+            { id: 'sa0', t: '08:20–14:45', title: '周六出游（含在外午饭与通勤）', type: 'rest' },
+            { id: 'sa3', t: '15:00–17:00', title: '练习钢琴', type: 'rest' },
+            { id: 'sa-b2', divider: '晚饭 · 17:00–18:10' },
+            { id: 'sa4', t: '18:15–20:15', title: '准备周日家教', type: 'due' },
+            { id: 'sa5', t: '20:30–23:00', title: '看部电影', type: 'rest' }
+          ],
+          [
+            { id: 'su1', t: '08:20–09:50', title: '几何学作业一次性完成', type: 'due', course: '几何学' },
+            { id: 'su2', t: '10:00–12:00', title: '带家教', type: 'class' },
+            { id: 'su-b1', divider: '午饭 · 12:00–12:40' },
+            { id: 'su2b', t: '12:40–14:10', title: '分析学作业主力第一段（1.5h）', type: 'due', course: '数学分析' },
+            { id: 'su3', t: '14:20–17:20', title: '本周定理闭卷过关与反例', type: 'ana', course: '数学分析', hub: weekObj.anaUrl },
+            { id: 'su-b2', divider: '晚饭 · 17:20–18:05' },
+            { id: 'su4', t: '18:10–20:10', title: '分析学作业主力第二段（2h）', type: 'due', course: '数学分析' },
+            { id: 'su5', t: '20:15–22:00', title: '核对作业与下周章节预热', type: 'alg', course: '代数学', hub: weekObj.algUrl }
+          ]
+        ];
+        return templates[dIdx] || [];
+      }
+
+      var QUOTA_DEFS = [
+        { id: 'q-ana', title: '数学分析深度整块', target: 4, color: '#1E5663' },
+        { id: 'q-alg', title: '代数学补基推进', target: 4, color: '#5B4386' },
+        { id: 'q-vocab', title: '每日 20 分钟背单词', target: 7, color: '#1C1F2B' },
+        { id: 'q-sleep', title: '23:30 收尾 · 零点睡', target: 7, color: '#A6512B' }
+      ];
+
+      function initState() {
+        return {
+          dark: false,
+          weekIdx: 0,
+          dayIdx: 5, // Starts on Saturday 11.28!
+          tab: 'today',
+          listSub: 'timetable',
+          lifeSub: 'sleep',
+          calMonth: 11,
+          calSelected: '2026-11-28',
+          phase: 'all',
+          showAllDue: false,
+          show10d: false,
+          attGradeCoupling: false,
+          vocabDone: false,
+          sleepDone: false,
+          dueDone: {},
+          blockDone: {},
+          skipped: {},
+          shifted: {},
+          attendance: { 'w1|1|t3': { status: '自学', note: '南开 ch05 中值定理' } },
+          backfills: { '2026-11-28': [{ id: 'bf1', t: '09:00–13:30', title: '周六出游与午餐' }] },
+          selectedWeekBlock: null,
+          expandedItem: null,
+          customItems: {},
+          makeupPool: [],
+          quotaCounts: { 'q-ana': 0, 'q-alg': 0, 'q-vocab': 1, 'q-sleep': 1 },
+          courseFocusMins: { '数学分析': 270, '代数学': 180, '几何学': 90, 'C 程': 120 },
+          quadTasks: [
+            { id: 'qt1', q: 'q1', title: '完成本周分析学作业', done: false, subs: [
+              { id: 's1', title: '周日中午 1.5h', done: false },
+              { id: 's2', title: '周日晚 2h', done: false },
+              { id: 's3', title: '周一晚 1.5h', done: false }
+            ]},
+            { id: 'qt2', q: 'q2', title: '重读陶哲轩第 10 章导数严格定义', done: false, subs: [] },
+            { id: 'qt3', q: 'q3', title: '周一晚交周志', done: false, subs: [] },
+            { id: 'qt4', q: 'q4', title: '周六上午出游与晚间电影', done: false, subs: [] }
+          ],
+          diary: [
+            { id: 'd1', kind: '反例', date: '11月28日', text: 'x^n 在 [0,1] 逐点收敛但极限在 1 处间断，说明逐点收敛不保连续。' },
+            { id: 'd2', kind: '灵感', date: '11月28日', text: '隐函数定理本质上是切空间可逆线性映射诱导局部非线性可逆。' }
+          ],
+          doneAna: {},
+          doneAlg: {},
+          sleepRec: { start: '23:54', end: '07:20', deep: 108, light: 236, rem: 90, awake: 12, awakenings: 1, debtMin: 72, steps: 6840, activeKcal: 245 },
+          ledger: [
+            { id: 'l1', cat: '餐饮', note: '紫金港食堂午饭', amt: 18.5, date: '11月28日' },
+            { id: 'l2', cat: '学习', note: '草稿纸与中性笔', amt: 24.0, date: '11月27日' },
+            { id: 'l3', cat: '出游', note: '周六出游交通与饮品', amt: 38.0, date: '11月28日' }
+          ],
+          diet: [
+            { id: 'dt1', name: '早饭 · 豆浆包子', kcal: 420 },
+            { id: 'dt2', name: '午饭 · 食堂套餐', kcal: 680 }
+          ],
+          grades: [
+            { id: 'g1', name: '分析学 I', credit: 5, target: 90, parts: [{ n: '平时', w: 20, s: 94 }, { n: '期中', w: 30, s: 88 }, { n: '期末', w: 50, s: 92 }] },
+            { id: 'g2', name: '代数学 I', credit: 4.5, target: 88, parts: [{ n: '平时', w: 20, s: 90 }, { n: '期中', w: 30, s: 82 }, { n: '期末', w: 50, s: 88 }] },
+            { id: 'g3', name: '几何学', credit: 4, target: 90, parts: [{ n: '平时', w: 30, s: 92 }, { n: '期末', w: 70, s: 89 }] },
+            { id: 'g4', name: '程序设计基础', credit: 3.5, target: 88, parts: [{ n: '平时', w: 40, s: 95 }, { n: '期末', w: 60, s: 86 }] }
+          ],
+          focusMins: 45,
+          focusToday: 0,
+          focusCourse: '数学分析',
+          focusTitle: '南开 ch05 导数应用',
+          focusHub: 'textbook-analysis-lichengzhang-ch05.html',
+          whiteNoise: false
+        };
+      }
+
+      var state = initState();
+      try {
+        var saved = window.localStorage.getItem(KEY);
+        if (saved) {
+          var obj = JSON.parse(saved);
+          if (obj && typeof obj === 'object') state = Object.assign(initState(), obj);
+        }
+      } catch (e) {}
+
+      function applyTheme() { document.documentElement.classList.toggle('dark', !!state.dark); }
+      applyTheme();
+      function save() { try { window.localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+      var undoSnapshot = null;
+      var toastTimer = null;
+      function toast(msg, snapshotForUndo) {
+        undoSnapshot = snapshotForUndo || null;
+        var t = document.getElementById('toast');
+        var uBtn = document.getElementById('btn-undo');
+        document.getElementById('toast-msg').textContent = msg;
+        if (undoSnapshot) uBtn.classList.remove('hidden');
+        else uBtn.classList.add('hidden');
+        t.classList.remove('opacity-0', 'pointer-events-none');
+        t.classList.add('opacity-100');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+          t.classList.remove('opacity-100');
+          t.classList.add('opacity-0', 'pointer-events-none');
+          undoSnapshot = null;
+        }, undoSnapshot ? 3800 : 1800);
+      }
+
+      function toMin(hhmm) {
+        var p = String(hhmm || '').trim().split(':');
+        if (p.length !== 2) return null;
+        var h = parseInt(p[0], 10), m = parseInt(p[1], 10);
+        return (isNaN(h) || isNaN(m)) ? null : h * 60 + m;
+      }
+
+      function add30Min(rangeStr) {
+        var parts = rangeStr.split('–');
+        function shift(hm) {
+          var p = hm.trim().split(':');
+          if (p.length !== 2) return hm;
+          var total = (parseInt(p[0], 10) * 60 + parseInt(p[1], 10) + 30) % (24 * 60);
+          var hh = Math.floor(total / 60), mm = total % 60;
+          return (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm;
+        }
+        return parts.length === 2 ? (shift(parts[0]) + '–' + shift(parts[1])) : shift(rangeStr);
+      }
+
+      function blockKey(wIdx, dIdx, itemId) { return WEEKS[wIdx].id + '|' + dIdx + '|' + itemId; }
+
+      // Plan starts Sat (dayIdx=5) in W1; order inside W1: Sat(5)->Sun(6)->Mon(0)->Tue(1)->Wed(2)->Thu(3)->Fri(4)
+      function dayOrderInWeek(dIdx) { return (dIdx + 2) % 7; }
+      function isPastBlock(wIdx, dIdx, endMin) {
+        if (wIdx < NOW_WEEK_IDX) return true;
+        if (wIdx > NOW_WEEK_IDX) return false;
+        var curO = dayOrderInWeek(NOW_DAY_IDX);
+        var tgtO = dayOrderInWeek(dIdx);
+        if (tgtO < curO) return true;
+        if (tgtO > curO) return false;
+        return endMin != null && endMin <= NOW_MIN;
+      }
+
+      /* Grade & GPA Helper (Multi-component + Attendance Coupling + What-If) */
+      function computeGradeStats() {
+        var dueDoneCnt = DUE_ITEMS.filter(function (x) { return !!state.dueDone[x.id]; }).length;
+        var autoRegular = Math.min(100, Math.round(85 + (dueDoneCnt / DUE_ITEMS.length) * 15));
+        var totalCr = 0, totalGp = 0, totalWeighted = 0;
+        var rows = state.grades.map(function (g) {
+          var sum = 0;
+          var nonFinalSum = 0;
+          var finalPart = g.parts[g.parts.length - 1];
+          g.parts.forEach(function (pt, idx) {
+            var sc = (state.attGradeCoupling && pt.n === '平时') ? autoRegular : pt.s;
+            sum += sc * (pt.w / 100);
+            if (idx < g.parts.length - 1) nonFinalSum += sc * (pt.w / 100);
+          });
+          var gp = sum >= 95 ? 5.0 : (sum >= 85 ? 4.0 + (sum - 85) * 0.1 : Math.max(1.5, 3.9 - (85 - sum) * 0.1));
+          var needFinal = finalPart && finalPart.w ? Math.ceil((g.target - nonFinalSum) / (finalPart.w / 100)) : 0;
+          totalCr += g.credit;
+          totalGp += gp * g.credit;
+          totalWeighted += sum * g.credit;
+          return { g: g, total: sum, gp: gp, needFinal: needFinal, autoRegular: autoRegular };
+        });
+        return {
+          gpa: totalCr ? (totalGp / totalCr) : 0,
+          avg: totalCr ? (totalWeighted / totalCr) : 0,
+          rows: rows
+        };
+      }
+
+      /* Timer */
+      var intervalId = null;
+      var secLeft = state.focusMins * 60;
+      var running = false;
+
+      function fmtSec(s) {
+        var m = Math.floor(s / 60), r = s % 60;
+        return (m < 10 ? '0' : '') + m + ':' + (r < 10 ? '0' : '') + r;
+      }
+
+      function syncTimerUI() {
+        var txt = fmtSec(secLeft);
+        document.getElementById('focus-display').textContent = txt;
+        document.getElementById('focus-title').textContent = state.focusTitle;
+        document.getElementById('focus-course-sel').value = state.focusCourse;
+        document.getElementById('focus-today-mins').textContent = state.focusToday;
+        document.getElementById('btn-white-noise').textContent = '白噪音：' + (state.whiteNoise ? '开（雨声）' : '关');
+        var dot = document.getElementById('top-focus-dot');
+        var lbl = document.getElementById('top-focus-label');
+        if (running) {
+          dot.className = 'w-1.5 h-1.5 rounded-full bg-teal-600 animate-pulse';
+          lbl.textContent = txt;
+          document.getElementById('btn-timer-toggle').textContent = '暂停';
+        } else {
+          dot.className = 'w-1.5 h-1.5 rounded-full bg-stone-400';
+          lbl.textContent = '专注';
+          document.getElementById('btn-timer-toggle').textContent = '开始';
+        }
+      }
+
+      function stopTimer() {
+        if (intervalId !== null) { clearInterval(intervalId); intervalId = null; }
+        running = false;
+        syncTimerUI();
+      }
+
+      function startTimer() {
+        if (running) return;
+        if (secLeft <= 0) secLeft = state.focusMins * 60;
+        running = true;
+        syncTimerUI();
+        intervalId = setInterval(function () {
+          secLeft -= 1;
+          if (secLeft <= 0) {
+            stopTimer();
+            state.focusToday += state.focusMins;
+            state.courseFocusMins[state.focusCourse] = (state.courseFocusMins[state.focusCourse] || 0) + state.focusMins;
+            secLeft = state.focusMins * 60;
+            save();
+            renderAll();
+            toast('专注结束，已计入「' + state.focusCourse + '」课程投入');
+          } else { syncTimerUI(); }
+        }, 1000);
+      }
+
+      function switchTab(tab) {
+        state.tab = tab;
+        save();
+        document.querySelectorAll('.tab-view').forEach(function (v) { v.classList.add('hidden'); });
+        var el = document.getElementById('view-' + tab);
+        if (el) el.classList.remove('hidden');
+        document.querySelectorAll('.nav-btn').forEach(function (b) {
+          var on = b.getAttribute('data-tab') === tab;
+          b.classList.toggle('nav-item-active', on);
+          b.classList.toggle('txt-faint', !on);
+        });
+      }
+
+      function getDayItems(wIdx, dIdx) {
+        var wk = WEEKS[wIdx] || WEEKS[0];
+        var base = buildDayItemsForWeek(wk, dIdx);
+        var custom = state.customItems[wk.id + '|' + dIdx] || [];
+        return base.concat(custom);
+      }
+
+      function renderToday() {
+        var wk = WEEKS[state.weekIdx] || WEEKS[0];
+        var dm = DAY_META[state.dayIdx] || DAY_META[5];
+        document.getElementById('top-date-title').textContent = dm.dateLabel;
+        document.getElementById('top-day-sub').textContent = wk.label + ' · ' + dm.full + ' · ' + dm.lunar;
+        document.getElementById('schedule-title').textContent = wk.label + ' · ' + dm.full + '安排';
+
+        // Cross-link: Health threshold gentle hint on Today page
+        var r = state.sleepRec;
+        var asleep = r.deep + r.light + r.rem;
+        var hintBox = document.getElementById('today-health-hint');
+        if (asleep < 390) {
+          hintBox.classList.remove('hidden');
+          document.getElementById('today-health-hint-text').textContent = '昨夜有效睡眠不足 6.5 小时，今晚尽量 23:30 准时收尾。';
+        } else {
+          hintBox.classList.add('hidden');
+        }
+
+        document.getElementById('day-strip').innerHTML = DAY_META.map(function (item, idx) {
+          var cls = idx === state.dayIdx ? 'day-active' : 'txt-soft hover:opacity-80';
+          return '<button type="button" data-day="' + idx + '" class="day-btn w-9 h-9 rounded-full text-xs font-medium transition ' + cls + '">' + item.short + '</button>';
+        }).join('');
+
+        var allItems = getDayItems(state.weekIdx, state.dayIdx);
+        var primary = allItems.find(function (x) {
+          var k = blockKey(state.weekIdx, state.dayIdx, x.id);
+          return !x.divider && !state.skipped[k] && !state.blockDone[k];
+        }) || allItems.find(function (x) { return !x.divider; });
+
+        if (primary) {
+          var pk = blockKey(state.weekIdx, state.dayIdx, primary.id);
+          document.getElementById('now-tag-label').textContent = (state.weekIdx === 0 && state.dayIdx === 5) ? '11月28日（周六）正式启动' : '下一段安排';
+          document.getElementById('now-time').textContent = state.shifted[pk] || primary.t;
+          document.getElementById('now-title').textContent = primary.title;
+          var readBtn = document.getElementById('btn-now-read');
+          if (primary.hub) { readBtn.href = HUB + primary.hub; readBtn.classList.remove('hidden'); }
+          else { readBtn.classList.add('hidden'); }
+        }
+
+        var vBtn = document.getElementById('habit-vocab');
+        vBtn.className = 'flex items-center gap-2 px-3.5 py-2 rounded-full text-xs border transition ' + (state.vocabDone ? 'day-active border-transparent' : 'surf txt-main');
+        vBtn.innerHTML = '<span class="w-3.5 h-3.5 rounded-full border flex items-center justify-center text-[9px]" style="border-color:currentColor">' + (state.vocabDone ? '✓' : '') + '</span><span>背 20 分钟单词</span>';
+
+        var sBtn = document.getElementById('habit-sleep');
+        sBtn.className = 'flex items-center gap-2 px-3.5 py-2 rounded-full text-xs border transition ' + (state.sleepDone ? 'day-active border-transparent' : 'surf txt-main');
+        sBtn.innerHTML = '<span class="w-3.5 h-3.5 rounded-full border flex items-center justify-center text-[9px]" style="border-color:currentColor">' + (state.sleepDone ? '✓' : '') + '</span><span>23:30 收尾</span>';
+
+        var nearDue = DUE_ITEMS.filter(function (x) { return ((x.dayIdx - state.dayIdx + 7) % 7) <= 2; });
+        var visibleDue = state.showAllDue ? DUE_ITEMS : (nearDue.length ? nearDue : DUE_ITEMS.slice(0, 2));
+        var remainCnt = DUE_ITEMS.filter(function (x) { return !state.dueDone[x.id]; }).length;
+        document.getElementById('btn-toggle-all-due').textContent = state.showAllDue ? '只看近期' : ('本周全部 (' + remainCnt + ' 未交)');
+
+        document.getElementById('due-list').innerHTML = visibleDue.map(function (x) {
+          var done = !!state.dueDone[x.id];
+          return '<button type="button" data-due="' + x.id + '" class="due-btn w-full px-4 py-3 flex items-center justify-between text-left hover:opacity-80 transition">' +
+            '<div class="flex items-center gap-3 min-w-0">' +
+            '<span class="w-4 h-4 rounded-full border flex items-center justify-center text-[10px] shrink-0 ' + (done ? 'day-active border-transparent' : 'txt-faint') + '" style="' + (done ? '' : 'border-color:var(--line)') + '">✓</span>' +
+            '<span class="text-sm truncate ' + (done ? 'line-through txt-faint' : 'txt-main') + '">' + x.title + '</span></div>' +
+            '<span class="text-xs shrink-0 ' + (done ? 'txt-faint' : 'txt-soft') + '">' + (done ? '交完了' : x.dueText) + '</span></button>';
+        }).join('');
+
+        var dotColor = { ana: 'bg-[#1E5663]', alg: 'bg-[#5B4386]', due: 'bg-[#A6512B]', rest: 'bg-rose-400', class: 'bg-stone-400' };
+        document.getElementById('schedule-flow').innerHTML = allItems.map(function (item) {
+          if (item.divider) {
+            return '<div class="py-2 flex items-center gap-3 text-[11px] txt-faint"><span class="flex-1 h-px" style="background:var(--line)"></span><span>' + item.divider + '</span><span class="flex-1 h-px" style="background:var(--line)"></span></div>';
+          }
+          var k = blockKey(state.weekIdx, state.dayIdx, item.id);
+          var done = !!state.blockDone[k];
+          var skip = !!state.skipped[k];
+          var open = state.expandedItem === k;
+          var displayTime = state.shifted[k] || item.t;
+          var endM = toMin(displayTime.split('–')[1] || displayTime.split('–')[0]);
+          var overdue = (item.type !== 'class' && item.type !== 'rest') && !done && !skip && isPastBlock(state.weekIdx, state.dayIdx, endM);
+          var att = state.attendance[k];
+
+          var cardCls = 'surf';
+          if (done || skip) cardCls = 'surf done-block';
+          else if (overdue) cardCls = 'overdue-block';
+
+          return '<div class="rounded-2xl border overflow-hidden transition ' + cardCls + '" style="' + (overdue ? '' : 'border-color:var(--line)') + '">' +
+            '<button type="button" data-itemkey="' + k + '" class="sched-row w-full px-4 py-3 text-left flex items-center justify-between gap-3 transition">' +
+            '<div class="flex items-center gap-3 min-w-0">' +
+            '<span class="w-1.5 h-1.5 rounded-full shrink-0 ' + (overdue ? 'bg-[#D95338]' : (dotColor[item.type] || 'bg-stone-400')) + '"></span>' +
+            '<div class="min-w-0"><div class="text-sm truncate ' + ((done || skip) ? 'line-through' : '') + '">' + item.title +
+            (overdue ? ' <span class="ml-1.5 text-[10px] px-1.5 py-0.5 rounded bg-[#D95338] text-white font-normal">未完成</span>' : '') +
+            (att ? ' <span class="ml-1.5 text-[10px] px-1.5 py-0.5 rounded surf-2 txt-soft font-normal">' + att.status + (att.note ? '·' + att.note : '') + '</span>' : '') +
+            '</div>' +
+            (item.sub ? '<div class="text-[11px] txt-faint mt-0.5">' + item.sub + '</div>' : '') +
+            '</div></div>' +
+            '<span class="num-tab text-xs opacity-70 shrink-0">' + displayTime + '</span></button>' +
+            (open ? (
+              '<div class="px-4 pb-3 pt-2 border-t space-y-2 text-xs" style="border-color:var(--line)">' +
+              '<div class="flex items-center gap-2 flex-wrap">' +
+              (item.type !== 'class' ? '<button type="button" data-act="done" data-key="' + k + '" class="item-act px-3 py-1 rounded-full" style="background:var(--ink);color:var(--bg)">' + (done ? '取消完成' : '标记已完成') + '</button>' : '') +
+              (item.type !== 'class' ? '<button type="button" data-act="focus" data-key="' + k + '" class="item-act px-3 py-1 rounded-full surf-2 txt-main">专注</button>' : '') +
+              (item.hub ? '<a href="' + HUB + item.hub + '" target="_blank" rel="noopener noreferrer" class="px-3 py-1 rounded-full surf-2 txt-soft">看教材 ↗</a>' : '') +
+              '<button type="button" data-act="shift" data-key="' + k + '" class="item-act px-3 py-1 rounded-full surf-2 txt-soft">顺延 30 分钟</button>' +
+              '<button type="button" data-act="skip" data-key="' + k + '" class="item-act px-3 py-1 rounded-full surf-2 txt-faint">' + (skip ? '恢复' : '今天跳过') + '</button>' +
+              '</div>' +
+              (item.attendable ? (
+                '<div class="flex items-center gap-1.5 flex-wrap pt-1">' +
+                '<span class="text-[11px] txt-faint">考勤：</span>' +
+                ['已到', '自学', '请假'].map(function (st) {
+                  var active = att && att.status === st;
+                  return '<button type="button" data-att-st="' + st + '" data-att-key="' + k + '" class="att-btn px-2 py-0.5 rounded-full text-[11px] border ' + (active ? 'day-active border-transparent' : 'surf txt-soft') + '">' + st + '</button>';
+                }).join('') +
+                '<input type="text" data-att-note="' + k + '" value="' + (att && att.note ? att.note : '') + '" placeholder="课内学了哪章（回车存）" class="att-note-inp flex-1 min-w-[120px] px-2 py-0.5 rounded-lg surf-2 border text-[11px] focus:outline-none" style="border-color:var(--line)">' +
+                '</div>'
+              ) : '') +
+              '</div>'
+            ) : '') +
+            '</div>';
+        }).join('');
+
+        var mpWrap = document.getElementById('makeup-pool-wrap');
+        var mpList = document.getElementById('makeup-pool-list');
+        if (state.makeupPool && state.makeupPool.length) {
+          mpWrap.classList.remove('hidden');
+          mpList.innerHTML = state.makeupPool.map(function (m) {
+            return '<div class="rounded-2xl border border-[#D95338]/40 bg-[#FFF1EE] px-4 py-3 flex items-center justify-between gap-3 text-xs">' +
+              '<div class="min-w-0"><div class="font-semibold text-[#8C2312] truncate">' + m.title + '</div>' +
+              '<div class="text-[11px] text-[#A6512B] mt-0.5">' + m.reason + '</div></div>' +
+              '<button type="button" data-done-makeup="' + m.id + '" class="done-makeup-btn px-2.5 py-1 rounded-full bg-white border border-[#D95338]/40 text-[#8C2312] shrink-0">已补完</button></div>';
+          }).join('');
+        } else { mpWrap.classList.add('hidden'); }
+      }
+
+      function renderWeekAxis() {
+        var wk = WEEKS[state.weekIdx] || WEEKS[0];
+        document.getElementById('week-axis-title').textContent = wk.label + ' · ' + wk.dates;
+        document.getElementById('week-axis-sub').textContent = wk.rest ? '春节休整周' : (wk.anaShort + ' · ' + wk.algShort);
+
+        var START_M = 7 * 60 + 30;
+        var END_M = 23 * 60 + 40;
+        var PX_PER_MIN = 0.85;
+        var TOTAL_H = Math.round((END_M - START_M) * PX_PER_MIN);
+        var HOURS = [8, 10, 12, 14, 16, 18, 20, 22];
+
+        var blockColor = {
+          ana: 'bg-[#E6F2F4] border-[#1E5663]/40 text-[#133C46]',
+          alg: 'bg-[#EFEAF7] border-[#5B4386]/40 text-[#3F2C63]',
+          due: 'bg-[#FBECE6] border-[#A6512B]/40 text-[#7B3618]',
+          rest: 'bg-rose-50 border-rose-300 text-rose-900',
+          class: 'surf-2 txt-soft'
+        };
+
+        var headerHtml = '<div class="grid grid-cols-[44px_repeat(7,minmax(0,1fr))] gap-1.5 pb-2 border-b text-center text-[11px] font-semibold txt-soft" style="border-color:var(--line)">' +
+          '<div></div>' +
+          DAY_META.map(function (d, idx) {
+            var isStart = (state.weekIdx === 0 && idx === 5);
+            return '<div class="' + (isStart ? 'txt-main font-bold' : '') + '">' + d.full + (isStart ? ' · 启' : '') + '</div>';
+          }).join('') + '</div>';
+
+        var axisLabels = HOURS.map(function (h) {
+          var top = Math.round((h * 60 - START_M) * PX_PER_MIN);
+          return '<div class="absolute left-0 right-1 text-right text-[10px] num-tab txt-faint -translate-y-1/2" style="top:' + top + 'px">' + (h < 10 ? '0' : '') + h + ':00</div>';
+        }).join('');
+
+        var gridLines = HOURS.map(function (h) {
+          var top = Math.round((h * 60 - START_M) * PX_PER_MIN);
+          return '<div class="absolute left-0 right-0 border-t pointer-events-none" style="top:' + top + 'px;border-color:var(--line);opacity:0.45"></div>';
+        }).join('');
+
+        var colsHtml = DAY_META.map(function (d, dIdx) {
+          var rawItems = getDayItems(state.weekIdx, dIdx).filter(function (x) { return !x.divider; });
+          var parsed = rawItems.map(function (item) {
+            var k = blockKey(state.weekIdx, dIdx, item.id);
+            var rng = (state.shifted[k] || item.t).split('–');
+            var sM = toMin(rng[0]);
+            var eM = rng[1] ? toMin(rng[1]) : (sM != null ? sM + 35 : null);
+            return { item: item, k: k, sM: sM, eM: eM, startStr: rng[0] };
+          }).filter(function (x) { return x.sM != null && x.eM != null; })
+            .sort(function (a, b) { return a.sM - b.sM; });
+
+          var blocksHtml = parsed.map(function (entry, i) {
+            var top = Math.max(0, Math.round((entry.sM - START_M) * PX_PER_MIN));
+            var naturalH = Math.round((entry.eM - entry.sM) * PX_PER_MIN) - 2;
+            var nextTop = (i + 1 < parsed.length) ? Math.round((parsed[i + 1].sM - START_M) * PX_PER_MIN) : TOTAL_H;
+            var maxAllowedH = Math.max(16, nextTop - top - 3);
+            var height = Math.min(Math.max(18, naturalH), maxAllowedH);
+
+            var done = !!state.blockDone[entry.k];
+            var skip = !!state.skipped[entry.k];
+            var overdue = (entry.item.type !== 'class' && entry.item.type !== 'rest') && !done && !skip && isPastBlock(state.weekIdx, dIdx, entry.eM);
+
+            var cls = blockColor[entry.item.type] || blockColor.class;
+            if (done || skip) cls += ' done-block line-through';
+            else if (overdue) cls += ' overdue-block';
+
+            return '<button type="button" data-wblock="' + entry.k + '" class="wblock-btn absolute left-0.5 right-0.5 rounded-lg border px-1.5 py-0.5 text-left overflow-hidden transition hover:brightness-95 ' + cls + '" style="top:' + top + 'px;height:' + height + 'px">' +
+              '<div class="text-[10px] font-semibold leading-tight truncate">' + entry.item.title + '</div>' +
+              (height >= 34 ? '<div class="text-[9px] opacity-75 num-tab">' + entry.startStr + (overdue ? ' · 未做' : '') + '</div>' : '') +
+              '</button>';
+          }).join('');
+
+          return '<div class="relative border-l" style="height:' + TOTAL_H + 'px;border-color:var(--line)">' + gridLines + blocksHtml + '</div>';
+        }).join('');
+
+        document.getElementById('week-axis-wrap').innerHTML = headerHtml +
+          '<div class="grid grid-cols-[44px_repeat(7,minmax(0,1fr))] gap-1.5 pt-2">' +
+          '<div class="relative" style="height:' + TOTAL_H + 'px">' + axisLabels + '</div>' +
+          colsHtml + '</div>';
+
+        var detailEl = document.getElementById('week-block-detail');
+        if (state.selectedWeekBlock) {
+          var parts = state.selectedWeekBlock.split('|');
+          var wIdxFound = WEEKS.findIndex(function (w) { return w.id === parts[0]; });
+          var di = parseInt(parts[1], 10);
+          var bid = parts[2];
+          var items = wIdxFound >= 0 ? getDayItems(wIdxFound, di) : [];
+          var found = items.find(function (x) { return x.id === bid; });
+          if (found) {
+            detailEl.classList.remove('hidden');
+            var k = state.selectedWeekBlock;
+            document.getElementById('wbd-daytime').textContent = WEEKS[wIdxFound].label + ' ' + DAY_META[di].full + ' ' + (state.shifted[k] || found.t);
+            document.getElementById('wbd-title').textContent = found.title;
+            document.getElementById('wbd-toggle-done').textContent = state.blockDone[k] ? '取消完成' : '标记已完成';
+            document.getElementById('wbd-toggle-cancel').textContent = state.skipped[k] ? '恢复安排' : '本周停课/跳过';
+            var hubA = document.getElementById('wbd-hub');
+            if (found.hub) { hubA.href = HUB + found.hub; hubA.classList.remove('hidden'); }
+            else { hubA.classList.add('hidden'); }
+          } else { detailEl.classList.add('hidden'); }
+        } else { detailEl.classList.add('hidden'); }
+      }
+
+      /* Living Calendar with Retrospective Capsules & Backfill */
+      function renderCalendar() {
+        var m = state.calMonth;
+        document.querySelectorAll('.cal-m-btn').forEach(function (b) {
+          var on = parseInt(b.getAttribute('data-cal-m'), 10) === m;
+          b.className = 'cal-m-btn px-2.5 py-1 rounded-full ' + (on ? 'surf-2 txt-main font-semibold' : 'txt-soft');
+        });
+        var y = (m === 1) ? 2027 : 2026;
+        document.getElementById('cal-month-title').textContent = y + ' 年 ' + m + ' 月';
+        var daysInM = (m === 11) ? 30 : 31;
+        var firstDow = new Date(y, m - 1, 1).getDay();
+        var offset = (firstDow + 6) % 7;
+        var cells = '';
+        for (var e = 0; e < offset; e++) cells += '<div></div>';
+
+        var tags = {
+          '2026-11-28': { lunar: '十九', dot: '#1E5663', tag: '正式开机' },
+          '2026-12-23': { lunar: '冬十四', dot: '#A6512B', tag: '期末周' },
+          '2027-01-01': { lunar: '冬廿三', dot: '#D95338', tag: '元旦休' },
+          '2027-01-04': { lunar: '冬廿六', dot: '#5B4386', tag: '调休/考' },
+          '2027-01-13': { lunar: '腊初六', dot: '#1E5663', tag: '放寒假' }
+        };
+        for (var day = 1; day <= daysInM; day++) {
+          var ds = y + '-' + (m < 10 ? '0' : '') + m + '-' + (day < 10 ? '0' : '') + day;
+          var info = tags[ds] || {};
+          var hasBf = state.backfills[ds] && state.backfills[ds].length;
+          var sel = state.calSelected === ds;
+          cells += '<button type="button" data-cal-day="' + ds + '" class="cal-day-btn p-1.5 rounded-xl border text-center transition ' + (sel ? 'day-active border-transparent' : 'surf border-transparent hover:border-stone-300') + '">' +
+            '<div class="text-xs font-medium num-tab">' + day + '</div>' +
+            '<div class="text-[9px] opacity-70 truncate">' + (info.tag || info.lunar || '·') + '</div>' +
+            ((info.dot || hasBf) ? '<span class="inline-block w-1.5 h-1.5 rounded-full mt-0.5" style="background:' + (info.dot || '#5B4386') + '"></span>' : '') +
+            '</button>';
+        }
+        document.getElementById('cal-grid').innerHTML = cells;
+
+        var selDs = state.calSelected;
+        var selInfo = tags[selDs];
+        document.getElementById('cal-day-header').textContent = selDs + (selInfo ? (' · ' + selInfo.tag + '（农历' + selInfo.lunar + '）') : ' · 当日记录档案');
+
+        var r = state.sleepRec;
+        var slH = ((r.deep + r.light + r.rem) / 60).toFixed(1);
+        var spendDay = state.ledger.filter(function (l) { return selDs.endsWith(l.date.replace('11月', '').replace('日', '')); })
+          .reduce(function (s, x) { return s + (Number(x.amt) || 0); }, 0);
+        document.getElementById('cal-capsules').innerHTML =
+          '<div class="p-2.5 rounded-xl surf-2"><div class="text-[10px] txt-faint">专注</div><div class="font-semibold num-tab txt-main">' + state.focusToday + ' min</div></div>' +
+          '<div class="p-2.5 rounded-xl surf-2"><div class="text-[10px] txt-faint">睡眠</div><div class="font-semibold num-tab txt-main">' + slH + ' h</div></div>' +
+          '<div class="p-2.5 rounded-xl surf-2"><div class="text-[10px] txt-faint">支出</div><div class="font-semibold num-tab txt-main">¥' + spendDay.toFixed(1) + '</div></div>' +
+          '<div class="p-2.5 rounded-xl surf-2"><div class="text-[10px] txt-faint">随记</div><div class="font-semibold num-tab txt-main">' + state.diary.length + ' 条</div></div>';
+
+        var bfs = state.backfills[selDs] || [];
+        document.getElementById('cal-backfill-list').innerHTML = bfs.length ? bfs.map(function (b) {
+          return '<div class="px-3 py-2 rounded-xl surf-2 flex items-center justify-between text-xs">' +
+            '<span><strong class="num-tab txt-soft mr-2">' + b.t + '</strong><span class="txt-main">' + b.title + '</span></span>' +
+            '<button type="button" data-del-bf="' + selDs + '|' + b.id + '" class="del-bf txt-faint">删</button></div>';
+        }).join('') : '<div class="text-[11px] txt-faint">当天暂无补录时间块（上课与手环睡眠默认作为底色保留）</div>';
+      }
+
+      function renderList() {
+        document.querySelectorAll('.list-sub-btn').forEach(function (b) {
+          b.classList.toggle('subtab-active', b.getAttribute('data-list-sub') === state.listSub);
+        });
+        document.querySelectorAll('.list-sub-panel').forEach(function (p) { p.classList.add('hidden'); });
+        document.getElementById('list-sub-' + state.listSub).classList.remove('hidden');
+
+        renderWeekAxis();
+        renderCalendar();
+
+        var quads = [
+          { key: 'q1', name: '重要且紧急' },
+          { key: 'q2', name: '重要不紧急' },
+          { key: 'q3', name: '日常杂项' },
+          { key: 'q4', name: '放松与备选' }
+        ];
+        document.getElementById('quadrant-grid').innerHTML = quads.map(function (q) {
+          var items = state.quadTasks.filter(function (t) { return t.q === q.key; });
+          return '<div class="surf rounded-2xl border p-4 space-y-2.5">' +
+            '<div class="text-xs font-medium txt-soft">' + q.name + '</div>' +
+            (items.length ? items.map(function (t) {
+              var subsHtml = (t.subs && t.subs.length) ? (
+                '<div class="pl-5 pt-1 space-y-1">' + t.subs.map(function (sb) {
+                  return '<button type="button" data-qsub="' + t.id + '|' + sb.id + '" class="qsub-btn flex items-center gap-1.5 text-[11px] txt-soft">' +
+                    '<span>' + (sb.done ? '☑' : '☐') + '</span><span class="' + (sb.done ? 'line-through txt-faint' : '') + '">' + sb.title + '</span></button>';
+                }).join('') + '</div>'
+              ) : '';
+              return '<div class="py-1"><div class="flex items-center justify-between gap-2">' +
+                '<button type="button" data-qt="' + t.id + '" class="qt-btn flex items-center gap-2 text-left text-xs min-w-0">' +
+                '<span class="w-3.5 h-3.5 rounded-full border flex items-center justify-center text-[9px] shrink-0 ' + (t.done ? 'day-active border-transparent' : 'txt-faint') + '" style="' + (t.done ? '' : 'border-color:var(--line)') + '">✓</span>' +
+                '<span class="truncate ' + (t.done ? 'line-through txt-faint' : 'txt-main') + '">' + t.title + '</span></button>' +
+                '<button type="button" data-del-qt="' + t.id + '" class="del-qt text-[11px] txt-faint shrink-0">删</button>' +
+                '</div>' + subsHtml + '</div>';
+            }).join('') : '<div class="text-xs txt-faint">暂无</div>') +
+            '</div>';
+        }).join('');
+
+        document.getElementById('diary-feed').innerHTML = state.diary.map(function (d) {
+          return '<div class="surf rounded-2xl border px-4 py-3 flex items-start justify-between gap-3">' +
+            '<div class="space-y-1"><div class="text-[11px] txt-faint">' + d.kind + ' · ' + d.date + '</div>' +
+            '<div class="text-xs txt-main leading-relaxed">' + d.text + '</div></div>' +
+            '<button type="button" data-del-diary="' + d.id + '" class="del-diary text-xs txt-faint shrink-0">删</button></div>';
+        }).join('');
+      }
+
+      /* Progress: Quota + OKR (with live GPA KR!) + Course Focus & Ledger Breakdown Charts */
+      function renderProgress() {
+        var wk = WEEKS[state.weekIdx] || WEEKS[0];
+        document.getElementById('quota-week-label').textContent = wk.label + ' · ' + wk.dates;
+
+        document.getElementById('quota-plans-list').innerHTML = QUOTA_DEFS.map(function (q) {
+          var cnt = state.quotaCounts[q.id] || 0;
+          var badge = cnt >= q.target ? '本周已达标' : '推进中';
+          var badgeCls = cnt >= q.target ? 'text-[#1E5663] bg-[#E6F2F4]' : 'txt-soft surf-2';
+          var dots = '';
+          for (var i = 0; i < q.target; i++) {
+            var filled = i < cnt;
+            dots += '<button type="button" data-qdot="' + q.id + '|' + (i + 1) + '" class="qdot-btn w-5 h-5 rounded-full border text-[10px] flex items-center justify-center transition ' +
+              (filled ? 'text-white border-transparent' : 'surf txt-faint') +
+              '" style="' + (filled ? ('background:' + q.color) : 'border-color:var(--line)') + '">✓</button>';
+          }
+          return '<div class="space-y-2"><div class="flex items-center justify-between text-xs">' +
+            '<div class="flex items-center gap-2"><span class="font-medium txt-main">' + q.title + '</span>' +
+            '<span class="text-[10px] px-2 py-0.5 rounded-full ' + badgeCls + '">' + badge + '</span></div>' +
+            '<span class="num-tab txt-soft">' + cnt + ' / ' + q.target + '</span></div>' +
+            '<div class="flex items-center gap-1.5">' + dots + '</div></div>';
+        }).join('');
+
+        var studyWeeks = WEEKS.filter(function (w) { return !w.rest; });
+        var anaDone = studyWeeks.filter(function (w) { return !!state.doneAna[w.id]; }).length;
+        var algDone = studyWeeks.filter(function (w) { return !!state.doneAlg[w.id]; }).length;
+        var gStat = computeGradeStats();
+        var gpaTarget = 4.30;
+        var gpaPct = Math.min(100, Math.round((gStat.gpa / gpaTarget) * 100));
+
+        var okrs = [
+          { title: '数学分析上下册 4 个月收官', sub: '已过 ' + anaDone + ' / ' + studyWeeks.length + ' 周章节', pct: Math.round((anaDone / studyWeeks.length) * 100), color: '#1E5663' },
+          { title: '101 代数学从矩阵补齐全册', sub: '已过 ' + algDone + ' / ' + studyWeeks.length + ' 周章节', pct: Math.round((algDone / studyWeeks.length) * 100), color: '#5B4386' },
+          { title: '冬学期 GPA 目标（' + gpaTarget.toFixed(2) + '）', sub: '实时联动成绩构成：当前 ' + gStat.gpa.toFixed(2) + ' / 加权 ' + gStat.avg.toFixed(1), pct: gpaPct, color: '#A6512B' }
+        ];
+        document.getElementById('okr-list').innerHTML = okrs.map(function (o) {
+          return '<div class="space-y-1.5"><div class="flex items-baseline justify-between text-xs">' +
+            '<span class="txt-main font-medium">' + o.title + '</span>' +
+            '<span class="num-tab txt-soft">' + o.pct + '%</span></div>' +
+            '<div class="h-1.5 surf-2 rounded-full overflow-hidden"><div class="h-full rounded-full transition-all duration-300" style="width:' + o.pct + '%;background:' + o.color + '"></div></div>' +
+            '<div class="text-[11px] txt-faint">' + o.sub + '</div></div>';
+        }).join('');
+
+        // Chart 1: Real Course Focus Investment
+        var cEntries = Object.keys(state.courseFocusMins).map(function (k) { return { k: k, h: (state.courseFocusMins[k] / 60) }; });
+        var maxH = Math.max.apply(null, cEntries.map(function (x) { return x.h; }).concat([4]));
+        var cColors = { '数学分析': '#1E5663', '代数学': '#5B4386', '几何学': '#A6512B', 'C 程': '#64748B' };
+        document.getElementById('stats-course-svg').innerHTML = cEntries.map(function (e, idx) {
+          var y = 14 + idx * 31;
+          var w = Math.max(8, Math.round((e.h / maxH) * 145));
+          return '<text x="64" y="' + (y + 13) + '" text-anchor="end" font-size="11" fill="currentColor" opacity="0.75">' + e.k + '</text>' +
+            '<rect x="72" y="' + y + '" width="' + w + '" height="18" rx="4" fill="' + (cColors[e.k] || '#5C6274') + '"/>' +
+            '<text x="' + (78 + w) + '" y="' + (y + 13) + '" font-size="11" fill="currentColor" opacity="0.85">' + e.h.toFixed(1) + 'h</text>';
+        }).join('');
+
+        // Chart 2: Real Ledger Breakdown by Category
+        var catSum = { '餐饮': 0, '学习': 0, '出游': 0, '其他': 0 };
+        state.ledger.forEach(function (l) { var c = l.cat || '其他'; catSum[c] = (catSum[c] || 0) + (Number(l.amt) || 0); });
+        var lEntries = Object.keys(catSum).map(function (k) { return { k: k, v: catSum[k] }; });
+        var maxV = Math.max.apply(null, lEntries.map(function (x) { return x.v; }).concat([50]));
+        document.getElementById('stats-ledger-svg').innerHTML = lEntries.map(function (e, idx) {
+          var y = 14 + idx * 31;
+          var w = Math.max(4, Math.round((e.v / maxV) * 145));
+          return '<text x="52" y="' + (y + 13) + '" text-anchor="end" font-size="11" fill="currentColor" opacity="0.75">' + e.k + '</text>' +
+            '<rect x="60" y="' + y + '" width="' + w + '" height="18" rx="4" fill="#5C6274" opacity="0.8"/>' +
+            '<text x="' + (66 + w) + '" y="' + (y + 13) + '" font-size="11" fill="currentColor" opacity="0.85">¥' + e.v.toFixed(0) + '</text>';
+        }).join('');
+
+        var list = WEEKS.filter(function (w) { return state.phase === 'all' || w.phase === state.phase; });
+        document.getElementById('chapters-list').innerHTML = list.map(function (w) {
+          if (w.rest) {
+            return '<div class="px-4 py-3.5 rounded-2xl surf-2 text-xs txt-soft flex items-center justify-between">' +
+              '<span>' + w.label + ' · ' + w.dates + '</span><span>' + w.ana + '</span></div>';
+          }
+          var aOk = !!state.doneAna[w.id];
+          var gOk = !!state.doneAlg[w.id];
+          return '<div class="surf rounded-2xl border p-4 space-y-3">' +
+            '<div class="flex items-center justify-between text-xs txt-faint">' +
+            '<span class="font-medium txt-main">' + w.label + '</span>' +
+            '<span class="num-tab">' + w.dates + '</span></div>' +
+            '<div class="space-y-2">' +
+            '<div class="flex items-center justify-between gap-2">' +
+            '<a href="' + HUB + w.anaUrl + '" target="_blank" rel="noopener noreferrer" class="text-xs sm:text-sm txt-main hover:underline truncate ' + (aOk ? 'line-through txt-faint' : '') + '">' + w.ana + ' ↗</a>' +
+            '<button type="button" data-done-ana="' + w.id + '" class="done-ana-btn shrink-0 px-2.5 py-0.5 rounded-full text-[11px] border transition ' + (aOk ? 'bg-[#1E5663] border-[#1E5663] text-white' : 'txt-soft') + '" style="' + (aOk ? '' : 'border-color:var(--line)') + '">' + (aOk ? '已过' : '标记') + '</button></div>' +
+            '<div class="flex items-center justify-between gap-2">' +
+            '<a href="' + HUB + w.algUrl + '" target="_blank" rel="noopener noreferrer" class="text-xs sm:text-sm txt-main hover:underline truncate ' + (gOk ? 'line-through txt-faint' : '') + '">' + w.alg + ' ↗</a>' +
+            '<button type="button" data-done-alg="' + w.id + '" class="done-alg-btn shrink-0 px-2.5 py-0.5 rounded-full text-[11px] border transition ' + (gOk ? 'bg-[#5B4386] border-[#5B4386] text-white' : 'txt-soft') + '" style="' + (gOk ? '' : 'border-color:var(--line)') + '">' + (gOk ? '已过' : '标记') + '</button></div>' +
+            '</div></div>';
+        }).join('');
+      }
+
+      function renderSleepDetail() {
+        var r = state.sleepRec;
+        var total = r.deep + r.light + r.rem + r.awake;
+        var h = Math.floor(total / 60), m = total % 60;
+        var asleep = r.deep + r.light + r.rem;
+        var eff = total ? Math.round((asleep / total) * 100) : 95;
+        var stageRatio = asleep ? (r.deep + r.rem) / asleep : 0.35;
+        var score = Math.round(Math.min(1, asleep / 460) * 40 + Math.min(1, stageRatio / 0.40) * 35 + Math.min(1, eff / 96) * 25);
+
+        document.getElementById('sl-total-str').textContent = h + '小时' + m + '分';
+        document.getElementById('sl-range-str').textContent = r.start + ' – ' + r.end;
+        document.getElementById('sl-score').textContent = score;
+        document.getElementById('sl-eff').textContent = eff + '%';
+        document.getElementById('sl-awake-cnt').textContent = r.awakenings + ' 次 · ' + r.awake + 'm';
+        document.getElementById('sl-debt').textContent = (r.debtMin > 0 ? '-' : '+') + (Math.abs(r.debtMin) / 60).toFixed(1) + ' 小时';
+        document.getElementById('sl-activity').textContent = r.steps.toLocaleString() + ' 步 · ' + r.activeKcal + ' kcal';
+
+        var pct = function (v) { return total ? ((v / total) * 100).toFixed(1) : '0'; };
+        document.getElementById('sl-stage-bar').innerHTML =
+          '<div style="width:' + pct(r.deep) + '%" class="bg-[#1E5663]"></div>' +
+          '<div style="width:' + pct(r.light) + '%" class="bg-[#5A92A0]"></div>' +
+          '<div style="width:' + pct(r.rem) + '%" class="bg-[#5B4386]"></div>' +
+          '<div style="width:' + pct(r.awake) + '%" class="bg-[#D97757]"></div>';
+
+        var stages = [
+          { name: '深睡', min: r.deep, color: 'bg-[#1E5663]' },
+          { name: '浅睡', min: r.light, color: 'bg-[#5A92A0]' },
+          { name: 'REM', min: r.rem, color: 'bg-[#5B4386]' },
+          { name: '清醒', min: r.awake, color: 'bg-[#D97757]' }
+        ];
+        document.getElementById('sl-stage-legend').innerHTML = stages.map(function (st) {
+          var sh = Math.floor(st.min / 60), sm = st.min % 60;
+          var sStr = sh ? (sh + 'h' + sm + 'm') : (sm + 'm');
+          return '<div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full ' + st.color + '"></span><span>' + st.name + ' <strong class="num-tab txt-main">' + sStr + '</strong> (' + Math.round((st.min / (total || 1)) * 100) + '%)</span></div>';
+        }).join('');
+
+        var qFactor = Math.min(1, (asleep / 480) * 0.55 + (eff / 100) * 0.25 + Math.min(1, stageRatio / 0.35) * 0.20);
+        var pts = [];
+        for (var H = 7; H <= 24; H += 0.5) {
+          var base = 0.5 + 0.42 * Math.cos((H - 10.5) / 24 * 2 * Math.PI);
+          var dip = 0.10 * Math.exp(-Math.pow((H - 15) / 1.3, 2));
+          var val = Math.max(0.08, Math.min(0.98, (base - dip) * (0.45 + 0.55 * qFactor)));
+          var x = 30 + ((H - 7) / 17) * 510;
+          var y = 120 - val * 96;
+          pts.push(x.toFixed(1) + ',' + y.toFixed(1));
+        }
+        document.getElementById('sl-alertness-svg').innerHTML =
+          '<line x1="30" y1="120" x2="540" y2="120" stroke="#969AAB" stroke-opacity="0.3" stroke-width="1"/>' +
+          '<line x1="30" y1="72" x2="540" y2="72" stroke="#969AAB" stroke-opacity="0.2" stroke-width="1" stroke-dasharray="3 3"/>' +
+          '<polyline fill="none" stroke="#1E5663" stroke-width="2.2" points="' + pts.join(' ') + '"/>' +
+          '<text x="135" y="16" text-anchor="middle" font-size="11" fill="#1E5663">上午高峰 10:30</text>' +
+          '<text x="270" y="96" text-anchor="middle" font-size="11" fill="#8E93A4">午后小谷 15:00</text>' +
+          '<text x="30" y="138" text-anchor="middle" font-size="11" fill="#8E93A4">07:00</text>' +
+          '<text x="180" y="138" text-anchor="middle" font-size="11" fill="#8E93A4">12:00</text>' +
+          '<text x="360" y="138" text-anchor="middle" font-size="11" fill="#8E93A4">18:00</text>' +
+          '<text x="535" y="138" text-anchor="end" font-size="11" fill="#8E93A4">24:00</text>';
+
+        var kcalIn = state.diet.reduce(function (s, x) { return s + (Number(x.kcal) || 0); }, 0);
+        var insights10 = [
+          { k: '1. 精力预测', v: qFactor >= 0.78 ? '充沛（适合啃代数证明）' : '良好（保持常规推进）' },
+          { k: '2. 7日睡眠债', v: (r.debtMin / 60).toFixed(1) + 'h（维持 00:00 睡可渐消）' },
+          { k: '3. 作息规律度', v: '92 分（统一 00:00 入睡极稳）' },
+          { k: '4. 深睡+REM占比', v: Math.round(stageRatio * 100) + '%（健康区间 35–45%）' },
+          { k: '5. 昼夜低谷窗', v: '14:30–15:30 易困，适合练琴/出游' },
+          { k: '6. 7日步数均值', v: r.steps.toLocaleString() + ' 步 / 天' },
+          { k: '7. 热量收支', v: '摄入 ' + kcalIn + ' / 消耗约 ' + (1850 + r.activeKcal) + ' kcal' },
+          { k: '8. 本周达标夜', v: '5 / 7 夜达成 7h+ 睡眠' },
+          { k: '9. 早八对比', v: '早八日均睡 7.2h vs 周末 7.5h' },
+          { k: '10. 社交时差', v: '仅 18 分钟（周末无晚睡倒时差）' }
+        ];
+        var g10 = document.getElementById('health-10d-grid');
+        g10.classList.toggle('hidden', !state.show10d);
+        document.getElementById('toggle-10d-lbl').textContent = state.show10d ? '收起 ▴' : '展开 ▾';
+        g10.innerHTML = insights10.map(function (it) {
+          return '<div class="p-2.5 rounded-xl surf-2"><div class="text-[11px] txt-faint">' + it.k + '</div><div class="txt-main font-medium mt-0.5">' + it.v + '</div></div>';
+        }).join('');
+      }
+
+      function renderWhitepaper() {
+        var spend = state.ledger.reduce(function (s, x) { return s + (Number(x.amt) || 0); }, 0);
+        var kcal = state.diet.reduce(function (s, x) { return s + (Number(x.kcal) || 0); }, 0);
+        var dueDoneCnt = DUE_ITEMS.filter(function (x) { return !!state.dueDone[x.id]; }).length;
+        var gStat = computeGradeStats();
+        var r = state.sleepRec;
+        var total = r.deep + r.light + r.rem + r.awake;
+
+        document.getElementById('wp-summary').innerHTML =
+          '<p>计划自 11 月 28 日正式启动；当前冬学期预估均绩 <strong class="txt-main num-tab">' + gStat.gpa.toFixed(2) + '</strong>（加权均分 ' + gStat.avg.toFixed(1) + '），本周作业已完成 <strong class="txt-main num-tab">' + dueDoneCnt + ' / ' + DUE_ITEMS.length + '</strong> 项，今日专注 <strong class="txt-main num-tab">' + state.focusToday + '</strong> 分钟。</p>' +
+          '<p>生活方面，本月支出 <strong class="txt-main num-tab">¥ ' + spend.toFixed(2) + '</strong>，今日饮食 <strong class="txt-main num-tab">' + kcal + '</strong> 千卡，昨夜睡眠 <strong class="txt-main num-tab">' + Math.floor(total / 60) + 'h' + (total % 60) + 'm</strong>（深睡 ' + r.deep + 'm，步数 ' + r.steps.toLocaleString() + ' 步）。</p>';
+      }
+
+      function renderLife() {
+        document.querySelectorAll('.life-sub-btn').forEach(function (b) {
+          b.classList.toggle('subtab-active', b.getAttribute('data-life-sub') === state.lifeSub);
+        });
+        document.querySelectorAll('.life-sub-panel').forEach(function (p) { p.classList.add('hidden'); });
+        document.getElementById('life-sub-' + state.lifeSub).classList.remove('hidden');
+
+        renderSleepDetail();
+
+        // Multi-component Grades + What-If
+        var gStat = computeGradeStats();
+        document.getElementById('gpa-val').textContent = gStat.gpa.toFixed(2);
+        document.getElementById('avg-score-val').textContent = '加权均分 ' + gStat.avg.toFixed(1);
+        var attBtn = document.getElementById('btn-toggle-att-grade');
+        attBtn.textContent = '平时分联动考勤/作业：' + (state.attGradeCoupling ? '开' : '关');
+        attBtn.className = 'px-3 py-1.5 rounded-full text-xs border transition ' + (state.attGradeCoupling ? 'day-active border-transparent' : 'surf txt-soft');
+
+        document.getElementById('grades-list').innerHTML = gStat.rows.map(function (row) {
+          var g = row.g;
+          var partsHtml = g.parts.map(function (pt, pIdx) {
+            var isAuto = state.attGradeCoupling && pt.n === '平时';
+            var sc = isAuto ? row.autoRegular : pt.s;
+            return '<div class="flex items-center justify-between text-xs py-1">' +
+              '<span class="txt-soft">' + pt.n + ' <span class="num-tab txt-faint">(' + pt.w + '%)</span>' + (isAuto ? ' <span class="text-[10px] px-1.5 py-0.5 rounded surf-2">自动折算</span>' : '') + '</span>' +
+              '<div class="flex items-center gap-1.5">' +
+              (isAuto ? '' : '<button type="button" data-gp="' + g.id + '|' + pIdx + '|-1" class="gp-step w-5 h-5 rounded-full surf-2 txt-soft">-</button>') +
+              '<span class="num-tab w-7 text-center font-medium txt-main">' + sc + '</span>' +
+              (isAuto ? '' : '<button type="button" data-gp="' + g.id + '|' + pIdx + '|1" class="gp-step w-5 h-5 rounded-full surf-2 txt-soft">+</button>') +
+              '</div></div>';
+          }).join('');
+          var whatIfStr = row.needFinal <= 100
+            ? ('What-If：目标总评 ' + g.target + ' 分，期末至少考 <strong class="txt-main num-tab">' + Math.max(0, row.needFinal) + '</strong> 分')
+            : ('What-If：即使期末满分也难达 ' + g.target + ' 分，建议调低目标');
+          return '<div class="surf rounded-2xl border p-4 space-y-2.5">' +
+            '<div class="flex items-baseline justify-between border-b pb-2" style="border-color:var(--line)">' +
+            '<div><span class="font-semibold txt-main text-sm">' + g.name + '</span> <span class="text-[11px] txt-faint num-tab">' + g.credit + ' 学分</span></div>' +
+            '<div class="num-tab text-xs font-semibold text-[#1E5663]">总评 ' + row.total.toFixed(1) + ' · GPA ' + row.gp.toFixed(2) + '</div></div>' +
+            '<div>' + partsHtml + '</div>' +
+            '<div class="pt-1.5 border-t text-[11px] txt-faint" style="border-color:var(--line)">' + whatIfStr + '</div></div>';
+        }).join('');
+
+        // Ledger
+        var spend = state.ledger.reduce(function (s, x) { return s + (Number(x.amt) || 0); }, 0);
+        document.getElementById('ledger-total').textContent = '¥ ' + spend.toFixed(2);
+        document.getElementById('ledger-list').innerHTML = state.ledger.map(function (l) {
+          return '<div class="px-4 py-3 flex items-center justify-between text-xs">' +
+            '<div><span class="text-[10px] px-1.5 py-0.5 rounded surf-2 txt-soft mr-1.5">' + (l.cat || '其他') + '</span><span class="txt-main">' + l.note + '</span><div class="text-[11px] txt-faint mt-0.5">' + l.date + '</div></div>' +
+            '<div class="flex items-center gap-3"><span class="num-tab font-medium txt-main">-¥' + Number(l.amt).toFixed(2) + '</span>' +
+            '<button type="button" data-del-ledger="' + l.id + '" class="del-ledger txt-faint">删</button></div></div>';
+        }).join('');
+
+        // Diet
+        var kcal = state.diet.reduce(function (s, x) { return s + (Number(x.kcal) || 0); }, 0);
+        document.getElementById('diet-kcal-total').textContent = kcal + ' / 2100 kcal';
+        document.getElementById('diet-list').innerHTML = state.diet.map(function (d) {
+          return '<div class="py-2.5 flex items-center justify-between text-xs">' +
+            '<span class="txt-main">' + d.name + '</span>' +
+            '<div class="flex items-center gap-3"><span class="num-tab txt-soft">' + d.kcal + ' kcal</span>' +
+            '<button type="button" data-del-diet="' + d.id + '" class="del-diet txt-faint">删</button></div></div>';
+        }).join('');
+
+        renderWhitepaper();
+      }
+
+      function renderSearch(q) {
+        var box = document.getElementById('global-search-results');
+        q = (q || '').trim().toLowerCase();
+        var res = [];
+        WEEKS.forEach(function (w) {
+          if (!q || w.ana.toLowerCase().indexOf(q) >= 0 || w.alg.toLowerCase().indexOf(q) >= 0) {
+            res.push('<a href="' + HUB + (w.anaUrl || '') + '" target="_blank" rel="noopener noreferrer" class="block p-2.5 rounded-xl surf-2 hover:opacity-80"><div class="font-medium txt-main">' + w.label + ' · ' + w.anaShort + '</div><div class="text-[11px] txt-faint">' + w.algShort + ' ↗</div></a>');
+          }
+        });
+        state.diary.forEach(function (d) {
+          if (!q || d.text.toLowerCase().indexOf(q) >= 0) {
+            res.push('<div class="p-2.5 rounded-xl surf-2"><span class="text-[10px] txt-faint mr-1.5">[' + d.kind + ']</span><span class="txt-main">' + d.text + '</span></div>');
+          }
+        });
+        if (q && (/^\d{1,2}:\d{2}/.test(q) || q.indexOf('例') >= 0 || q.indexOf('证明') >= 0)) {
+          res.unshift('<a href="' + HUB + '?q=' + encodeURIComponent(q) + '" target="_blank" rel="noopener noreferrer" class="block p-2.5 rounded-xl border border-[#1E5663]/40 bg-[#E6F2F4] text-[#133C46]">在知识库跨课检索 “' + q + '”（含时间戳与例题） ↗</a>');
+        }
+        box.innerHTML = res.length ? res.slice(0, 8).join('') : '<div class="text-xs txt-faint p-2">未找到匹配内容</div>';
+      }
+
+      function renderAll() {
+        renderToday();
+        renderList();
+        renderProgress();
+        renderLife();
+        syncTimerUI();
+      }
+
+      function findItemByKey(k) {
+        var parts = k.split('|');
+        var wi = WEEKS.findIndex(function (w) { return w.id === parts[0]; });
+        var di = parseInt(parts[1], 10);
+        var id = parts[2];
+        if (wi < 0) return null;
+        return getDayItems(wi, di).find(function (x) { return x.id === id; }) || null;
+      }
+
+      document.addEventListener('click', function (e) {
+        var nav = e.target.closest('.nav-btn');
+        if (nav) { switchTab(nav.getAttribute('data-tab')); return; }
+
+        var lsub = e.target.closest('.list-sub-btn');
+        if (lsub) { state.listSub = lsub.getAttribute('data-list-sub'); save(); renderList(); return; }
+
+        var lifesub = e.target.closest('.life-sub-btn');
+        if (lifesub) { state.lifeSub = lifesub.getAttribute('data-life-sub'); save(); renderLife(); return; }
+
+        var calM = e.target.closest('.cal-m-btn');
+        if (calM) { state.calMonth = parseInt(calM.getAttribute('data-cal-m'), 10); save(); renderCalendar(); return; }
+
+        var calD = e.target.closest('.cal-day-btn');
+        if (calD) { state.calSelected = calD.getAttribute('data-cal-day'); save(); renderCalendar(); return; }
+
+        var delBf = e.target.closest('.del-bf');
+        if (delBf) {
+          var bp = delBf.getAttribute('data-del-bf').split('|');
+          var snapBf = JSON.stringify(state);
+          state.backfills[bp[0]] = (state.backfills[bp[0]] || []).filter(function (x) { return x.id !== bp[1]; });
+          save();
+          renderCalendar();
+          toast('已删除补录块', snapBf);
+          return;
+        }
+
+        var dayBtn = e.target.closest('.day-btn');
+        if (dayBtn) { state.dayIdx = parseInt(dayBtn.getAttribute('data-day'), 10) || 0; state.expandedItem = null; save(); renderToday(); return; }
+
+        var wblock = e.target.closest('.wblock-btn');
+        if (wblock) { var key = wblock.getAttribute('data-wblock'); state.selectedWeekBlock = (state.selectedWeekBlock === key) ? null : key; renderList(); return; }
+
+        var dueBtn = e.target.closest('.due-btn');
+        if (dueBtn) { var id = dueBtn.getAttribute('data-due'); state.dueDone[id] = !state.dueDone[id]; save(); renderAll(); return; }
+
+        var schedRow = e.target.closest('.sched-row');
+        if (schedRow) { var sk = schedRow.getAttribute('data-itemkey'); state.expandedItem = (state.expandedItem === sk) ? null : sk; renderToday(); return; }
+
+        var attBtn = e.target.closest('.att-btn');
+        if (attBtn) {
+          var ak = attBtn.getAttribute('data-att-key');
+          var st = attBtn.getAttribute('data-att-st');
+          var prev = state.attendance[ak] || {};
+          state.attendance[ak] = { status: st, note: prev.note || '' };
+          save();
+          renderAll();
+          return;
+        }
+
+        var actBtn = e.target.closest('.item-act');
+        if (actBtn) {
+          var act = actBtn.getAttribute('data-act');
+          var ak2 = actBtn.getAttribute('data-key');
+          var target = findItemByKey(ak2);
+          if (!target) return;
+          if (act === 'done') { state.blockDone[ak2] = !state.blockDone[ak2]; state.expandedItem = null; save(); renderAll(); }
+          else if (act === 'skip') { state.skipped[ak2] = !state.skipped[ak2]; state.expandedItem = null; save(); renderAll(); }
+          else if (act === 'shift') { state.shifted[ak2] = add30Min(state.shifted[ak2] || target.t); save(); renderAll(); toast('已顺延 30 分钟'); }
+          else if (act === 'focus') {
+            state.focusTitle = target.title;
+            state.focusCourse = target.course || '数学分析';
+            state.focusHub = target.hub || '';
+            state.focusMins = 45;
+            stopTimer();
+            secLeft = 45 * 60;
+            save();
+            syncTimerUI();
+            document.getElementById('focus-modal').classList.remove('hidden');
+          }
+          return;
+        }
+
+        var dmBtn = e.target.closest('.done-makeup-btn');
+        if (dmBtn) { var snap = JSON.stringify(state); var mid = dmBtn.getAttribute('data-done-makeup'); state.makeupPool = state.makeupPool.filter(function (x) { return x.id !== mid; }); save(); renderToday(); toast('已从待补池消掉', snap); return; }
+
+        var qdot = e.target.closest('.qdot-btn');
+        if (qdot) { var qp = qdot.getAttribute('data-qdot').split('|'); var qid = qp[0], val = parseInt(qp[1], 10); state.quotaCounts[qid] = (state.quotaCounts[qid] === val) ? (val - 1) : val; save(); renderProgress(); return; }
+
+        var qtBtn = e.target.closest('.qt-btn');
+        if (qtBtn) { var qtid = qtBtn.getAttribute('data-qt'); state.quadTasks.forEach(function (t) { if (t.id === qtid) t.done = !t.done; }); save(); renderList(); return; }
+
+        var qsub = e.target.closest('.qsub-btn');
+        if (qsub) { var sp = qsub.getAttribute('data-qsub').split('|'); state.quadTasks.forEach(function (t) { if (t.id === sp[0] && t.subs) t.subs.forEach(function (sb) { if (sb.id === sp[1]) sb.done = !sb.done; }); }); save(); renderList(); return; }
+
+        var delQt = e.target.closest('.del-qt');
+        if (delQt) { var snapQ = JSON.stringify(state); var dqid = delQt.getAttribute('data-del-qt'); state.quadTasks = state.quadTasks.filter(function (t) { return t.id !== dqid; }); save(); renderList(); toast('已删除待办', snapQ); return; }
+
+        var delDiary = e.target.closest('.del-diary');
+        if (delDiary) { var snapD = JSON.stringify(state); var did = delDiary.getAttribute('data-del-diary'); state.diary = state.diary.filter(function (d) { return d.id !== did; }); save(); renderList(); toast('已删除记录', snapD); return; }
+
+        var phaseBtn = e.target.closest('.phase-pill');
+        if (phaseBtn) {
+          state.phase = phaseBtn.getAttribute('data-phase');
+          document.querySelectorAll('.phase-pill').forEach(function (p) {
+            var on = p.getAttribute('data-phase') === state.phase;
+            p.className = 'phase-pill px-3 py-1 rounded-full text-xs shrink-0 ' + (on ? '' : 'surf border txt-soft');
+            p.style.cssText = on ? 'background:var(--ink);color:var(--bg)' : '';
+          });
+          save();
+          renderProgress();
+          return;
+        }
+
+        var anaBtn = e.target.closest('.done-ana-btn');
+        if (anaBtn) { var wid = anaBtn.getAttribute('data-done-ana'); state.doneAna[wid] = !state.doneAna[wid]; save(); renderAll(); return; }
+
+        var algBtn = e.target.closest('.done-alg-btn');
+        if (algBtn) { var wid2 = algBtn.getAttribute('data-done-alg'); state.doneAlg[wid2] = !state.doneAlg[wid2]; save(); renderAll(); return; }
+
+        var gpStep = e.target.closest('.gp-step');
+        if (gpStep) {
+          var gp = gpStep.getAttribute('data-gp').split('|');
+          var gid = gp[0], pIdx = parseInt(gp[1], 10), delta = parseInt(gp[2], 10);
+          state.grades.forEach(function (g) {
+            if (g.id === gid && g.parts[pIdx]) {
+              g.parts[pIdx].s = Math.min(100, Math.max(40, g.parts[pIdx].s + delta));
+            }
+          });
+          save();
+          renderAll();
+          return;
+        }
+
+        var delLed = e.target.closest('.del-ledger');
+        if (delLed) { var snapL = JSON.stringify(state); var lid = delLed.getAttribute('data-del-ledger'); state.ledger = state.ledger.filter(function (l) { return l.id !== lid; }); save(); renderAll(); toast('已删除账目', snapL); return; }
+
+        var delDiet = e.target.closest('.del-diet');
+        if (delDiet) { var snapDt = JSON.stringify(state); var dtid = delDiet.getAttribute('data-del-diet'); state.diet = state.diet.filter(function (d) { return d.id !== dtid; }); save(); renderLife(); toast('已删除饮食记录', snapDt); return; }
+
+        var durBtn = e.target.closest('.dur-btn');
+        if (durBtn) {
+          stopTimer();
+          state.focusMins = parseInt(durBtn.getAttribute('data-mins'), 10) || 45;
+          secLeft = state.focusMins * 60;
+          document.querySelectorAll('.dur-btn').forEach(function (b) {
+            var on = b === durBtn;
+            b.className = 'dur-btn px-3 py-1 rounded-full text-xs ' + (on ? '' : 'surf-2 txt-soft');
+            b.style.cssText = on ? 'background:var(--ink);color:var(--bg)' : '';
+          });
+          save();
+          syncTimerUI();
+          return;
+        }
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && e.target.classList.contains('att-note-inp')) {
+          var ak = e.target.getAttribute('data-att-note');
+          var prev = state.attendance[ak] || { status: '自学' };
+          state.attendance[ak] = { status: prev.status, note: e.target.value.trim() };
+          save();
+          renderToday();
+          toast('已记下课内自学内容');
+        }
+      });
+
+      document.getElementById('focus-course-sel').addEventListener('change', function () {
+        state.focusCourse = this.value;
+        save();
+      });
+
+      document.getElementById('btn-goto-sleep').addEventListener('click', function () {
+        state.lifeSub = 'sleep';
+        switchTab('life');
+        renderLife();
+      });
+
+      document.getElementById('btn-toggle-att-grade').addEventListener('click', function () {
+        state.attGradeCoupling = !state.attGradeCoupling;
+        save();
+        renderAll();
+      });
+
+      document.getElementById('btn-add-backfill').addEventListener('click', function () {
+        var t = (document.getElementById('bf-time').value || '10:00–12:00').trim();
+        var title = (document.getElementById('bf-title').value || '').trim();
+        if (!title) return;
+        if (!state.backfills[state.calSelected]) state.backfills[state.calSelected] = [];
+        state.backfills[state.calSelected].push({ id: 'bf' + Date.now(), t: t, title: title });
+        document.getElementById('bf-title').value = '';
+        save();
+        renderCalendar();
+        toast('已补录到 ' + state.calSelected);
+      });
+
+      document.getElementById('btn-copy-freeslots').addEventListener('click', function () {
+        var txt = '本周空闲时段：周六 08:20–14:45（全空出游）、周六 23:00–23:30、周日 22:00–23:30。';
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(txt).then(function () { toast('已复制本周空闲时段文本'); }).catch(function () { fallbackCopy(txt); });
+        } else { fallbackCopy(txt); }
+      });
+
+      document.getElementById('btn-undo').addEventListener('click', function () {
+        if (!undoSnapshot) return;
+        state = JSON.parse(undoSnapshot);
+        undoSnapshot = null;
+        save();
+        renderAll();
+        toast('已撤销');
+      });
+
+      document.getElementById('btn-toggle-theme').addEventListener('click', function () { state.dark = !state.dark; applyTheme(); save(); });
+      document.getElementById('btn-toggle-10d').addEventListener('click', function () { state.show10d = !state.show10d; save(); renderSleepDetail(); });
+      document.getElementById('btn-open-search').addEventListener('click', function () { document.getElementById('search-modal').classList.remove('hidden'); renderSearch(''); document.getElementById('global-search-input').focus(); });
+      document.getElementById('btn-close-search').addEventListener('click', function () { document.getElementById('search-modal').classList.add('hidden'); });
+      document.getElementById('global-search-input').addEventListener('input', function () { renderSearch(this.value); });
+
+      document.getElementById('btn-week-prev').addEventListener('click', function () { if (state.weekIdx > 0) { state.weekIdx -= 1; state.selectedWeekBlock = null; save(); renderAll(); } });
+      document.getElementById('btn-week-next').addEventListener('click', function () { if (state.weekIdx < WEEKS.length - 1) { state.weekIdx += 1; state.selectedWeekBlock = null; save(); renderAll(); } });
+      document.getElementById('wbd-toggle-done').addEventListener('click', function () { if (!state.selectedWeekBlock) return; state.blockDone[state.selectedWeekBlock] = !state.blockDone[state.selectedWeekBlock]; save(); renderAll(); });
+      document.getElementById('wbd-toggle-cancel').addEventListener('click', function () { if (!state.selectedWeekBlock) return; state.skipped[state.selectedWeekBlock] = !state.skipped[state.selectedWeekBlock]; save(); renderAll(); });
+
+      document.getElementById('btn-parse-sleep').addEventListener('click', function () {
+        var txt = (document.getElementById('sl-nlp-input').value || '').trim();
+        var mRange = /(\d{1,2}:\d{2})\s*[-–~]\s*(\d{1,2}:\d{2})/.exec(txt);
+        var mDeep = /深睡\s*(\d+)/.exec(txt);
+        var mLight = /浅睡\s*(\d+)/.exec(txt);
+        var mRem = /REM\s*(\d+)/i.exec(txt);
+        var mAwake = /清醒\s*(\d+)/.exec(txt);
+        if (mRange) { state.sleepRec.start = mRange[1]; state.sleepRec.end = mRange[2]; }
+        if (mDeep) state.sleepRec.deep = parseInt(mDeep[1], 10);
+        if (mLight) state.sleepRec.light = parseInt(mLight[1], 10);
+        if (mRem) state.sleepRec.rem = parseInt(mRem[1], 10);
+        if (mAwake) state.sleepRec.awake = parseInt(mAwake[1], 10);
+        save();
+        renderAll();
+        toast('已按小米健康模型重新推算');
+      });
+
+      document.getElementById('habit-vocab').addEventListener('click', function () { state.vocabDone = !state.vocabDone; save(); renderToday(); });
+      document.getElementById('habit-sleep').addEventListener('click', function () { state.sleepDone = !state.sleepDone; save(); renderToday(); });
+      document.getElementById('btn-toggle-all-due').addEventListener('click', function () { state.showAllDue = !state.showAllDue; save(); renderToday(); });
+
+      document.getElementById('btn-now-focus').addEventListener('click', function () {
+        state.focusTitle = document.getElementById('now-title').textContent;
+        state.focusMins = 45;
+        secLeft = 45 * 60;
+        save();
+        syncTimerUI();
+        document.getElementById('focus-modal').classList.remove('hidden');
+        startTimer();
+      });
+
+      document.getElementById('btn-open-focus').addEventListener('click', function () { document.getElementById('focus-modal').classList.remove('hidden'); });
+      document.getElementById('btn-close-focus').addEventListener('click', function () { document.getElementById('focus-modal').classList.add('hidden'); });
+      document.getElementById('focus-modal').addEventListener('click', function (e) { if (e.target === this) this.classList.add('hidden'); });
+      document.getElementById('btn-timer-toggle').addEventListener('click', function () { if (running) stopTimer(); else startTimer(); });
+      document.getElementById('btn-timer-reset').addEventListener('click', function () { stopTimer(); secLeft = state.focusMins * 60; syncTimerUI(); });
+      document.getElementById('btn-white-noise').addEventListener('click', function () { state.whiteNoise = !state.whiteNoise; save(); syncTimerUI(); });
+
+      document.getElementById('btn-quick-add').addEventListener('click', function () { switchTab('today'); document.getElementById('quick-add-box').classList.remove('hidden'); document.getElementById('qa-title').focus(); });
+      document.getElementById('btn-close-quick-add').addEventListener('click', function () { document.getElementById('quick-add-box').classList.add('hidden'); });
+      document.getElementById('btn-clear-makeup').addEventListener('click', function () { state.makeupPool = []; save(); renderToday(); });
+
+      document.getElementById('btn-save-quick-add').addEventListener('click', function () {
+        var t = (document.getElementById('qa-time').value || '09:00–11:30').trim().replace('-', '–');
+        var title = (document.getElementById('qa-title').value || '').trim();
+        if (!title) return;
+        var rng = t.split('–');
+        var sM = toMin(rng[0]);
+        var eM = rng[1] ? toMin(rng[1]) : (sM != null ? sM + 60 : null);
+        var wk = WEEKS[state.weekIdx];
+        var ck = wk.id + '|' + state.dayIdx;
+
+        var displaced = [];
+        if (sM != null && eM != null) {
+          var existing = getDayItems(state.weekIdx, state.dayIdx).filter(function (x) { return !x.divider; });
+          existing.forEach(function (item) {
+            var k = blockKey(state.weekIdx, state.dayIdx, item.id);
+            if (state.skipped[k] || state.blockDone[k]) return;
+            if (item.type === 'class' || item.type === 'rest') return;
+            var ir = (state.shifted[k] || item.t).split('–');
+            var isM = toMin(ir[0]);
+            var ieM = ir[1] ? toMin(ir[1]) : (isM != null ? isM + 45 : null);
+            if (isM != null && ieM != null && Math.max(sM, isM) < Math.min(eM, ieM)) {
+              state.skipped[k] = true;
+              var hint = item.type === 'due'
+                ? ('硬性作业顺延：建议并入周日晚/周一晚兜底槽（原 ' + DAY_META[state.dayIdx].full + ' ' + item.t + '）')
+                : ('弹性自学让位：可填进缓冲周（原 ' + DAY_META[state.dayIdx].full + ' ' + item.t + '）');
+              state.makeupPool.unshift({ id: 'mp' + Date.now() + item.id, title: item.title, reason: hint });
+              displaced.push(item.title);
+            }
+          });
+        }
+
+        if (!state.customItems[ck]) state.customItems[ck] = [];
+        state.customItems[ck].push({ id: 'c' + Date.now(), t: t, title: title, type: 'due', sub: '临时突发待办' });
+        document.getElementById('qa-title').value = '';
+        document.getElementById('quick-add-box').classList.add('hidden');
+        save();
+        renderAll();
+        toast(displaced.length ? ('已加入，' + displaced.length + ' 项冲突任务已自动转入待补池') : '已加进今天');
+      });
+
+      document.getElementById('btn-add-nlp').addEventListener('click', function () {
+        var inp = document.getElementById('nlp-task-input');
+        var raw = (inp.value || '').trim();
+        if (!raw) return;
+        var q = raw.indexOf('重要') !== -1 ? 'q1' : 'q2';
+        var clean = raw.replace('#重要', '').trim();
+        var title = clean, subs = [];
+        if (clean.indexOf('/') >= 0) {
+          var subRaw = clean.split('/');
+          title = subRaw[0].trim();
+          subs = subRaw.slice(1).map(function (s, i) { return { id: 's' + Date.now() + i, title: s.trim(), done: false }; });
+        }
+        state.quadTasks.unshift({ id: 'qt' + Date.now(), q: q, title: title, done: false, subs: subs });
+        inp.value = '';
+        save();
+        renderList();
+        toast('已加入四象限');
+      });
+
+      document.getElementById('btn-save-diary').addEventListener('click', function () {
+        var inp = document.getElementById('diary-input');
+        var kind = document.getElementById('diary-kind').value;
+        var txt = (inp.value || '').trim();
+        if (!txt) return;
+        state.diary.unshift({ id: 'd' + Date.now(), kind: kind, date: '今天', text: txt });
+        inp.value = '';
+        save();
+        renderAll();
+        toast('记下了');
+      });
+
+      document.getElementById('btn-add-ledger').addEventListener('click', function () {
+        var cat = document.getElementById('ledger-cat').value;
+        var note = (document.getElementById('ledger-note').value || '').trim();
+        var amt = parseFloat(document.getElementById('ledger-amt').value);
+        if (!note || isNaN(amt) || amt <= 0) return;
+        state.ledger.unshift({ id: 'l' + Date.now(), cat: cat, note: note, amt: amt, date: '11月28日' });
+        document.getElementById('ledger-note').value = '';
+        document.getElementById('ledger-amt').value = '';
+        save();
+        renderAll();
+        toast('记好了');
+      });
+
+      document.getElementById('btn-add-diet').addEventListener('click', function () {
+        var name = (document.getElementById('diet-name').value || '').trim();
+        var kcal = parseInt(document.getElementById('diet-kcal').value, 10);
+        if (!name || isNaN(kcal) || kcal <= 0) return;
+        state.diet.push({ id: 'dt' + Date.now(), name: name, kcal: kcal });
+        document.getElementById('diet-name').value = '';
+        document.getElementById('diet-kcal').value = '';
+        save();
+        renderLife();
+        toast('已记录');
+      });
+
+      document.getElementById('btn-open-settings').addEventListener('click', function () { document.getElementById('settings-modal').classList.remove('hidden'); });
+      document.getElementById('btn-close-settings').addEventListener('click', function () { document.getElementById('settings-modal').classList.add('hidden'); });
+      document.getElementById('settings-modal').addEventListener('click', function (e) { if (e.target === this) this.classList.add('hidden'); });
+
+      document.getElementById('btn-reset-week').addEventListener('click', function () {
+        state.dueDone = {};
+        state.skipped = {};
+        state.shifted = {};
+        save();
+        renderAll();
+        document.getElementById('settings-modal').classList.add('hidden');
+        toast('已开启新的一周');
+      });
+
+      document.getElementById('btn-copy-backup').addEventListener('click', function () {
+        var txt = JSON.stringify(state, null, 2);
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(txt).then(function () { toast('存档已复制'); }).catch(function () { fallbackCopy(txt); });
+        } else { fallbackCopy(txt); }
+      });
+
+      function fallbackCopy(txt) {
+        var ta = document.createElement('textarea');
+        ta.value = txt;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); toast('存档已复制'); } catch (e) { toast('复制失败'); }
+        document.body.removeChild(ta);
+      }
+
+      document.getElementById('btn-export-ics').addEventListener('click', function () {
+        var ics = [
+          'BEGIN:VCALENDAR',
+          'VERSION:2.0',
+          'PRODID:-//Riji//Winter//CN',
+          'BEGIN:VEVENT',
+          'SUMMARY:计划正式启动 · 周六出游',
+          'DTSTART:20261128T082000',
+          'DTEND:20261128T144500',
+          'END:VEVENT',
+          'BEGIN:VEVENT',
+          'SUMMARY:几何学作业截止',
+          'DTSTART:20261130T074500',
+          'DTEND:20261130T080000',
+          'BEGIN:VALARM',
+          'TRIGGER:-PT15M',
+          'ACTION:DISPLAY',
+          'DESCRIPTION:课前提交几何作业',
+          'END:VALARM',
+          'END:VEVENT',
+          'BEGIN:VEVENT',
+          'SUMMARY:23:30 结束学习',
+          'DTSTART:20261128T233000',
+          'DTEND:20261128T234500',
+          'RRULE:FREQ=DAILY;COUNT=30',
+          'BEGIN:VALARM',
+          'TRIGGER:-PT0M',
+          'ACTION:DISPLAY',
+          'DESCRIPTION:准备洗漱，零点入睡',
+          'END:VALARM',
+          'END:VEVENT',
+          'END:VCALENDAR'
+        ].join('\r\n');
+        var blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = '冬学期提醒.ics';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        toast('已导出日历文件');
+      });
+
+      switchTab(state.tab || 'today');
+      renderAll();
+    })();
+  </script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
