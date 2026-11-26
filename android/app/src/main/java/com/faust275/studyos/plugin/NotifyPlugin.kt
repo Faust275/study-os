@@ -3,17 +3,19 @@ package com.faust275.studyos.plugin
 /**
  * 原生系统闹钟通知插件（Kotlin）
  * --------------------------------------------------
- * Web 侧 assets/js/remind.js 只能发页面内 toast，锁屏就没了。装成 App 后，
- * 同一份提醒数据改走系统闹钟：remind.js 会把未来 14 天的上课/待办到期算好，
+ * Web 侧只能发页面内 toast，锁屏就没了。装成 App 后，提醒改走系统闹钟：
+ * index.html 的 scheduleNativeNotifications 会把未来 21 天的上课/待办到期算好，
  * 通过 Capacitor 调到这里，由 AlarmManager 精确排程，到点由 NotifyReceiver 发通知。
  *
- * 与 Web 侧的接口契约（改签名必须先改 settings.js / remind.js）：
+ * 与 Web 侧的接口契约（改签名必须先改 index.html 的 scheduleNativeNotifications）：
  *   available()                  -> { notifications: Boolean, exact: Boolean }
- *   requestPermission()          -> { granted: Boolean, exact: Boolean }（Android 13+ 弹系统授权框）
+ *   requestPermission()          -> { notifications: Boolean, exact: Boolean, granted?: Boolean }（Android 13+ 弹系统授权框后补 granted）
  *   openSettings()               -> 跳系统「通知」设置页
- *   schedule({ items: [...] })   -> { scheduled: Int, exact: Boolean }
+ *   schedule({ items: [...] })   -> { scheduled: Int, skipped: Int, exact: Boolean }（skipped 为未排入条数）
  *     items 元素：{ id:int, at:long(毫秒时间戳), title:String, body:String }
  *   cancelAll()                  -> { cancelled: true }
+ *   scheduleTimer({ at, title, body, route }) -> { scheduled: Boolean }（专注计时专用，ID 1500 独立于课表排程）
+ *   cancelTimer()                -> { cancelled: true }
  *   notifyPermissions()          -> 同 available()，保留给老调用方
  *
  * 重启/覆盖安装后闹钟会被系统清空，BootReceiver 会读这里缓存的 items 重新排一遍。
@@ -29,7 +31,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.provider.AlarmClock
 import com.faust275.studyos.MainActivity
 import com.getcapacitor.JSArray
 import com.getcapacitor.JSObject
@@ -52,11 +53,12 @@ object NotifyScheduler {
     const val EXTRA_ROUTE = "cp_route"
     const val ACTION_SNOOZE = "com.faust275.studyos.NOTIFY_SNOOZE"
     const val ACTION_DISMISS = "com.faust275.studyos.NOTIFY_DISMISS"
-    const val ACTION_DAILY = "com.faust275.studyos.NOTIFY_DAILY"
 
-    // 与 remind.js 的 1000 + n 对齐；上限放宽到 400 条以容纳 14 天窗口
+    // 与前端 scheduleNativeNotifications 的 1001…1489 对齐（上限 490 条，容纳 21 天窗口）
     const val ID_BASE = 1000
-    const val ID_MAX = 1400
+    const val ID_MAX = 1490
+    // 专注计时用独立 ID：必须落在 ID_BASE..ID_MAX 之外，否则 schedule()/cancelAll() 会把它一起清掉
+    const val TIMER_ID = 1500
 
     private const val PREFS = "cp_notify"
     private const val KEY_ITEMS = "items"
@@ -70,7 +72,9 @@ object NotifyScheduler {
 
     fun notificationsEnabled(ctx: Context): Boolean {
         val nm = notificationManager(ctx) ?: return false
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) nm.areNotificationsEnabled() else true
+        // minSdk 26，areNotificationsEnabled 从 API 24 就有；不能用版本号把它短接掉，
+        // 否则 Android 8–12 用户手动关闭通知后仍会显示“排程成功”。
+        return nm.areNotificationsEnabled()
     }
 
     fun canScheduleExact(ctx: Context): Boolean {
@@ -105,6 +109,8 @@ object NotifyScheduler {
     /** 把一批提醒排进系统闹钟，返回成功排入的条数。 */
     fun schedule(ctx: Context, items: JSONArray): Int {
         val am = alarmManager(ctx) ?: return 0
+        // 先清掉上一轮排程，避免条目变少后旧闹钟仍在后台响
+        cancelAll(ctx)
         if (!notificationsEnabled(ctx)) return 0
         ensureChannel(ctx)
         val exact = canScheduleExact(ctx)
@@ -144,6 +150,37 @@ object NotifyScheduler {
         }
     }
 
+    /**
+     * 专注计时到点提醒：独立于 21 天课表排程，不写 items 缓存。
+     * 进程被杀/重启后闹钟随系统清空，由前端恢复计时时重新排一次。
+     */
+    fun scheduleTimer(ctx: Context, at: Long, title: String, body: String, route: String): Boolean {
+        val am = alarmManager(ctx) ?: return false
+        if (at <= System.currentTimeMillis()) return false
+        if (!notificationsEnabled(ctx)) {
+            cancelTimer(ctx)
+            return false
+        }
+        ensureChannel(ctx)
+        val pi = pendingIntent(ctx, TIMER_ID, title, body, route) ?: return false
+        return try {
+            if (canScheduleExact(ctx)) {
+                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi)
+            } else {
+                am.setWindow(AlarmManager.RTC_WAKEUP, at - 30_000L, 60_000L, pi)
+            }
+            true
+        } catch (e: SecurityException) {
+            false
+        }
+    }
+
+    fun cancelTimer(ctx: Context) {
+        val am = alarmManager(ctx) ?: return
+        val pi = pendingIntent(ctx, TIMER_ID, "", "") ?: return
+        try { am.cancel(pi) } catch (e: Exception) { /* 忽略 */ }
+    }
+
     fun saveItems(ctx: Context, json: String?) {
         try {
             ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
@@ -165,12 +202,6 @@ object NotifyScheduler {
         if (arr.length() == 0) return
         if (!notificationsEnabled(ctx)) return
         schedule(ctx, arr)
-    }
-
-    /** 后台兜底用的重复闹钟（每 N 小时把未来 14 天重排一遍），不依赖 WorkManager */
-    fun dailyPendingIntent(ctx: Context): PendingIntent {
-        val intent = Intent(ctx, DailyRescheduleReceiver::class.java).apply { action = ACTION_DAILY }
-        return PendingIntent.getBroadcast(ctx, 991001, intent, PI_FLAGS)
     }
 }
 
@@ -261,55 +292,21 @@ class NotifyPlugin : Plugin() {
         }
     }
 
-    /** 调起系统闹钟（就寝提醒用）：优先静默创建，失败则打开系统闹钟界面让用户确认 */
-    @PluginMethod
-    fun setSystemAlarm(call: PluginCall) {
-        val hour = call.getInt("hour")
-        if (hour == null || hour < 0 || hour > 23) {
-            call.reject("小时不合法")
-            return
-        }
-        val minute = (call.getInt("minute") ?: 0).coerceIn(0, 59)
-        val label = call.getString("label") ?: "就寝提醒"
-        try {
-            val intent = Intent(AlarmClock.ACTION_SET_ALARM).apply {
-                putExtra(AlarmClock.EXTRA_HOUR, hour)
-                putExtra(AlarmClock.EXTRA_MINUTES, minute)
-                putExtra(AlarmClock.EXTRA_MESSAGE, label)
-                putExtra(AlarmClock.EXTRA_SKIP_UI, true)
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-            context.startActivity(intent)
-            call.resolve(JSObject().put("ok", true))
-        } catch (e: Exception) {
-            try {
-                val fallback = Intent(AlarmClock.ACTION_SET_ALARM).apply {
-                    putExtra(AlarmClock.EXTRA_HOUR, hour)
-                    putExtra(AlarmClock.EXTRA_MINUTES, minute)
-                    putExtra(AlarmClock.EXTRA_MESSAGE, label)
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
-                context.startActivity(fallback)
-                call.resolve(JSObject().put("ok", true))
-            } catch (e2: Exception) {
-                call.reject("无法打开系统闹钟", e2)
-            }
-        }
-    }
-
     @PluginMethod
     fun schedule(call: PluginCall) {
         val items: JSArray = call.getArray("items") ?: JSArray()
         if (!NotifyScheduler.notificationsEnabled(context)) {
-            // 权限没开：把清单留着，用户去授权后 BootReceiver/下次启动还能补排
+            // 权限没开：清掉可能残留的旧闹钟，把清单留着，用户去授权后 BootReceiver/下次启动还能补排
+            NotifyScheduler.cancelAll(context)
             NotifyScheduler.saveItems(context, items.toString())
-            call.resolve(JSObject().put("scheduled", 0).put("skipped", true)
+            call.resolve(JSObject().put("scheduled", 0).put("skipped", items.length())
                 .put("exact", NotifyScheduler.canScheduleExact(context)))
             return
         }
         val n = NotifyScheduler.schedule(context, items)
         NotifyScheduler.saveItems(context, items.toString())
-        call.resolve(JSObject().put("scheduled", n).put("exact", NotifyScheduler.canScheduleExact(context)))
+        call.resolve(JSObject().put("scheduled", n).put("skipped", items.length() - n)
+            .put("exact", NotifyScheduler.canScheduleExact(context)))
     }
 
     @PluginMethod
@@ -319,36 +316,21 @@ class NotifyPlugin : Plugin() {
         call.resolve(JSObject().put("cancelled", true))
     }
 
-    /**
-     * 可选的后台兜底：每 N 小时自动重排一次系统提醒。
-     * 用 setInexactRepeating 而不是 WorkManager，免得为一个兜底再拉一份依赖。
-     */
+    /** 专注计时：开始/恢复时排一条到点提醒，暂停/结束/重置时取消。 */
     @PluginMethod
-    fun setDailyReschedule(call: PluginCall) {
-        val enabled = call.getBoolean("enabled") ?: true
-        val hours = (call.getInt("hours") ?: 24).coerceIn(1, 168)
-        val am = NotifyScheduler.alarmManager(context)
-        if (am == null) {
-            call.reject("AlarmManager 不可用")
-            return
-        }
-        val pi = NotifyScheduler.dailyPendingIntent(context)
-        try { am.cancel(pi) } catch (e: Exception) { /* 忽略 */ }
-        if (enabled) {
-            val interval = hours * 3600_000L
-            try {
-                am.setInexactRepeating(
-                    AlarmManager.RTC_WAKEUP,
-                    System.currentTimeMillis() + interval,
-                    interval,
-                    pi
-                )
-            } catch (e: Exception) {
-                call.reject("设置失败：" + (e.message ?: ""), e)
-                return
-            }
-        }
-        call.resolve(JSObject().put("enabled", enabled).put("hours", hours))
+    fun scheduleTimer(call: PluginCall) {
+        val at = call.getLong("at") ?: 0L
+        val title = call.getString("title") ?: "专注结束"
+        val body = call.getString("body") ?: ""
+        val route = call.getString("route") ?: ""
+        val ok = NotifyScheduler.scheduleTimer(context, at, title, body, route)
+        call.resolve(JSObject().put("scheduled", ok))
+    }
+
+    @PluginMethod
+    fun cancelTimer(call: PluginCall) {
+        NotifyScheduler.cancelTimer(context)
+        call.resolve(JSObject().put("cancelled", true))
     }
 
     private fun status(): JSObject = JSObject()
@@ -465,12 +447,5 @@ class BootReceiver : BroadcastReceiver() {
                 try { NotifyScheduler.reapply(context) } catch (e: Exception) { /* 忽略 */ }
             }
         }
-    }
-}
-
-/** 兜底重排的重复闹钟到点后，把缓存的提醒重新排一遍 */
-class DailyRescheduleReceiver : BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) {
-        try { NotifyScheduler.reapply(context) } catch (e: Exception) { /* 忽略 */ }
     }
 }

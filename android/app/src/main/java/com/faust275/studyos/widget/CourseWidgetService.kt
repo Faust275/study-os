@@ -10,7 +10,7 @@ import java.time.LocalTime
 
 /**
  * 为小组件里的 ListView 提供今日课程列表项。
- * RemoteViewsService 在独立进程中运行，从 WidgetData 读取快照并按系统当前时刻标记课程状态。
+ * RemoteViewsService 与应用同进程运行，从 WidgetData 读取快照并按系统当前时刻标记课程状态。
  */
 class CourseWidgetService : RemoteViewsService() {
     override fun onGetViewFactory(intent: Intent): RemoteViewsFactory {

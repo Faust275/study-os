@@ -62,9 +62,13 @@ open class CourseWidgetProvider : AppWidgetProvider() {
         }
 
         if (intent.action == AppWidgetManager.ACTION_APPWIDGET_UPDATE) {
+            // 系统广播带 EXTRA_APPWIDGET_IDS，super.onReceive 已经分发过；
+            // 只有网页侧 DataBridge 发来的包级广播（不带 ID）才需要补一次，
+            // 且只刷新本类的实例，避免 4 个 provider 互相重复刷新。
+            if (intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS) != null) return
             val mgr = AppWidgetManager.getInstance(context)
             val ids = mgr.getAppWidgetIds(ComponentName(context, this.javaClass))
-            onUpdate(context, mgr, ids)
+            if (ids.isNotEmpty()) onUpdate(context, mgr, ids)
         }
     }
 
@@ -112,7 +116,7 @@ open class CourseWidgetProvider : AppWidgetProvider() {
                     else "${snap.weekday} · ${snap.today}"
                 )
             } else {
-                views.setTextViewText(R.id.widget_title, "课程规划助手")
+                views.setTextViewText(R.id.widget_title, "日迹")
                 views.setTextViewText(R.id.widget_date, "打开 App 一次以同步")
             }
 
@@ -174,7 +178,11 @@ open class CourseWidgetProvider : AppWidgetProvider() {
                 views.setTextViewText(R.id.todo_remain, "")
             }
 
-            val launch = context.packageManager.getLaunchIntentForPackage(context.packageName)
+            // 点组件根区域直接落到「今日」，课程列表项落到「课表」；其余区域保持原行为
+            val launch = context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
+                putExtra("cp_route", "today")
+            }
+            val listLaunch = launch?.let { Intent(it).apply { putExtra("cp_route", "schedule") } }
             val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             else PendingIntent.FLAG_UPDATE_CURRENT
@@ -185,7 +193,7 @@ open class CourseWidgetProvider : AppWidgetProvider() {
             val listClickFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
             else PendingIntent.FLAG_UPDATE_CURRENT
-            val listClickPending = PendingIntent.getActivity(context, 1001, launch, listClickFlags)
+            val listClickPending = PendingIntent.getActivity(context, 1001, listLaunch ?: launch, listClickFlags)
             views.setPendingIntentTemplate(R.id.widget_list, listClickPending)
 
             appWidgetManager.updateAppWidget(appWidgetId, views)

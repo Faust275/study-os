@@ -55,16 +55,32 @@ object WidgetMutations {
     }
 
     @Synchronized
-    fun consumePending(context: Context): List<JSONObject> {
+    fun peekPending(context: Context): List<JSONObject> {
         val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         val raw = prefs.getString(KEY_MUTATIONS, "[]") ?: "[]"
         val arr = try { JSONArray(raw) } catch (_: Exception) { JSONArray() }
         val list = mutableListOf<JSONObject>()
         for (i in 0 until arr.length()) {
-            list.add(arr.getJSONObject(i))
+            val o = arr.optJSONObject(i) ?: continue
+            list.add(o)
         }
-        prefs.edit().putString(KEY_MUTATIONS, "[]").apply()
         return list
+    }
+
+    @Synchronized
+    fun ackPending(context: Context, maxVersion: Long): Int {
+        if (maxVersion <= 0L) return 0
+        val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        val raw = prefs.getString(KEY_MUTATIONS, "[]") ?: "[]"
+        val arr = try { JSONArray(raw) } catch (_: Exception) { JSONArray() }
+        val keep = JSONArray()
+        var dropped = 0
+        for (i in 0 until arr.length()) {
+            val o = arr.optJSONObject(i) ?: continue
+            if (o.optLong("version", 0L) <= maxVersion) dropped++ else keep.put(o)
+        }
+        if (dropped > 0) prefs.edit().putString(KEY_MUTATIONS, keep.toString()).apply()
+        return dropped
     }
 }
 
@@ -85,6 +101,22 @@ object WidgetData {
         }
     }
 
+    /**
+     * 原子落盘：先写临时文件再 rename，避免小组件在截断窗口里读到半截 JSON。
+     * 所有写入方都必须经过这里（同名对象的 monitor 同时充当同进程写锁）。
+     */
+    @Synchronized
+    fun writeSnapshot(context: Context, json: String) {
+        val file = File(context.filesDir, FILE_NAME)
+        val tmp = File(context.filesDir, "$FILE_NAME.tmp")
+        tmp.writeText(json)
+        if (!tmp.renameTo(file)) {
+            file.writeText(json)
+            tmp.delete()
+        }
+    }
+
+    @Synchronized
     fun updateTodoStatus(context: Context, todoId: String, done: Boolean): Boolean {
         return try {
             val file = File(context.filesDir, FILE_NAME)
@@ -94,7 +126,7 @@ object WidgetData {
             if (todoObj != null && (todoObj.optString("id") == todoId || todoId.isEmpty())) {
                 todoObj.put("done", done)
                 o.put("updatedAt", System.currentTimeMillis())
-                file.writeText(o.toString())
+                writeSnapshot(context, o.toString())
                 true
             } else {
                 false

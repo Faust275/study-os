@@ -1,7 +1,7 @@
 {
-  "name": "Study OS · 17周学习日程",
-  "short_name": "Study OS",
-  "description": "数学分析与代数学 17 周学习日程、课表、成绩构成与健康追踪",
+  "name": "日迹",
+  "short_name": "日迹",
+  "description": "数学分析与代数学 15 周学习日程、课表、成绩构成与健康追踪",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

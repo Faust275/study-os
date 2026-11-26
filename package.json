@@ -1,10 +1,11 @@
 {
   "name": "study-os",
-  "version": "1.0.0",
+  "version": "1.0.9",
   "private": true,
   "description": "日迹 (Study OS) · 大学多学期课表成绩与可插拔自学专题 PWA + Capacitor Android APK",
   "scripts": {
-    "sync:www": "node -e \"const fs=require('fs');fs.mkdirSync('www',{recursive:true});['index.html','manifest.json','sw.js','icon.svg','icon-192.png','icon-512.png'].forEach(f=>fs.existsSync(f)&&fs.copyFileSync(f,'www/'+f))\"",
+    "check:classes": "node tools/check-classes.mjs",
+    "sync:www": "node -e \"const fs=require('fs');fs.mkdirSync('www',{recursive:true});['index.html','app.css','manifest.json','sw.js','icon.svg','icon-192.png','icon-512.png'].forEach(f=>fs.existsSync(f)&&fs.copyFileSync(f,'www/'+f))\"",
     "cap:sync": "npm run sync:www && npx cap sync android"
   },
   "dependencies": {

@@ -1,8 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <!-- 轻松愉快的桌面显示名称，可按喜好改为「轻松课表」「摸鱼课表」等 -->
-    <string name="app_name">不咕课表</string>
-    <string name="title_activity_main">不咕课表</string>
+    <string name="app_name">日迹</string>
+    <string name="title_activity_main">日迹</string>
     <string name="package_name">com.faust275.studyos</string>
     <string name="custom_url_scheme">com.faust275.studyos</string>
 </resources>

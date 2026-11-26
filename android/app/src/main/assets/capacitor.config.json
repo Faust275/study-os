@@ -1,7 +1,7 @@
 {
 	"appId": "com.faust275.studyos",
 	"appName": "日迹",
-	"webDir": "dist",
+	"webDir": "www",
 	"loggingEnabled": false,
 	"server": {
 		"androidScheme": "https"
@@ -14,7 +14,7 @@
 	"plugins": {
 		"SplashScreen": {
 			"launchAutoHide": true,
-			"backgroundColor": "#f6f7fb",
+			"backgroundColor": "#F7F6F3",
 			"showSpinner": false
 		}
 	}

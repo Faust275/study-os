@@ -13,6 +13,7 @@ import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.records.StepsRecord
+import androidx.health.connect.client.request.AggregateGroupByPeriodRequest
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.response.ReadRecordsResponse
 import androidx.health.connect.client.time.TimeRangeFilter
@@ -27,6 +28,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.Period
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -45,6 +49,7 @@ class HealthConnectPlugin : Plugin() {
     private val STAGE_LIGHT = 4
     private val STAGE_DEEP = 5
     private val STAGE_REM = 6
+    private val STAGE_AWAKE_IN_BED = 7
 
     private var hcClient: HealthConnectClient? = null
     private var hcStatus: Int = -1
@@ -151,16 +156,55 @@ class HealthConnectPlugin : Plugin() {
             call.reject("当前环境无法发起授权，请尝试从系统设置开启 Health Connect 权限")
             return
         }
-        val perms = setOf(
-            HealthPermission.getReadPermission(SleepSessionRecord::class),
-            HealthPermission.getReadPermission(StepsRecord::class),
-            HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
-            HealthPermission.getReadPermission(DistanceRecord::class),
-            HealthPermission.getReadPermission(ExerciseSessionRecord::class)
-        )
+        val perms = requiredPermissions()
+        // 上一次授权还挂在系统弹窗上时，若再次发起会覆盖 pendingPermissionCall，让先前的 call 永久悬挂
+        if (pendingPermissionCall != null) {
+            call.reject("已有 Health Connect 授权请求进行中，请先完成或取消当前弹窗")
+            return
+        }
         pendingPermissionCall = call
         activity.runOnUiThread { launcher.launch(perms) }
     }
+
+    /** 前端自动同步前查询已授予的读权限，避免每次启动都弹系统授权页。 */
+    @PluginMethod
+    fun getPermissionStatus(call: PluginCall) {
+        if (hcClient == null) refreshStatus()
+        val client = hcClient
+        if (client == null) {
+            val ret = JSObject()
+            ret.put("available", false)
+            ret.put("grantedAny", false)
+            ret.put("grantedAll", false)
+            call.resolve(ret)
+            return
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            val ret = JSObject()
+            ret.put("available", true)
+            try {
+                val granted = client.permissionController.getGrantedPermissions()
+                val required = requiredPermissions()
+                ret.put("grantedAny", required.any { it in granted })
+                ret.put("grantedAll", required.all { it in granted })
+                ret.put("grantedCount", required.count { it in granted })
+                ret.put("requiredCount", required.size)
+            } catch (e: Exception) {
+                ret.put("grantedAny", false)
+                ret.put("grantedAll", false)
+                ret.put("error", e.message ?: "读取权限状态失败")
+            }
+            activity.runOnUiThread { call.resolve(ret) }
+        }
+    }
+
+    private fun requiredPermissions(): Set<String> = setOf(
+        HealthPermission.getReadPermission(SleepSessionRecord::class),
+        HealthPermission.getReadPermission(StepsRecord::class),
+        HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
+        HealthPermission.getReadPermission(DistanceRecord::class),
+        HealthPermission.getReadPermission(ExerciseSessionRecord::class)
+    )
 
     @PluginMethod
     fun readSleep(call: PluginCall) {
@@ -191,7 +235,7 @@ class HealthConnectPlugin : Plugin() {
                     for (st in r.stages) {
                         val dur = Duration.between(st.startTime, st.endTime).toMinutes().coerceAtLeast(0L)
                         when (st.stage) {
-                            STAGE_AWAKE, STAGE_OUT_OF_BED -> {
+                            STAGE_AWAKE, STAGE_OUT_OF_BED, STAGE_AWAKE_IN_BED -> {
                                 awakeMin += dur
                                 if (dur > 0) awakenings += 1
                             }
@@ -239,24 +283,71 @@ class HealthConnectPlugin : Plugin() {
         val zone = ZoneId.systemDefault()
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val end = Instant.now()
-                val start = end.minus(Duration.ofDays(days.toLong()))
+                // AggregateGroupByPeriodRequest 的构造器只接受 LocalDateTime 过滤器，
+                // 传 Instant 会在构造时抛 IllegalArgumentException（与签名类型无关）。
+                val start = LocalDate.now(zone).minusDays(days.toLong() - 1).atStartOfDay()
+                val end = LocalDateTime.now(zone)
+                if (!end.isAfter(start)) {
+                    activity.runOnUiThread { call.reject("时间范围无效") }
+                    return@launch
+                }
 
                 val steps = HashMap<String, Long>()
                 val cals = HashMap<String, Double>()
                 val dists = HashMap<String, Double>()
+                val denied = JSArray()
 
-                for (r in readAll(client, StepsRecord::class, start, end)) {
-                    val k = r.startTime.atZone(zone).toLocalDate().toString()
-                    steps[k] = (steps[k] ?: 0L) + r.count
+                // 累计类数据用 Aggregate API：系统按用户设置的应用优先级去重，避免多来源（手环+手机）重复计数
+                try {
+                    val resp = client.aggregateGroupByPeriod(
+                        AggregateGroupByPeriodRequest(
+                            metrics = setOf(StepsRecord.COUNT_TOTAL),
+                            timeRangeFilter = TimeRangeFilter.between(start, end),
+                            timeRangeSlicer = Period.ofDays(1)
+                        )
+                    )
+                    for (b in resp) {
+                        if (!b.result.contains(StepsRecord.COUNT_TOTAL)) continue
+                        val v = b.result[StepsRecord.COUNT_TOTAL] ?: continue
+                        val k = b.startTime.toLocalDate().toString()
+                        steps[k] = (steps[k] ?: 0L) + v
+                    }
+                } catch (e: SecurityException) {
+                    denied.put("步数")
                 }
-                for (r in readAll(client, ActiveCaloriesBurnedRecord::class, start, end)) {
-                    val k = r.startTime.atZone(zone).toLocalDate().toString()
-                    cals[k] = (cals[k] ?: 0.0) + r.energy.inKilocalories
+                try {
+                    val resp = client.aggregateGroupByPeriod(
+                        AggregateGroupByPeriodRequest(
+                            metrics = setOf(ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL),
+                            timeRangeFilter = TimeRangeFilter.between(start, end),
+                            timeRangeSlicer = Period.ofDays(1)
+                        )
+                    )
+                    for (b in resp) {
+                        if (!b.result.contains(ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL)) continue
+                        val v = b.result[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL] ?: continue
+                        val k = b.startTime.toLocalDate().toString()
+                        cals[k] = (cals[k] ?: 0.0) + v.inKilocalories
+                    }
+                } catch (e: SecurityException) {
+                    denied.put("活动热量")
                 }
-                for (r in readAll(client, DistanceRecord::class, start, end)) {
-                    val k = r.startTime.atZone(zone).toLocalDate().toString()
-                    dists[k] = (dists[k] ?: 0.0) + r.distance.inMeters
+                try {
+                    val resp = client.aggregateGroupByPeriod(
+                        AggregateGroupByPeriodRequest(
+                            metrics = setOf(DistanceRecord.DISTANCE_TOTAL),
+                            timeRangeFilter = TimeRangeFilter.between(start, end),
+                            timeRangeSlicer = Period.ofDays(1)
+                        )
+                    )
+                    for (b in resp) {
+                        if (!b.result.contains(DistanceRecord.DISTANCE_TOTAL)) continue
+                        val v = b.result[DistanceRecord.DISTANCE_TOTAL] ?: continue
+                        val k = b.startTime.toLocalDate().toString()
+                        dists[k] = (dists[k] ?: 0.0) + v.inMeters
+                    }
+                } catch (e: SecurityException) {
+                    denied.put("距离")
                 }
 
                 val keys = LinkedHashSet<String>()
@@ -273,9 +364,10 @@ class HealthConnectPlugin : Plugin() {
                 }
                 val ret = JSObject()
                 ret.put("days", arr)
+                ret.put("denied", denied)
                 activity.runOnUiThread { call.resolve(ret) }
             } catch (e: Exception) {
-                activity.runOnUiThread { call.reject(e.message, e) }
+                activity.runOnUiThread { call.reject("hc_read_failed: " + (e.message ?: e.javaClass.simpleName), e) }
             }
         }
     }
@@ -320,27 +412,6 @@ class HealthConnectPlugin : Plugin() {
                 activity.runOnUiThread { call.resolve(empty) }
             }
         }
-    }
-
-    /**
-     * 设置页「系统级后台同步」开关：开启 / 关闭 WorkManager 周期任务，并持久化到 SharedPreferences。
-     * 返回最终生效的 enabled，供 JS 端回显。
-     */
-    @PluginMethod
-    fun setBackgroundSync(call: PluginCall) {
-        val enabled: Boolean = call.getBoolean("enabled", true) ?: true
-        HealthSyncWorker.setEnabled(context, enabled)
-        val ret = JSObject()
-        ret.put("enabled", enabled)
-        call.resolve(ret)
-    }
-
-    /** 读取「系统级后台同步」开关当前状态（默认开启）。 */
-    @PluginMethod
-    fun getBackgroundSync(call: PluginCall) {
-        val ret = JSObject()
-        ret.put("enabled", HealthSyncWorker.isEnabled(context))
-        call.resolve(ret)
     }
 
     private suspend fun <T : Record> readAll(

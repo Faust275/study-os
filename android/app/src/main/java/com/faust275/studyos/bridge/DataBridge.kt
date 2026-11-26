@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.webkit.JavascriptInterface
 import com.faust275.studyos.widget.WidgetData
-import java.io.File
 
 /**
  * 网页侧通过 window.AndroidBridge.pushSnapshot(json) 调用本方法。
@@ -16,8 +15,7 @@ class DataBridge(private val context: Context) {
     @JavascriptInterface
     fun pushSnapshot(json: String) {
         try {
-            val file = File(context.filesDir, WidgetData.FILE_NAME)
-            file.writeText(json)
+            WidgetData.writeSnapshot(context, json)
 
             val intent = Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE).apply {
                 setPackage(context.packageName)

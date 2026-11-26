@@ -30,14 +30,19 @@ class BackupExportPlugin : Plugin() {
             call.reject("备份内容为空")
             return
         }
-        val rawName = call.getString("name") ?: ("course-planner-" + System.currentTimeMillis() + ".json")
+        val rawName = call.getString("name") ?: ("riji-backup-" + System.currentTimeMillis() + ".json")
         val name = rawName.replace(Regex("[^A-Za-z0-9._\\-\\u4e00-\\u9fa5]"), "_")
+        val mime = call.getString("mimeType") ?: when (name.substringAfterLast('.', "").lowercase()) {
+            "ics" -> "text/calendar"
+            "json" -> "application/json"
+            else -> "application/octet-stream"
+        }
 
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 val values = ContentValues().apply {
                     put(MediaStore.MediaColumns.DISPLAY_NAME, name)
-                    put(MediaStore.MediaColumns.MIME_TYPE, "application/json")
+                    put(MediaStore.MediaColumns.MIME_TYPE, mime)
                     put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/StudyOS")
                     put(MediaStore.MediaColumns.IS_PENDING, 1)
                 }
