@@ -62,26 +62,64 @@
       from { opacity: 0; transform: translateY(3px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type="number"] { -moz-appearance: textfield; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    @media (max-width: 639px) {
+      .snap-rail {
+        display: flex !important;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        gap: 0.75rem;
+        padding-inline: 6%;
+        padding-bottom: 0.35rem;
+        margin-inline: -1.25rem;
+      }
+      .snap-card-82 { flex: 0 0 82%; scroll-snap-align: center; }
+      .snap-card-84 { flex: 0 0 84%; scroll-snap-align: center; }
+      .snap-card-88 { flex: 0 0 88%; scroll-snap-align: center; }
+    }
+    .week-3d-scroll {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+    .week-3d-col {
+      flex: 0 0 calc((100% - 42px) / 3);
+      scroll-snap-align: center;
+    }
+    .week-3d-pad {
+      flex: 0 0 calc((100% - 42px) / 3);
+    }
+    .week-sticky-gutter {
+      position: sticky;
+      left: 0;
+      z-index: 15;
+      background: var(--surf);
+    }
   </style>
   <meta name="theme-color" content="#F7F6F3">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Study OS">
+  <meta name="apple-mobile-web-app-title" content="日迹">
   <link rel="manifest" href="./manifest.json">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="./icon-192.png">
 </head>
-<body class="min-h-screen pb-24">
+<body class="min-h-screen pb-24 lg:pb-10 lg:pl-48">
 
   <!-- Quiet Top Bar -->
   <header class="sticky top-0 z-20 backdrop-blur border-b" style="background: color-mix(in srgb, var(--bg) 90%, transparent); border-color: var(--line);">
-    <div class="max-w-2xl mx-auto px-5 h-14 flex items-center justify-between gap-2">
-      <div class="flex items-baseline gap-2 min-w-0">
-        <span id="top-date-title" class="text-base font-bold txt-main truncate">11月28日</span>
-        <span id="top-day-sub" class="text-xs txt-soft truncate">第 1 周 · 周六 · 十月十九</span>
+    <div class="max-w-2xl lg:max-w-5xl mx-auto px-4 sm:px-5 py-2 min-h-[54px] flex items-center justify-between gap-2">
+      <div class="flex flex-col sm:flex-row sm:items-baseline sm:gap-2 min-w-0">
+        <span id="top-date-title" class="text-[15px] sm:text-base font-bold txt-main leading-tight shrink-0">11月28日</span>
+        <span id="top-day-sub" class="text-[11px] sm:text-xs txt-soft truncate leading-tight">第 1 周 · 周六 · 十月十九</span>
       </div>
-      <div class="flex items-center gap-1 shrink-0">
-        <button type="button" id="btn-open-focus" class="px-2.5 py-1 rounded-full surf border text-xs txt-main flex items-center gap-1.5 transition">
+      <div class="flex items-center gap-0.5 sm:gap-1 shrink-0">
+        <button type="button" id="btn-open-focus" class="px-2 sm:px-2.5 py-1 rounded-full surf border text-[11px] sm:text-xs txt-main flex items-center gap-1 transition">
           <span id="top-focus-dot" class="w-1.5 h-1.5 rounded-full bg-stone-400"></span>
           <span id="top-focus-label" class="num-tab">专注</span>
         </button>
@@ -100,7 +138,7 @@
   </header>
 
   <!-- Main Flow -->
-  <main class="max-w-2xl mx-auto px-5 pt-5">
+  <main class="max-w-2xl lg:max-w-5xl mx-auto px-5 pt-5">
 
     <!-- ==================== TAB 1: 今天 ==================== -->
     <section id="view-today" class="tab-view space-y-6 fade-in">
@@ -125,12 +163,21 @@
         </div>
       </div>
 
-      <!-- Light Habits + English Hub Link -->
-      <div class="flex items-center gap-2.5 flex-wrap">
+      <!-- Light Habits + Same-Origin English Hub Link -->
+      <div class="flex items-center gap-2 flex-wrap">
         <button type="button" id="habit-vocab" class="flex items-center gap-2 px-3.5 py-2 rounded-full text-xs border transition"></button>
-        <a href="https://faust275.github.io/math-course-hub/english.html" target="_blank" rel="noopener noreferrer" class="text-xs txt-soft hover:underline px-1">英语课文与听写 ↗</a>
+        <a id="hub-eng-link" href="https://faust275.github.io/math-course-hub/english-quiz.html#wrong" target="_blank" rel="noopener noreferrer" class="text-xs txt-soft hover:underline px-1">英语听写与错词 ↗</a>
         <div class="flex-1"></div>
         <button type="button" id="habit-sleep" class="flex items-center gap-2 px-3.5 py-2 rounded-full text-xs border transition"></button>
+      </div>
+
+      <!-- Same-origin Math-Course-Hub Doubtful Examples Queue -->
+      <div id="hub-mastery-box" class="hidden surf rounded-2xl border p-3.5 space-y-2">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-medium txt-main">知识库存疑例题（同源自动同步）</span>
+          <span id="hub-mastery-cnt" class="text-[11px] txt-faint num-tab"></span>
+        </div>
+        <div id="hub-mastery-list" class="flex flex-wrap gap-1.5"></div>
       </div>
 
       <!-- Near Due List -->
@@ -197,14 +244,16 @@
             </div>
             <button type="button" id="btn-week-next" class="w-7 h-7 rounded-full hover:opacity-75 txt-soft flex items-center justify-center text-sm">›</button>
           </div>
-          <div class="flex items-center gap-2.5 text-[11px] txt-soft">
-            <span class="flex items-center gap-1"><i class="w-2 h-2 rounded-full bg-[#D95338] inline-block"></i>过时未做</span>
-            <span class="flex items-center gap-1"><i class="w-2 h-2 rounded-full bg-stone-400 inline-block"></i>已完成</span>
+          <div class="flex items-center gap-2 text-[11px] txt-soft">
+            <button type="button" id="btn-toggle-week-mode" class="sm:hidden px-2.5 py-1 rounded-full surf-2 border txt-main text-[11px]" style="border-color:var(--line)">切7日缩略</button>
+            <button type="button" id="btn-center-today-axis" class="sm:hidden px-2 py-1 rounded-full surf-2 txt-soft text-[11px]">回今日</button>
+            <span class="hidden sm:flex items-center gap-1"><i class="w-2 h-2 rounded-full bg-[#D95338] inline-block"></i>过时未做</span>
+            <span class="hidden sm:flex items-center gap-1"><i class="w-2 h-2 rounded-full bg-stone-400 inline-block"></i>已完成</span>
           </div>
         </div>
 
-        <div class="surf rounded-2xl border p-3 overflow-x-auto">
-          <div id="week-axis-wrap" class="min-w-[700px]"></div>
+        <div class="surf rounded-2xl border p-2.5 sm:p-3 overflow-hidden">
+          <div id="week-axis-wrap"></div>
         </div>
 
         <div id="week-block-detail" class="hidden surf rounded-2xl border p-3.5 flex flex-wrap items-center justify-between gap-2 text-xs fade-in">
@@ -232,6 +281,7 @@
               <button type="button" data-cal-m="11" class="cal-m-btn px-2.5 py-1 rounded-full surf-2 txt-main font-medium">11月</button>
               <button type="button" data-cal-m="12" class="cal-m-btn px-2.5 py-1 rounded-full txt-soft">12月</button>
               <button type="button" data-cal-m="1" class="cal-m-btn px-2.5 py-1 rounded-full txt-soft">1月</button>
+              <button type="button" data-cal-m="2" class="cal-m-btn px-2.5 py-1 rounded-full txt-soft">2月</button>
             </div>
           </div>
           <div class="grid grid-cols-7 text-center text-[11px] txt-faint py-1 border-b" style="border-color:var(--line)">
@@ -260,14 +310,14 @@
           <div class="text-xs font-semibold txt-main">近期关键倒数</div>
           <div class="grid grid-cols-3 gap-2 text-center text-xs">
             <div class="p-2.5 rounded-xl surf-2">
-              <div class="text-[11px] txt-faint">冬学期期末周</div>
-              <div class="text-sm font-bold num-tab txt-main mt-0.5">25 天后</div>
-              <div class="text-[10px] txt-faint">12月23日</div>
+              <div class="text-[11px] txt-faint">全校停课考试</div>
+              <div class="text-sm font-bold num-tab txt-main mt-0.5">39 天后</div>
+              <div class="text-[10px] txt-faint">1月6日</div>
             </div>
             <div class="p-2.5 rounded-xl surf-2">
-              <div class="text-[11px] txt-faint">C 程结课/放寒假</div>
-              <div class="text-sm font-bold num-tab txt-main mt-0.5">46 天后</div>
-              <div class="text-[10px] txt-faint">1月13日</div>
+              <div class="text-[11px] txt-faint">寒假开始</div>
+              <div class="text-sm font-bold num-tab txt-main mt-0.5">49 天后</div>
+              <div class="text-[10px] txt-faint">1月16日</div>
             </div>
             <div class="p-2.5 rounded-xl surf-2">
               <div class="text-[11px] txt-faint">春节休整周</div>
@@ -284,7 +334,8 @@
           <input id="nlp-task-input" type="text" placeholder="记一条待办，如：分析作业 / 周日午 / 周日晚 #重要" class="flex-1 text-xs bg-transparent px-1 py-1 focus:outline-none">
           <button type="button" id="btn-add-nlp" class="px-3 py-1 rounded-full text-xs shrink-0" style="background:var(--ink);color:var(--bg)">记下</button>
         </div>
-        <div id="quadrant-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+        <div class="text-[11px] txt-faint sm:hidden px-1">左右滑动切换象限 · 点任务右侧「+子项」随时拆分子任务</div>
+        <div id="quadrant-grid" class="snap-rail no-scrollbar sm:grid sm:grid-cols-2 sm:gap-3"></div>
       </div>
 
       <!-- Sub 4: Diary, Counterexamples & Inspiration -->
@@ -340,7 +391,33 @@
         </div>
       </div>
 
+      <!-- Pluggable Self-Study Tracks (Short-term sprints decoupled from Evergreen Base) -->
       <div class="space-y-3">
+        <div class="surf rounded-2xl border p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <div class="text-xs font-semibold txt-main">自学专题（可新建 / 归档 / 导入，不绑死底座）</div>
+              <div id="track-meta-sub" class="text-[11px] txt-faint mt-0.5">当前激活：4 个月数分上下册 + 101 代数补基</div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button type="button" id="btn-archive-track" class="px-2.5 py-1 rounded-full surf-2 text-[11px] txt-soft whitespace-nowrap shrink-0">归档此专题</button>
+              <button type="button" id="btn-toggle-new-track" class="px-3 py-1 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0" style="background:var(--ink);color:var(--bg)">+ 新建专题</button>
+            </div>
+          </div>
+          <div id="tracks-strip" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5"></div>
+          <div id="new-track-box" class="hidden pt-2.5 border-t space-y-2.5 text-xs" style="border-color:var(--line)">
+            <div class="flex flex-wrap gap-2">
+              <input id="nt-title" type="text" placeholder="新专题名（如：CS:APP / 抽代与实变）" class="flex-1 min-w-[160px] px-2.5 py-1.5 rounded-lg surf-2 border focus:outline-none" style="border-color:var(--line)">
+              <input id="nt-dates" type="text" placeholder="周期（如：04.01–06.30）" class="w-36 shrink-0 px-2.5 py-1.5 rounded-lg surf-2 border num-tab focus:outline-none" style="border-color:var(--line)">
+            </div>
+            <textarea id="nt-items" rows="3" placeholder="每行一个里程碑（支持：标题 | 可选外链），或直接粘贴专题 JSON" class="w-full px-2.5 py-1.5 rounded-lg surf-2 border focus:outline-none text-xs" style="border-color:var(--line)"></textarea>
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[11px] txt-faint">新建后自动挂入上方 OKR 进度条</span>
+              <button type="button" id="btn-save-new-track" class="px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap shrink-0" style="background:var(--ink);color:var(--bg)">创建并启用</button>
+            </div>
+          </div>
+        </div>
+
         <div class="flex items-center gap-1.5 overflow-x-auto pb-1" id="phase-strip">
           <button type="button" data-phase="all" class="phase-pill px-3 py-1 rounded-full text-xs shrink-0" style="background:var(--ink);color:var(--bg)">全部</button>
           <button type="button" data-phase="winter" class="phase-pill px-3 py-1 rounded-full text-xs surf border txt-soft shrink-0">冬学期</button>
@@ -348,7 +425,8 @@
           <button type="button" data-phase="break" class="phase-pill px-3 py-1 rounded-full text-xs surf border txt-soft shrink-0">寒假</button>
           <button type="button" data-phase="spring" class="phase-pill px-3 py-1 rounded-full text-xs surf border txt-soft shrink-0">春学期</button>
         </div>
-        <div id="chapters-list" class="space-y-3"></div>
+        <div class="text-[11px] txt-faint sm:hidden px-1">左右滑动浏览专题路线 · 默认居中当前进度</div>
+        <div id="chapters-list" class="snap-rail no-scrollbar sm:grid sm:grid-cols-2 sm:gap-3"></div>
       </div>
     </section>
 
@@ -409,7 +487,9 @@
             <div class="text-xs font-semibold txt-main">今日昼夜警觉度与精力曲线</div>
             <div id="sl-coffee-win" class="text-[11px] txt-faint mt-0.5">上午高峰 ~10:30 · 午后小谷 ~15:00 · 咖啡建议窗 08:50–18:00</div>
           </div>
-          <svg id="sl-alertness-svg" viewBox="0 0 560 150" class="w-full h-auto" role="img" aria-label="今日昼夜警觉度曲线"></svg>
+          <div id="sl-alertness-scroll" class="overflow-x-auto no-scrollbar pb-1">
+            <svg id="sl-alertness-svg" viewBox="0 0 560 150" class="w-[620px] sm:w-full h-auto" role="img" aria-label="今日昼夜警觉度曲线"></svg>
+          </div>
         </div>
 
         <div class="surf rounded-2xl border p-4 space-y-3">
@@ -420,33 +500,77 @@
           <div id="health-10d-grid" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 border-t text-xs" style="border-color:var(--line)"></div>
         </div>
 
-        <div class="surf rounded-2xl border p-4 space-y-2.5">
-          <div class="flex items-center justify-between text-xs">
-            <span class="font-medium txt-main">补录或调整昨夜睡眠（低于 6.5h 将在首页轻提示）</span>
+        <div class="surf rounded-2xl border p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+            <span class="font-medium txt-main">更新健康数据（Health Connect / 小米 CSV / 速记）</span>
+            <div class="flex items-center gap-1.5">
+              <button type="button" id="btn-hc-sync" class="px-3 py-1 rounded-full text-[11px] font-medium border transition" style="background:var(--ink);color:var(--bg)">同步 Health Connect</button>
+              <label for="xiaomi-csv-file" class="cursor-pointer px-3 py-1 rounded-full text-[11px] surf-2 border txt-main hover:opacity-80" style="border-color:var(--line)">导入小米 CSV</label>
+              <input id="xiaomi-csv-file" type="file" accept=".csv,.txt" class="hidden">
+            </div>
           </div>
+          <div id="hc-status-line" class="text-[11px] txt-faint leading-relaxed">当前在浏览器/PWA 模式：支持直接导入小米运动健康 GDPR / Zepp CSV 或下方手动速记；打包安卓 APK 后可一键直连 Health Connect。</div>
           <div class="flex flex-wrap gap-2">
-            <input id="sl-nlp-input" type="text" value="23:54-07:20 深睡108 浅睡236 REM90 清醒12" class="flex-1 min-w-[200px] text-xs surf-2 border rounded-lg px-3 py-1.5 num-tab focus:outline-none" style="border-color:var(--line)">
+            <input id="sl-nlp-input" type="text" value="23:54-07:20 深睡108 浅睡236 REM90 清醒12 步数6840 消耗245" class="flex-1 min-w-[200px] text-xs surf-2 border rounded-lg px-3 py-1.5 num-tab focus:outline-none" style="border-color:var(--line)">
             <button type="button" id="btn-parse-sleep" class="px-3.5 py-1.5 rounded-lg text-xs shrink-0" style="background:var(--ink);color:var(--bg)">更新推算</button>
           </div>
         </div>
       </div>
 
-      <!-- Life Sub 2: Multi-Component Grades + Attendance Coupling + What-If Calculator -->
+      <!-- Life Sub 2: Multi-Semester Grades + Mixed Scales (GPA / Level / Pass) + Nested Tree -->
       <div id="life-sub-grades" class="life-sub-panel hidden space-y-4">
-        <div class="surf rounded-2xl border p-4 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <div class="text-xs txt-faint">冬学期加权均绩（实时联动 OKR）</div>
-            <div class="flex items-baseline gap-2.5 mt-0.5">
-              <span id="gpa-val" class="text-2xl font-bold num-tab txt-main">4.42</span>
-              <span id="avg-score-val" class="text-xs num-tab txt-soft">加权均分 89.6</span>
+        <div class="surf rounded-2xl border p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b" style="border-color:var(--line)">
+            <div class="flex flex-wrap items-center gap-1.5">
+              <select id="sem-select" class="text-xs font-medium surf-2 border rounded-full px-3 py-1 txt-main" style="border-color:var(--line)"></select>
+              <button type="button" id="btn-toggle-gpa-scope" class="px-2.5 py-1 rounded-full text-[11px] border surf txt-soft whitespace-nowrap shrink-0">口径：仅本学期</button>
+              <button type="button" id="btn-add-semester" class="px-2.5 py-1 rounded-full text-[11px] surf-2 txt-main whitespace-nowrap shrink-0">+ 新学期</button>
+            </div>
+            <div class="flex flex-wrap items-center gap-1.5">
+              <select id="gpa-preset-sel" class="text-xs surf-2 border rounded-full px-2.5 py-1 txt-main" style="border-color:var(--line)">
+                <option value="zju5">浙大 5.0 制</option>
+                <option value="std4">标准 4.0 制</option>
+                <option value="std5">分段 5.0 制</option>
+                <option value="lin4">线性 4.0 制</option>
+              </select>
+              <button type="button" id="btn-add-course-grade" class="px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap shrink-0" style="background:var(--ink);color:var(--bg)">+ 课程</button>
             </div>
           </div>
-          <button type="button" id="btn-toggle-att-grade" class="px-3 py-1.5 rounded-full text-xs border transition surf txt-soft">
-            平时分联动考勤/作业：关
-          </button>
+
+          <div id="add-sem-box" class="hidden pb-2.5 border-b flex flex-wrap items-center gap-2 text-xs" style="border-color:var(--line)">
+            <input id="new-sem-name" type="text" placeholder="新学期名（如：2026–27 春学期）" class="flex-1 min-w-[150px] px-2.5 py-1.5 rounded-lg surf-2 border focus:outline-none" style="border-color:var(--line)">
+            <button type="button" id="btn-save-new-sem" class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap shrink-0" style="background:var(--ink);color:var(--bg)">建立并切换</button>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div class="text-xs txt-faint"><span id="gpa-scope-lbl">本学期加权均绩</span>（联动 OKR · 已修学分 <span id="gpa-credits-val" class="num-tab">26</span>）</div>
+              <div class="flex items-baseline gap-2.5 mt-0.5">
+                <span id="gpa-val" class="text-2xl font-bold num-tab txt-main">4.42</span>
+                <span id="avg-score-val" class="text-xs num-tab txt-soft">加权均分 89.6</span>
+              </div>
+            </div>
+            <button type="button" id="btn-toggle-att-grade" class="px-3 py-1.5 rounded-full text-xs border transition surf txt-soft whitespace-nowrap shrink-0">
+              考勤/作业自动分：关
+            </button>
+          </div>
+
+          <div id="add-grade-box" class="hidden pt-2 border-t flex flex-wrap items-center gap-2 text-xs" style="border-color:var(--line)">
+            <input id="new-g-name" type="text" placeholder="课程名（如：大学物理）" class="flex-1 min-w-[130px] px-2.5 py-1.5 rounded-lg surf-2 border focus:outline-none" style="border-color:var(--line)">
+            <input id="new-g-credit" type="number" step="0.5" min="0.5" max="10" value="3" class="w-16 shrink-0 px-2 py-1.5 rounded-lg surf-2 border num-tab focus:outline-none" style="border-color:var(--line)" placeholder="学分">
+            <select id="new-g-scale" class="px-2.5 py-1.5 rounded-lg surf-2 border txt-main" style="border-color:var(--line)">
+              <option value="percent">百分制</option>
+              <option value="level">等级制(A-F)</option>
+              <option value="pass">通过制(P/NP)</option>
+            </select>
+            <button type="button" id="btn-save-new-grade" class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap shrink-0" style="background:var(--ink);color:var(--bg)">添加</button>
+          </div>
+
+          <div id="grade-filter-strip" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-1 text-[11px]"></div>
         </div>
 
-        <div id="grades-list" class="space-y-3"></div>
+        <div class="text-[11px] txt-faint px-1">默认折叠以容纳整学期多门课 · 点任一课程「展开构成」细调权重与试算</div>
+        <div id="grades-list" class="space-y-2.5 sm:grid sm:grid-cols-1 xl:grid-cols-2 sm:gap-3 sm:space-y-0"></div>
       </div>
 
       <!-- Life Sub 3: Ledger with Categories -->
@@ -482,10 +606,10 @@
             <span class="text-xs font-medium txt-main">今日饮食</span>
             <span id="diet-kcal-total" class="text-xs num-tab txt-soft">0 / 2100 kcal</span>
           </div>
-          <div class="flex gap-2">
-            <input id="diet-name" type="text" placeholder="吃了什么，如：鸡腿饭" class="flex-1 text-xs surf-2 border rounded-lg px-2.5 py-1.5 focus:outline-none" style="border-color:var(--line)">
-            <input id="diet-kcal" type="number" placeholder="千卡" class="w-20 text-xs surf-2 border rounded-lg px-2.5 py-1.5 num-tab focus:outline-none" style="border-color:var(--line)">
-            <button type="button" id="btn-add-diet" class="px-3 py-1.5 rounded-lg text-xs shrink-0" style="background:var(--ink);color:var(--bg)">记录</button>
+          <div class="flex flex-wrap gap-2">
+            <input id="diet-name" type="text" placeholder="吃了什么，如：鸡腿饭" class="flex-1 min-w-[130px] text-xs surf-2 border rounded-lg px-2.5 py-1.5 focus:outline-none" style="border-color:var(--line)">
+            <input id="diet-kcal" type="number" placeholder="千卡" class="w-20 shrink-0 text-xs surf-2 border rounded-lg px-2.5 py-1.5 num-tab focus:outline-none" style="border-color:var(--line)">
+            <button type="button" id="btn-add-diet" class="px-3 py-1.5 rounded-lg text-xs shrink-0 whitespace-nowrap" style="background:var(--ink);color:var(--bg)">记录</button>
           </div>
           <div id="diet-list" class="divide-y" style="border-color:var(--line)"></div>
         </div>
@@ -505,24 +629,28 @@
 
   </main>
 
-  <!-- Quiet Bottom Navigation (4 Tabs) -->
-  <nav class="fixed bottom-0 inset-x-0 z-20 surf border-t backdrop-blur" aria-label="底部导航">
-    <div class="max-w-2xl mx-auto px-4 h-16 grid grid-cols-4 items-center">
-      <button type="button" data-tab="today" class="nav-btn flex flex-col items-center justify-center gap-1 text-xs txt-faint nav-item-active">
+  <!-- Responsive Navigation: Bottom 4-Tab Bar on Phone/Tablet, Fixed Left Sidebar on Desktop -->
+  <nav class="fixed bottom-0 inset-x-0 lg:inset-y-0 lg:right-auto lg:w-48 z-20 surf border-t lg:border-t-0 lg:border-r backdrop-blur" aria-label="主导航">
+    <div class="hidden lg:flex flex-col px-5 pt-6 pb-4 border-b" style="border-color:var(--line)">
+      <div class="text-base font-bold txt-main">日迹</div>
+      <div class="text-[11px] txt-faint mt-0.5">26–27 冬学期日程</div>
+    </div>
+    <div class="max-w-2xl mx-auto px-4 h-16 grid grid-cols-4 items-center lg:h-auto lg:flex lg:flex-col lg:items-stretch lg:gap-1.5 lg:p-3">
+      <button type="button" data-tab="today" class="nav-btn flex flex-col lg:flex-row lg:justify-between items-center justify-center gap-1 lg:px-3.5 lg:py-2.5 lg:rounded-xl text-xs lg:text-sm txt-faint nav-item-active">
         <span>今天</span>
-        <span class="nav-dot w-1 h-1 rounded-full opacity-0 transition" style="background:var(--ink)"></span>
+        <span class="nav-dot w-1 h-1 lg:w-1.5 lg:h-1.5 rounded-full opacity-0 transition" style="background:var(--ink)"></span>
       </button>
-      <button type="button" data-tab="list" class="nav-btn flex flex-col items-center justify-center gap-1 text-xs txt-faint">
+      <button type="button" data-tab="list" class="nav-btn flex flex-col lg:flex-row lg:justify-between items-center justify-center gap-1 lg:px-3.5 lg:py-2.5 lg:rounded-xl text-xs lg:text-sm txt-faint">
         <span>清单</span>
-        <span class="nav-dot w-1 h-1 rounded-full opacity-0 transition" style="background:var(--ink)"></span>
+        <span class="nav-dot w-1 h-1 lg:w-1.5 lg:h-1.5 rounded-full opacity-0 transition" style="background:var(--ink)"></span>
       </button>
-      <button type="button" data-tab="progress" class="nav-btn flex flex-col items-center justify-center gap-1 text-xs txt-faint">
+      <button type="button" data-tab="progress" class="nav-btn flex flex-col lg:flex-row lg:justify-between items-center justify-center gap-1 lg:px-3.5 lg:py-2.5 lg:rounded-xl text-xs lg:text-sm txt-faint">
         <span>进度</span>
-        <span class="nav-dot w-1 h-1 rounded-full opacity-0 transition" style="background:var(--ink)"></span>
+        <span class="nav-dot w-1 h-1 lg:w-1.5 lg:h-1.5 rounded-full opacity-0 transition" style="background:var(--ink)"></span>
       </button>
-      <button type="button" data-tab="life" class="nav-btn flex flex-col items-center justify-center gap-1 text-xs txt-faint">
+      <button type="button" data-tab="life" class="nav-btn flex flex-col lg:flex-row lg:justify-between items-center justify-center gap-1 lg:px-3.5 lg:py-2.5 lg:rounded-xl text-xs lg:text-sm txt-faint">
         <span>生活</span>
-        <span class="nav-dot w-1 h-1 rounded-full opacity-0 transition" style="background:var(--ink)"></span>
+        <span class="nav-dot w-1 h-1 lg:w-1.5 lg:h-1.5 rounded-full opacity-0 transition" style="background:var(--ink)"></span>
       </button>
     </div>
   </nav>
@@ -582,7 +710,7 @@
         <div class="p-3.5 rounded-xl surf-2 space-y-2">
           <div class="flex items-center justify-between">
             <span class="font-medium txt-main">日历与小米手环提醒</span>
-            <button type="button" id="btn-export-ics" class="px-3 py-1 rounded-full text-xs" style="background:var(--ink);color:var(--bg)">导出 .ics</button>
+            <div class="flex items-center gap-1.5"><button type="button" id="btn-native-notify" class="px-2.5 py-1 rounded-full surf border txt-main text-xs whitespace-nowrap">安卓提醒</button><button type="button" id="btn-export-ics" class="px-3 py-1 rounded-full text-xs whitespace-nowrap" style="background:var(--ink);color:var(--bg)">导出 .ics</button></div>
           </div>
           <p class="leading-relaxed">11 月 28 日（周六）正式启动；上课、作业、周日家教与 23:30 收尾设为震动提醒。</p>
         </div>
@@ -616,9 +744,9 @@
       'use strict';
 
       var HUB = 'https://faust275.github.io/math-course-hub/';
-      var KEY = 'riji_study_v7';
+      var KEY = 'riji_study_v9';
 
-      // Plan officially starts Saturday, 2026-11-28 (dayIdx=5 in W1)
+      // Plan officially starts Saturday, 2026-11-28 (aligned to official ZJU 2026-2027 academic calendar)
       var NOW_WEEK_IDX = 0;
       var NOW_DAY_IDX = 5;
       var NOW_MIN = 8 * 60 + 20;
@@ -637,16 +765,17 @@
         { id: 'w2', label: '第 2 周', dates: '12.05–12.11', phase: 'winter', anaShort: '南开 ch06–07 积分', ana: '南开 ch06–07 积分与可积性 · 陶 ch11', anaUrl: 'textbook-analysis-lichengzhang-ch07.html', algShort: '101 ch05 基与维数', alg: '101 ch05 线性空间的基和维数', algUrl: 'textbook-algebra-101-ch05.html', cShort: 'C程 · 字符串与递归' },
         { id: 'w3', label: '第 3 周', dates: '12.12–12.18', phase: 'winter', anaShort: '南开 ch08/10 广义积分', ana: '南开 ch08 积分应用 · ch10 广义积分', anaUrl: 'textbook-analysis-lichengzhang-ch10.html', algShort: '101 ch06 方程组与秩', alg: '101 ch06 线性方程组与矩阵的秩', algUrl: 'textbook-algebra-101-ch06.html', cShort: 'C程 · 结构体与文件' },
         { id: 'w4', label: '第 4 周', dates: '12.19–12.25', phase: 'winter', anaShort: '南开 ch09 数项级数', ana: '南开 ch09 数项级数 · 陶 ch07', anaUrl: 'textbook-analysis-lichengzhang-ch09.html', algShort: '101 ch07 行列式', alg: '101 ch07 矩阵与行列式', algUrl: 'textbook-algebra-101-ch07.html', cShort: 'C程 · 机考模拟卷' },
-        { id: 'w5', label: '考试周', dates: '12.26–01.12', phase: 'exam', anaShort: '分析I 期末复习', ana: '冬学期期末复习（南开 ch01–09）', anaUrl: 'course-analysis.html', algShort: '代数I 期末复习', alg: '代数学I期末复习 · C程结课', algUrl: 'course-algebra.html', cShort: 'C程期末冲刺' },
-        { id: 'w8', label: '寒假 1', dates: '01.13–01.19', phase: 'break', anaShort: '南开 ch11 一致收敛', ana: '南开 ch11 一致收敛 · 陶 ch14', anaUrl: 'textbook-analysis-lichengzhang-ch11.html', algShort: '101 ch08 线性变换', alg: '101 ch08 线性映射与线性变换', algUrl: 'textbook-algebra-101-ch08.html', cShort: '已结课' },
-        { id: 'w9', label: '寒假 2', dates: '01.20–01.26', phase: 'break', anaShort: '幂级数与 Fourier', ana: '幂级数与 Fourier 级数 · 陶 ch15–16', anaUrl: 'textbook-analysis-taozhexuan-ch16.html', algShort: '101 ch09 特征理论', alg: '101 ch09 特征值与对角化', algUrl: 'textbook-algebra-101-ch09.html', cShort: '已结课' },
-        { id: 'w11', label: '寒假 3', dates: '01.27–02.02', phase: 'break', anaShort: '多元拓扑与多元微分', ana: '多元拓扑与多元微分 · 陶 ch12–13, 17', anaUrl: 'textbook-analysis-taozhexuan-ch17.html', algShort: '二次型与欧氏空间', alg: '二次型、欧氏空间与谱定理', algUrl: 'course-algebra.html', cShort: '已结课' },
-        { id: 'w10', label: '春节', dates: '02.03–02.09', phase: 'break', rest: true, anaShort: '春节全休', ana: '春节前后七天休息，不排计划', algShort: '全休', alg: '彻底休息', cShort: '' },
-        { id: 'w12', label: '寒假 4', dates: '02.10–02.16', phase: 'break', anaShort: '隐函数与含参积分', ana: '隐函数、反函数与含参变量积分', anaUrl: 'textbook-analysis-taozhexuan-ch17.html', algShort: 'Jordan 形与 SVD', alg: 'Jordan 标准形、酉空间与 SVD', algUrl: 'course-algebra.html', cShort: '已结课' },
-        { id: 'w13', label: '春学期 1', dates: '02.17–02.23', phase: 'spring', anaShort: '二重与三重积分', ana: '二重与三重积分、变量替换', anaUrl: 'course-analysis.html', algShort: '群论入门', alg: '群论入门或高代专题深化', algUrl: 'course-algebra.html', cShort: '' },
-        { id: 'w14', label: '春学期 2', dates: '02.24–03.02', phase: 'spring', anaShort: '曲线与曲面积分', ana: '第一、二型曲线与曲面积分', anaUrl: 'course-analysis.html', algShort: '群同态与同构', alg: '群同态与同构定理', algUrl: 'course-algebra.html', cShort: '' },
-        { id: 'w15', label: '春学期 3', dates: '03.03–03.09', phase: 'spring', anaShort: '三大积分定理', ana: 'Green、Gauss 与 Stokes 定理', anaUrl: 'course-analysis.html', algShort: '环与理想基础', alg: '环与理想基础', algUrl: 'course-algebra.html', cShort: '' },
-        { id: 'w16', label: '收尾周', dates: '03.10–03.25', phase: 'spring', anaShort: '全书定理总复盘', ana: '全书核心定理复盘与查漏', anaUrl: 'course-analysis.html', algShort: '高代综合复盘', alg: '高代综合复盘与反例归档', algUrl: 'course-algebra.html', cShort: '' }
+        { id: 'w5', label: '冬末调课', dates: '12.26–01.05', phase: 'winter', zjuSwap: true, anaShort: '分析I 结课与总复习', ana: '12/31学生节停课 · 1/4周一补周四课 · 1/1元旦休', anaUrl: 'course-analysis.html', algShort: '代数I 结课复习', alg: '101 ch04–07 串联与作业查漏', algUrl: 'course-algebra.html', cShort: 'C程机考冲刺' },
+        { id: 'w6', label: '考试周', dates: '01.06–01.15', phase: 'exam', anaShort: '全校停课考试', ana: '1/6–1/15 浙大全校停课考试（分析I/代数I/几何/C程）', anaUrl: 'course-analysis.html', algShort: '代数I / C程考试', alg: '考完 C 程即退出后续日程', algUrl: 'course-algebra.html', cShort: 'C程期末结课' },
+        { id: 'w8', label: '寒假 1', dates: '01.16–01.22', phase: 'break', anaShort: '南开 ch11 一致收敛', ana: '南开 ch11 函数项级数与一致收敛 · 陶 ch14', anaUrl: 'textbook-analysis-lichengzhang-ch11.html', algShort: '101 ch08 线性变换', alg: '101 ch08 线性映射与线性变换', algUrl: 'textbook-algebra-101-ch08.html', cShort: '已结课' },
+        { id: 'w9', label: '寒假 2', dates: '01.23–01.29', phase: 'break', anaShort: '幂级数与 Fourier', ana: '幂级数与 Fourier 级数 · 陶 ch15–16', anaUrl: 'textbook-analysis-taozhexuan-ch16.html', algShort: '101 ch09 特征理论', alg: '101 ch09 特征值与对角化', algUrl: 'textbook-algebra-101-ch09.html', cShort: '已结课' },
+        { id: 'w11', label: '寒假 3', dates: '01.30–02.02', phase: 'break', anaShort: '多元拓扑与多元微分', ana: '多元拓扑与多元微分 · 陶 ch12–13, 17', anaUrl: 'textbook-analysis-taozhexuan-ch17.html', algShort: '二次型与欧氏空间', alg: '二次型、欧氏空间与谱定理', algUrl: 'course-algebra.html', cShort: '已结课' },
+        { id: 'w10', label: '春节', dates: '02.03–02.09', phase: 'break', rest: true, anaShort: '春节全休（2/6春节）', ana: '2027-02-06 春节前后七天休息，不排计划', algShort: '全休', alg: '彻底休息', cShort: '' },
+        { id: 'w12', label: '寒假 4', dates: '02.10–02.21', phase: 'break', anaShort: '隐函数与含参积分', ana: '隐函数、反函数与含参积分（2/19报到注册）', anaUrl: 'textbook-analysis-taozhexuan-ch17.html', algShort: 'Jordan 形与 SVD', alg: 'Jordan 标准形、酉空间与 SVD', algUrl: 'course-algebra.html', cShort: '已结课' },
+        { id: 'w13', label: '春学期 1', dates: '02.22–02.28', phase: 'spring', anaShort: '二重与三重积分', ana: '2/22 浙大春学期正式开课 · 重积分与变量替换', anaUrl: 'course-analysis.html', algShort: '群论入门', alg: '群论入门或高代专题深化', algUrl: 'course-algebra.html', cShort: '' },
+        { id: 'w14', label: '春学期 2', dates: '03.01–03.07', phase: 'spring', anaShort: '曲线与曲面积分', ana: '第一、二型曲线与曲面积分', anaUrl: 'course-analysis.html', algShort: '群同态与同构', alg: '群同态与同构定理', algUrl: 'course-algebra.html', cShort: '' },
+        { id: 'w15', label: '春学期 3', dates: '03.08–03.14', phase: 'spring', anaShort: '三大积分定理', ana: 'Green、Gauss 与 Stokes 定理', anaUrl: 'course-analysis.html', algShort: '环与理想基础', alg: '环与理想基础', algUrl: 'course-algebra.html', cShort: '' },
+        { id: 'w16', label: '收尾周', dates: '03.15–03.25', phase: 'spring', anaShort: '全书定理总复盘', ana: '全书核心定理复盘与查漏', anaUrl: 'course-analysis.html', algShort: '高代综合复盘', alg: '高代综合复盘与反例归档', algUrl: 'course-algebra.html', cShort: '' }
       ];
 
       var DAY_META = [
@@ -663,7 +792,26 @@
         if (weekObj.rest) {
           return [
             { id: 'rest-' + dIdx, t: '10:00–12:00', title: '春节休整 · 自由安排', type: 'rest' },
-            { id: 'rest-div-' + dIdx, divider: '春节前后七天不排学习任务' }
+            { id: 'rest-div-' + dIdx, divider: '春节前后七天不排学习任务（2027-02-06 春节）' }
+          ];
+        }
+        if (weekObj.zjuSwap && dIdx === 3) {
+          return [
+            { id: 'zju-fest-1', t: '09:00–11:30', title: '12/31 浙大学生节停课（周四课调至 1/4 周一）', type: 'rest', sub: '自由复习或参加学生节活动' },
+            { id: 'zju-fest-div', divider: '原周四分析学/代数学/C程实验已调至 2027-01-04（周一）' },
+            { id: 'zju-fest-2', t: '14:00–16:30', title: '弹性期末整理 · ' + weekObj.anaShort, type: 'study', hub: weekObj.anaUrl }
+          ];
+        }
+        if (weekObj.zjuSwap && dIdx === 0) {
+          return [
+            { id: 'zju-mk-1', t: '08:00–09:35', title: '【补12/31周四】程序设计基础实验（机房）', type: 'class', selfStudy: true, sub: '课内可自学：' + weekObj.anaShort, hub: weekObj.anaUrl },
+            { id: 'zju-mk-2', t: '10:00–12:25', title: '【补12/31周四】分析学 I（东1B）', type: 'class', hub: weekObj.anaUrl },
+            { id: 'zju-mk-div1', divider: '午饭与通勤 12:25–13:25' },
+            { id: 'zju-mk-3', t: '13:25–15:50', title: '【补12/31周四】代数学 I（东1A）', type: 'class', hub: weekObj.algUrl },
+            { id: 'zju-mk-4', t: '16:15–17:00', title: '【补12/31周四】身体素质（田径）', type: 'class' },
+            { id: 'zju-mk-5', t: '17:00–17:20', title: '校园跑步 20m', type: 'rest' },
+            { id: 'zju-mk-div2', divider: '晚饭 17:30–18:10' },
+            { id: 'zju-mk-6', t: '18:30–20:45', title: '期末总复习 · ' + weekObj.algShort, type: 'study', hub: weekObj.algUrl }
           ];
         }
         var isBreak = (weekObj.phase === 'break');
@@ -840,11 +988,83 @@
             { id: 'dt1', name: '早饭 · 豆浆包子', kcal: 420 },
             { id: 'dt2', name: '午饭 · 食堂套餐', kcal: 680 }
           ],
+          semesters: [
+            { id: '2026-winter', name: '2026–27 冬学期', startDate: '2026-11-09', weeks: 8 }
+          ],
+          activeSemId: '2026-winter',
+          gpaScope: 'current',
+          gradeFilter: 'all',
+          expandedGradeCards: { g1: true },
+          gpaPreset: 'zju5',
+          expandedGradeEdit: null,
+          weekAxisCompact: false,
+          openSubAdd: null,
+          activeTrackId: 't-math-17w',
+          tracks: [
+            { id: 't-math-17w', builtin: true, title: '数分上下册 + 101 代数', dates: '11.28–03.25', status: 'active', milestones: [] }
+          ],
           grades: [
-            { id: 'g1', name: '分析学 I', credit: 5, target: 90, parts: [{ n: '平时', w: 20, s: 94 }, { n: '期中', w: 30, s: 88 }, { n: '期末', w: 50, s: 92 }] },
-            { id: 'g2', name: '代数学 I', credit: 4.5, target: 88, parts: [{ n: '平时', w: 20, s: 90 }, { n: '期中', w: 30, s: 82 }, { n: '期末', w: 50, s: 88 }] },
-            { id: 'g3', name: '几何学', credit: 4, target: 90, parts: [{ n: '平时', w: 30, s: 92 }, { n: '期末', w: 70, s: 89 }] },
-            { id: 'g4', name: '程序设计基础', credit: 3.5, target: 88, parts: [{ n: '平时', w: 40, s: 95 }, { n: '期末', w: 60, s: 86 }] }
+            { id: 'g1', semId: '2026-winter', name: '分析学 I', credit: 5, scale: 'percent', level: 'A', passed: true, target: 90, hypo: '',
+              root: { id: 'r1', name: '总评', weight: 100, score: null, children: [
+                { id: 'r1p1', name: '平时', weight: 20, score: null, children: [
+                  { id: 'r1p1a', name: '考勤', weight: 40, score: 96, source: 'attendance', children: [] },
+                  { id: 'r1p1b', name: '作业', weight: 60, score: 92, children: [] }
+                ]},
+                { id: 'r1p2', name: '期中', weight: 30, score: 88, children: [] },
+                { id: 'r1p3', name: '期末', weight: 50, score: 92, children: [] }
+              ]}
+            },
+            { id: 'g2', semId: '2026-winter', name: '代数学 I', credit: 4.5, scale: 'percent', level: 'B', passed: true, target: 88, hypo: '',
+              root: { id: 'r2', name: '总评', weight: 100, score: null, children: [
+                { id: 'r2p1', name: '平时', weight: 20, score: 90, source: 'attendance', children: [] },
+                { id: 'r2p2', name: '期中', weight: 30, score: 82, children: [] },
+                { id: 'r2p3', name: '期末', weight: 50, score: 88, children: [] }
+              ]}
+            },
+            { id: 'g3', semId: '2026-winter', name: '几何学', credit: 4, scale: 'percent', level: 'A', passed: true, target: 90, hypo: '',
+              root: { id: 'r3', name: '总评', weight: 100, score: null, children: [
+                { id: 'r3p1', name: '平时', weight: 30, score: 92, source: 'attendance', children: [] },
+                { id: 'r3p2', name: '期末', weight: 70, score: 89, children: [] }
+              ]}
+            },
+            { id: 'g4', semId: '2026-winter', name: '程序设计基础与实验', credit: 3.5, scale: 'percent', level: 'B', passed: true, target: 88, hypo: '',
+              root: { id: 'r4', name: '总评', weight: 100, score: null, children: [
+                { id: 'r4p1', name: '平时与实验', weight: 40, score: 95, children: [] },
+                { id: 'r4p2', name: '期末机考', weight: 60, score: 86, children: [] }
+              ]}
+            },
+            { id: 'g5', semId: '2026-winter', name: '新工科大学英语', credit: 2, scale: 'percent', level: 'A', passed: true, target: 90, hypo: '',
+              root: { id: 'r5', name: '总评', weight: 100, score: null, children: [
+                { id: 'r5p1', name: '平时', weight: 50, score: 92, source: 'attendance', children: [] },
+                { id: 'r5p2', name: '期末', weight: 50, score: null, children: [] }
+              ]}
+            },
+            { id: 'g6', semId: '2026-winter', name: '百万立方未来世界', credit: 2, scale: 'percent', level: 'A', passed: true, target: 92, hypo: '',
+              root: { id: 'r6', name: '总评', weight: 100, score: null, children: [
+                { id: 'r6p1', name: '过程与展示', weight: 50, score: 94, children: [] },
+                { id: 'r6p2', name: '终期报告', weight: 50, score: null, children: [] }
+              ]}
+            },
+            { id: 'g7', semId: '2026-winter', name: '打开艺术之门', credit: 1.5, scale: 'pass', level: 'A', passed: true, target: 85, hypo: '',
+              root: { id: 'r7', name: '总评', weight: 100, score: null, children: [
+                { id: 'r7p1', name: '考勤与作业', weight: 100, score: null, source: 'attendance', children: [] }
+              ]}
+            },
+            { id: 'g8', semId: '2026-winter', name: '大学生思想文化素养', credit: 1, scale: 'pass', level: 'A', passed: true, target: 85, hypo: '',
+              root: { id: 'r8', name: '总评', weight: 100, score: null, children: [
+                { id: 'r8p1', name: '考核', weight: 100, score: null, children: [] }
+              ]}
+            },
+            { id: 'g9', semId: '2026-winter', name: '匹克球', credit: 1, scale: 'level', level: 'A', passed: true, target: 90, hypo: '',
+              root: { id: 'r9', name: '总评', weight: 100, score: null, children: [
+                { id: 'r9p1', name: '体测与技术', weight: 100, score: null, children: [] }
+              ]}
+            },
+            { id: 'g10', semId: '2026-winter', name: '身体素质', credit: 0.5, scale: 'pass', level: 'A', passed: true, target: 85, hypo: '',
+              root: { id: 'r10', name: '总评', weight: 100, score: null, children: [
+                { id: 'r10p1', name: '达标考核', weight: 100, score: null, children: [] }
+              ]}
+            }
           ],
           focusMins: 45,
           focusToday: 0,
@@ -864,9 +1084,58 @@
         }
       } catch (e) {}
 
-      function applyTheme() { document.documentElement.classList.toggle('dark', !!state.dark); }
+      function applyTheme() {
+        document.documentElement.classList.toggle('dark', !!state.dark);
+        try { window.localStorage.setItem('wb_theme', state.dark ? 'dark' : 'light'); } catch (e) {}
+      }
       applyTheme();
-      function save() { try { window.localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+      // === Native Android APK Bridges (Widget + HealthSyncWorker + Notify) ===
+      function pushAndroidWidgetSnapshot() {
+        try {
+          if (!(window.AndroidBridge && typeof window.AndroidBridge.pushSnapshot === 'function')) return;
+          var now = new Date();
+          var todayIso = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+          var items = getDayItems(state.weekIdx, state.dayIdx).filter(function (x) { return !x.divider; });
+          var courses = items.map(function (it) {
+            var rng = String(it.t || '').split('–');
+            return { name: it.title, start: rng[0] || '', end: rng[1] || '', location: it.sub || '' };
+          });
+          var todos = DUE_ITEMS.filter(function (d) { return !state.dueDone[d.id]; }).map(function (d) {
+            return { id: d.id, title: d.title, dueDate: d.dueText, done: false };
+          });
+          var r = state.sleepRec || {};
+          var snap = {
+            today: todayIso,
+            updatedAt: now.toISOString(),
+            courses: courses,
+            tasks: todos,
+            nextTodo: todos[0] || null,
+            sleep: { start: r.start || '23:54', end: r.end || '07:20', totalMinutes: (r.deep || 0) + (r.light || 0) + (r.rem || 0) }
+          };
+          window.AndroidBridge.pushSnapshot(JSON.stringify(snap));
+        } catch (e) {}
+      }
+
+      window.HealthConnect = {
+        autoSync: function () {
+          var btn = document.getElementById('btn-hc-sync');
+          if (btn && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.HealthConnect) {
+            btn.click();
+          }
+          return Promise.resolve(true);
+        },
+        persistAllToStore: function () { return Promise.resolve(true); }
+      };
+
+      // Auto-sync Health Connect & push widget snapshot on APK launch
+      if (window.Capacitor && window.Capacitor.Plugins) {
+        setTimeout(function () {
+          pushAndroidWidgetSnapshot();
+          if (window.Capacitor.Plugins.HealthConnect) window.HealthConnect.autoSync();
+        }, 1200);
+      }
+
+      function save() { try { window.localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} pushAndroidWidgetSnapshot(); }
 
       var undoSnapshot = null;
       var toastTimer = null;
@@ -920,30 +1189,202 @@
         return endMin != null && endMin <= NOW_MIN;
       }
 
-      /* Grade & GPA Helper (Multi-component + Attendance Coupling + What-If) */
-      function computeGradeStats() {
-        var dueDoneCnt = DUE_ITEMS.filter(function (x) { return !!state.dueDone[x.id]; }).length;
-        var autoRegular = Math.min(100, Math.round(85 + (dueDoneCnt / DUE_ITEMS.length) * 15));
-        var totalCr = 0, totalGp = 0, totalWeighted = 0;
-        var rows = state.grades.map(function (g) {
-          var sum = 0;
-          var nonFinalSum = 0;
-          var finalPart = g.parts[g.parts.length - 1];
-          g.parts.forEach(function (pt, idx) {
-            var sc = (state.attGradeCoupling && pt.n === '平时') ? autoRegular : pt.s;
-            sum += sc * (pt.w / 100);
-            if (idx < g.parts.length - 1) nonFinalSum += sc * (pt.w / 100);
+      /* Nested Grade Tree Engine (Aligned to course-planner store-course.js + ZJU 5.0 preset) */
+      var LEVEL_RULES = {
+        A: { label: 'A / 优', score: 95, gp4: 4.0, gp5: 4.8 },
+        B: { label: 'B / 良', score: 85, gp4: 3.5, gp5: 4.0 },
+        C: { label: 'C / 中', score: 75, gp4: 2.5, gp5: 3.0 },
+        D: { label: 'D / 及格', score: 65, gp4: 1.5, gp5: 2.0 },
+        F: { label: 'F / 不及格', score: 50, gp4: 0, gp5: 0 }
+      };
+
+      var GRADE_TEMPLATES = {
+        '40_60': { label: '四六开', make: function () { return [
+          { id: 'n' + Date.now() + '1', name: '平时', weight: 40, score: null, source: 'attendance', children: [] },
+          { id: 'n' + Date.now() + '2', name: '期末', weight: 60, score: null, children: [] }
+        ]; }},
+        '30_70': { label: '三七开', make: function () { return [
+          { id: 'n' + Date.now() + '1', name: '平时', weight: 30, score: null, source: 'attendance', children: [] },
+          { id: 'n' + Date.now() + '2', name: '期末', weight: 70, score: null, children: [] }
+        ]; }},
+        'midterm': { label: '含期中', make: function () { return [
+          { id: 'n' + Date.now() + '1', name: '平时', weight: 20, score: null, children: [
+            { id: 'n' + Date.now() + '1a', name: '考勤', weight: 40, score: null, source: 'attendance', children: [] },
+            { id: 'n' + Date.now() + '1b', name: '作业', weight: 60, score: null, children: [] }
+          ]},
+          { id: 'n' + Date.now() + '2', name: '期中', weight: 30, score: null, children: [] },
+          { id: 'n' + Date.now() + '3', name: '期末', weight: 50, score: null, children: [] }
+        ]; }},
+        'lab': { label: '含实验', make: function () { return [
+          { id: 'n' + Date.now() + '1', name: '平时', weight: 20, score: null, source: 'attendance', children: [] },
+          { id: 'n' + Date.now() + '2', name: '实验', weight: 30, score: null, children: [] },
+          { id: 'n' + Date.now() + '3', name: '期末', weight: 50, score: null, children: [] }
+        ]; }},
+        '50_50': { label: '五五开', make: function () { return [
+          { id: 'n' + Date.now() + '1', name: '平时', weight: 50, score: null, source: 'attendance', children: [] },
+          { id: 'n' + Date.now() + '2', name: '期末', weight: 50, score: null, children: [] }
+        ]; }}
+      };
+
+      function scoreToGp(score, preset) {
+        if (score == null || isNaN(score)) return null;
+        var s = Math.max(0, Math.min(100, Number(score)));
+        if (preset === 'zju5') {
+          if (s >= 95) return 5.0;
+          if (s >= 85) return Math.round((4.0 + (s - 85) * 0.1) * 100) / 100;
+          if (s >= 60) return Math.round((1.5 + (s - 60) * 0.1) * 100) / 100;
+          return 0;
+        }
+        if (preset === 'std4') {
+          var t4 = [[90,4],[85,3.7],[82,3.3],[78,3],[75,2.7],[72,2.3],[68,2],[64,1.5],[60,1],[0,0]];
+          for (var i = 0; i < t4.length; i++) if (s >= t4[i][0]) return t4[i][1];
+          return 0;
+        }
+        if (preset === 'std5') {
+          var t5 = [[90,5],[85,4.5],[82,4.2],[78,3.8],[75,3.5],[72,3.2],[68,2.8],[64,2.4],[60,2],[0,0]];
+          for (var j = 0; j < t5.length; j++) if (s >= t5[j][0]) return t5[j][1];
+          return 0;
+        }
+        return Math.round((s / 100) * 4 * 100) / 100;
+      }
+
+      function autoRegularScore() {
+        var attKeys = Object.keys(state.attendance || {});
+        if (attKeys.length) {
+          var ok = 0;
+          attKeys.forEach(function (k) {
+            var st = state.attendance[k] && state.attendance[k].status;
+            if (st === '已到' || st === '课内自学' || st === '自学') ok += 1;
           });
-          var gp = sum >= 95 ? 5.0 : (sum >= 85 ? 4.0 + (sum - 85) * 0.1 : Math.max(1.5, 3.9 - (85 - sum) * 0.1));
-          var needFinal = finalPart && finalPart.w ? Math.ceil((g.target - nonFinalSum) / (finalPart.w / 100)) : 0;
-          totalCr += g.credit;
-          totalGp += gp * g.credit;
-          totalWeighted += sum * g.credit;
-          return { g: g, total: sum, gp: gp, needFinal: needFinal, autoRegular: autoRegular };
+          return Math.round((ok / attKeys.length) * 1000) / 10;
+        }
+        var dueDoneCnt = DUE_ITEMS.filter(function (x) { return !!state.dueDone[x.id]; }).length;
+        return Math.min(100, Math.round(85 + (dueDoneCnt / DUE_ITEMS.length) * 15));
+      }
+
+      function evalGradeNode(node, autoReg) {
+        if (!node) return null;
+        if (!node.children || !node.children.length) {
+          if (state.attGradeCoupling && node.source === 'attendance') return autoReg;
+          return (node.score === '' || node.score == null || isNaN(Number(node.score))) ? null : Number(node.score);
+        }
+        var wSum = 0, vSum = 0;
+        node.children.forEach(function (ch) {
+          var w = Number(ch.weight) || 0;
+          var v = evalGradeNode(ch, autoReg);
+          if (v != null && w > 0) { wSum += w; vSum += v * w; }
+        });
+        return wSum > 0 ? Math.round((vSum / wSum) * 100) / 100 : null;
+      }
+
+      function validateTreeWeights(node, isRoot) {
+        var issues = [];
+        if (node && node.children && node.children.length) {
+          var sum = node.children.reduce(function (acc, c) { return acc + (Number(c.weight) > 0 ? Number(c.weight) : 0); }, 0);
+          var match100 = Math.abs(sum - 100) <= 0.15;
+          var matchParent = !isRoot && Math.abs(sum - (Number(node.weight) || 0)) <= 0.15;
+          if (!match100 && !matchParent) issues.push({ nodeId: node.id, name: node.name, sum: Math.round(sum * 10) / 10 });
+          node.children.forEach(function (c) { issues = issues.concat(validateTreeWeights(c, false)); });
+        }
+        return issues;
+      }
+
+      function normalizeNodeWeights(node, target) {
+        if (!node || !node.children || !node.children.length) return;
+        target = target || 100;
+        var sum = node.children.reduce(function (acc, c) { return acc + (Number(c.weight) > 0 ? Number(c.weight) : 0); }, 0);
+        var accW = 0;
+        node.children.forEach(function (c, i) {
+          if (i === node.children.length - 1) {
+            c.weight = Math.max(0, Math.round((target - accW) * 10) / 10);
+          } else {
+            var raw = sum > 0 ? ((Number(c.weight) || 0) / sum) * target : (target / node.children.length);
+            c.weight = Math.round(raw * 10) / 10;
+            accW += c.weight;
+          }
+        });
+      }
+
+      function findNodeAndParent(root, id, parent) {
+        if (!root) return null;
+        if (root.id === id) return { node: root, parent: parent || null };
+        if (root.children) {
+          for (var i = 0; i < root.children.length; i++) {
+            var found = findNodeAndParent(root.children[i], id, root);
+            if (found) return found;
+          }
+        }
+        return null;
+      }
+
+      function collectLeafScores(node, map) {
+        if (!node) return;
+        if (!node.children || !node.children.length) {
+          if (node.score != null && node.score !== '') map[node.name] = node.score;
+        } else {
+          node.children.forEach(function (c) { collectLeafScores(c, map); });
+        }
+      }
+
+      function applySavedLeafScores(node, map) {
+        if (!node) return;
+        if (!node.children || !node.children.length) {
+          if (map[node.name] != null) node.score = map[node.name];
+        } else {
+          node.children.forEach(function (c) { applySavedLeafScores(c, map); });
+        }
+      }
+
+      function computeGradeStats(overrideId, overrideScore) {
+        var autoReg = autoRegularScore();
+        var preset = state.gpaPreset || 'zju5';
+        var totalCr = 0, totalGp = 0, totalWeighted = 0, earnedCr = 0;
+        var scopedGrades = (state.gpaScope === 'all')
+          ? state.grades
+          : state.grades.filter(function (g) { return (g.semId || '2026-winter') === state.activeSemId; });
+        var rows = scopedGrades.map(function (g) {
+          var cr = Number(g.credit) || 0;
+          var score = null, gp = null, needFinal = null, need60 = null, issues = [];
+          if (g.scale === 'pass') {
+            if (g.passed) earnedCr += cr;
+          } else if (g.scale === 'level') {
+            var lr = LEVEL_RULES[g.level] || LEVEL_RULES.B;
+            score = (overrideId === g.id && overrideScore != null) ? overrideScore : lr.score;
+            gp = (overrideId === g.id && overrideScore != null) ? scoreToGp(score, preset) : ((preset === 'zju5' || preset === 'std5') ? lr.gp5 : lr.gp4);
+            if (score >= 60) earnedCr += cr;
+          } else {
+            issues = validateTreeWeights(g.root, true);
+            score = (overrideId === g.id && overrideScore != null) ? overrideScore : evalGradeNode(g.root, autoReg);
+            gp = scoreToGp(score, preset);
+            if (score != null && score >= 60) earnedCr += cr;
+            var ch = (g.root && g.root.children) ? g.root.children : [];
+            if (ch.length) {
+              var last = ch[ch.length - 1];
+              var totW = ch.reduce(function (a, c) { return a + (Number(c.weight) || 0); }, 0) || 100;
+              var otherSum = 0;
+              for (var i = 0; i < ch.length - 1; i++) {
+                var v = evalGradeNode(ch[i], autoReg);
+                var w = Number(ch[i].weight) || 0;
+                if (v != null && w > 0) { otherSum += v * (w / totW); }
+              }
+              var lastW = (Number(last.weight) || 0) / totW;
+              if (lastW > 0) {
+                needFinal = Math.ceil(((Number(g.target) || 90) - otherSum) / lastW);
+                need60 = Math.max(0, Math.ceil((60 - otherSum) / lastW));
+              }
+            }
+          }
+          if (score != null && gp != null && cr > 0) {
+            totalCr += cr;
+            totalGp += gp * cr;
+            totalWeighted += score * cr;
+          }
+          return { g: g, total: score, gp: gp, needFinal: needFinal, need60: need60, issues: issues, autoRegular: autoReg };
         });
         return {
           gpa: totalCr ? (totalGp / totalCr) : 0,
           avg: totalCr ? (totalWeighted / totalCr) : 0,
+          earnedCr: earnedCr,
           rows: rows
         };
       }
@@ -1066,6 +1507,39 @@
         vBtn.className = 'flex items-center gap-2 px-3.5 py-2 rounded-full text-xs border transition ' + (state.vocabDone ? 'day-active border-transparent' : 'surf txt-main');
         vBtn.innerHTML = '<span class="w-3.5 h-3.5 rounded-full border flex items-center justify-center text-[9px]" style="border-color:currentColor">' + (state.vocabDone ? '✓' : '') + '</span><span>背 20 分钟单词</span>';
 
+        try {
+          var engRaw = window.localStorage.getItem('wb_eng_wrong');
+          var engLink = document.getElementById('hub-eng-link');
+          if (engLink) {
+            var wrongCnt = engRaw ? Object.keys(JSON.parse(engRaw) || {}).length : 0;
+            engLink.textContent = wrongCnt > 0 ? ('错词本 ' + wrongCnt + ' 词待刷 ↗') : '英语听写与错词 ↗';
+            engLink.href = HUB + (wrongCnt > 0 ? 'english-quiz.html#wrong' : 'english.html');
+          }
+          var doubtful = [];
+          for (var li = 0; li < window.localStorage.length; li++) {
+            var lk = window.localStorage.key(li);
+            if (lk && lk.indexOf('wb_mastery_') === 0) {
+              var lid = lk.slice('wb_mastery_'.length);
+              var mObj = JSON.parse(window.localStorage.getItem(lk) || '{}');
+              Object.keys(mObj).forEach(function (exId) {
+                if (mObj[exId] === 1) doubtful.push({ lid: lid, exId: exId });
+              });
+            }
+          }
+          var mBox = document.getElementById('hub-mastery-box');
+          if (mBox) {
+            if (doubtful.length) {
+              mBox.classList.remove('hidden');
+              document.getElementById('hub-mastery-cnt').textContent = doubtful.length + ' 题待复盘';
+              document.getElementById('hub-mastery-list').innerHTML = doubtful.slice(0, 8).map(function (d) {
+                return '<a href="' + HUB + 'lecture-' + encodeURIComponent(d.lid) + '.html#' + encodeURIComponent(d.exId) + '" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-full surf-2 text-[11px] txt-main hover:opacity-80">' + d.lid + ' · ' + d.exId.replace('wb-ex-', '例') + ' ↗</a>';
+              }).join('');
+            } else {
+              mBox.classList.add('hidden');
+            }
+          }
+        } catch (e) {}
+
         var sBtn = document.getElementById('habit-sleep');
         sBtn.className = 'flex items-center gap-2 px-3.5 py-2 rounded-full text-xs border transition ' + (state.sleepDone ? 'day-active border-transparent' : 'surf txt-main');
         sBtn.innerHTML = '<span class="w-3.5 h-3.5 rounded-full border flex items-center justify-center text-[9px]" style="border-color:currentColor">' + (state.sleepDone ? '✓' : '') + '</span><span>23:30 收尾</span>';
@@ -1125,7 +1599,7 @@
               (item.attendable ? (
                 '<div class="flex items-center gap-1.5 flex-wrap pt-1">' +
                 '<span class="text-[11px] txt-faint">考勤：</span>' +
-                ['已到', '自学', '请假'].map(function (st) {
+                ['已到', '课内自学', '请假', '缺勤'].map(function (st) {
                   var active = att && att.status === st;
                   return '<button type="button" data-att-st="' + st + '" data-att-key="' + k + '" class="att-btn px-2 py-0.5 rounded-full text-[11px] border ' + (active ? 'day-active border-transparent' : 'surf txt-soft') + '">' + st + '</button>';
                 }).join('') +
@@ -1169,12 +1643,9 @@
           class: 'surf-2 txt-soft'
         };
 
-        var headerHtml = '<div class="grid grid-cols-[44px_repeat(7,minmax(0,1fr))] gap-1.5 pb-2 border-b text-center text-[11px] font-semibold txt-soft" style="border-color:var(--line)">' +
-          '<div></div>' +
-          DAY_META.map(function (d, idx) {
-            var isStart = (state.weekIdx === 0 && idx === 5);
-            return '<div class="' + (isStart ? 'txt-main font-bold' : '') + '">' + d.full + (isStart ? ' · 启' : '') + '</div>';
-          }).join('') + '</div>';
+        var isMobile = window.matchMedia && window.matchMedia('(max-width: 639px)').matches;
+        var modeBtn = document.getElementById('btn-toggle-week-mode');
+        if (modeBtn) modeBtn.textContent = state.weekAxisCompact ? '切3日居中' : '切7日缩略';
 
         var axisLabels = HOURS.map(function (h) {
           var top = Math.round((h * 60 - START_M) * PX_PER_MIN);
@@ -1186,7 +1657,7 @@
           return '<div class="absolute left-0 right-0 border-t pointer-events-none" style="top:' + top + 'px;border-color:var(--line);opacity:0.45"></div>';
         }).join('');
 
-        var colsHtml = DAY_META.map(function (d, dIdx) {
+        function renderDayBlocks(dIdx, compact) {
           var rawItems = getDayItems(state.weekIdx, dIdx).filter(function (x) { return !x.divider; });
           var parsed = rawItems.map(function (item) {
             var k = blockKey(state.weekIdx, dIdx, item.id);
@@ -1197,7 +1668,7 @@
           }).filter(function (x) { return x.sM != null && x.eM != null; })
             .sort(function (a, b) { return a.sM - b.sM; });
 
-          var blocksHtml = parsed.map(function (entry, i) {
+          return parsed.map(function (entry, i) {
             var top = Math.max(0, Math.round((entry.sM - START_M) * PX_PER_MIN));
             var naturalH = Math.round((entry.eM - entry.sM) * PX_PER_MIN) - 2;
             var nextTop = (i + 1 < parsed.length) ? Math.round((parsed[i + 1].sM - START_M) * PX_PER_MIN) : TOTAL_H;
@@ -1212,19 +1683,68 @@
             if (done || skip) cls += ' done-block line-through';
             else if (overdue) cls += ' overdue-block';
 
+            if (compact) {
+              var ch1 = entry.item.title.replace(/^【.*?】/, '').slice(0, 2);
+              return '<button type="button" data-wblock="' + entry.k + '" class="wblock-btn absolute left-0.5 right-0.5 rounded-md border px-0.5 py-0.5 text-center overflow-hidden transition ' + cls + '" style="top:' + top + 'px;height:' + height + 'px">' +
+                '<div class="text-[9px] font-semibold leading-tight truncate">' + ch1 + '</div></button>';
+            }
+
             return '<button type="button" data-wblock="' + entry.k + '" class="wblock-btn absolute left-0.5 right-0.5 rounded-lg border px-1.5 py-0.5 text-left overflow-hidden transition hover:brightness-95 ' + cls + '" style="top:' + top + 'px;height:' + height + 'px">' +
               '<div class="text-[10px] font-semibold leading-tight truncate">' + entry.item.title + '</div>' +
               (height >= 34 ? '<div class="text-[9px] opacity-75 num-tab">' + entry.startStr + (overdue ? ' · 未做' : '') + '</div>' : '') +
               '</button>';
           }).join('');
+        }
 
-          return '<div class="relative border-l" style="height:' + TOTAL_H + 'px;border-color:var(--line)">' + gridLines + blocksHtml + '</div>';
-        }).join('');
+        if (isMobile && !state.weekAxisCompact) {
+          // Mobile Centered 3-Day Swipe View (Sticky time gutter + 7 snap columns + edge spacers so Sat/Fri can center!)
+          var cols3d = DAY_META.map(function (d, dIdx) {
+            var isFocus = (dIdx === state.dayIdx);
+            return '<div data-axis-day="' + dIdx + '" class="week-3d-col flex flex-col border-l" style="border-color:var(--line);' + (isFocus ? 'background:color-mix(in srgb, var(--ink) 4%, transparent)' : '') + '">' +
+              '<button type="button" data-axis-focus="' + dIdx + '" class="axis-focus-btn py-2 text-center border-b text-xs transition ' + (isFocus ? 'font-bold txt-main' : 'txt-soft') + '" style="border-color:var(--line)">' +
+              d.full + (isFocus ? ' · 主' : '') + '</button>' +
+              '<div class="relative mt-2" style="height:' + TOTAL_H + 'px">' + gridLines + renderDayBlocks(dIdx, false) + '</div></div>';
+          }).join('');
 
-        document.getElementById('week-axis-wrap').innerHTML = headerHtml +
-          '<div class="grid grid-cols-[44px_repeat(7,minmax(0,1fr))] gap-1.5 pt-2">' +
-          '<div class="relative" style="height:' + TOTAL_H + 'px">' + axisLabels + '</div>' +
-          colsHtml + '</div>';
+          document.getElementById('week-axis-wrap').innerHTML =
+            '<div class="text-[10px] txt-faint pb-1.5 flex items-center justify-between"><span>左右滑动切换主日期（居中列为主日）</span><span>共 3 日同屏</span></div>' +
+            '<div id="week-3d-scroller" class="week-3d-scroll no-scrollbar flex items-stretch">' +
+            '<div class="week-sticky-gutter shrink-0 w-[42px] border-r" style="border-color:var(--line)">' +
+            '<div class="h-[33px] border-b" style="border-color:var(--line)"></div>' +
+            '<div class="relative mt-2" style="height:' + TOTAL_H + 'px">' + axisLabels + '</div></div>' +
+            '<div class="week-3d-pad shrink-0 flex items-start justify-center pt-10"><button type="button" id="axis-pad-prev" class="px-2 py-1 rounded-full surf-2 text-[10px] txt-soft">‹ 上周</button></div>' +
+            cols3d +
+            '<div class="week-3d-pad shrink-0 flex items-start justify-center pt-10"><button type="button" id="axis-pad-next" class="px-2 py-1 rounded-full surf-2 text-[10px] txt-soft">下周 ›</button></div>' +
+            '</div>';
+
+          setTimeout(function () {
+            var sc = document.getElementById('week-3d-scroller');
+            if (!sc) return;
+            var targetCol = sc.querySelector('[data-axis-day="' + state.dayIdx + '"]');
+            if (targetCol) {
+              var centerLeft = targetCol.offsetLeft - 42 - (sc.clientWidth - 42 - targetCol.offsetWidth) / 2;
+              sc.scrollLeft = Math.max(0, centerLeft);
+            }
+          }, 0);
+        } else {
+          // 7-Day Full Axis (Desktop/Tablet full labels; Mobile compact mode 2-char blocks)
+          var compact = isMobile && state.weekAxisCompact;
+          var headerHtml = '<div class="grid grid-cols-[40px_repeat(7,minmax(0,1fr))] gap-1 pb-2 border-b text-center text-[11px] font-semibold txt-soft" style="border-color:var(--line)">' +
+            '<div></div>' +
+            DAY_META.map(function (d, idx) {
+              var isStart = (state.weekIdx === 0 && idx === 5);
+              return '<div class="' + (idx === state.dayIdx ? 'txt-main font-bold' : '') + '">' + (compact ? d.short : (d.full + (isStart ? '·启' : ''))) + '</div>';
+            }).join('') + '</div>';
+
+          var colsHtml = DAY_META.map(function (d, dIdx) {
+            return '<div class="relative border-l" style="height:' + TOTAL_H + 'px;border-color:var(--line)">' + gridLines + renderDayBlocks(dIdx, compact) + '</div>';
+          }).join('');
+
+          document.getElementById('week-axis-wrap').innerHTML = headerHtml +
+            '<div class="grid grid-cols-[40px_repeat(7,minmax(0,1fr))] gap-1 pt-2">' +
+            '<div class="relative" style="height:' + TOTAL_H + 'px">' + axisLabels + '</div>' +
+            colsHtml + '</div>';
+        }
 
         var detailEl = document.getElementById('week-block-detail');
         if (state.selectedWeekBlock) {
@@ -1255,20 +1775,25 @@
           var on = parseInt(b.getAttribute('data-cal-m'), 10) === m;
           b.className = 'cal-m-btn px-2.5 py-1 rounded-full ' + (on ? 'surf-2 txt-main font-semibold' : 'txt-soft');
         });
-        var y = (m === 1) ? 2027 : 2026;
+        var y = (m === 1 || m === 2) ? 2027 : 2026;
         document.getElementById('cal-month-title').textContent = y + ' 年 ' + m + ' 月';
-        var daysInM = (m === 11) ? 30 : 31;
+        var daysInM = new Date(y, m, 0).getDate();
         var firstDow = new Date(y, m - 1, 1).getDay();
         var offset = (firstDow + 6) % 7;
         var cells = '';
         for (var e = 0; e < offset; e++) cells += '<div></div>';
 
         var tags = {
-          '2026-11-28': { lunar: '十九', dot: '#1E5663', tag: '正式开机' },
-          '2026-12-23': { lunar: '冬十四', dot: '#A6512B', tag: '期末周' },
+          '2026-11-28': { lunar: '十九', dot: '#1E5663', tag: '正式启动' },
+          '2026-12-31': { lunar: '冬廿二', dot: '#D95338', tag: '学生节休' },
           '2027-01-01': { lunar: '冬廿三', dot: '#D95338', tag: '元旦休' },
-          '2027-01-04': { lunar: '冬廿六', dot: '#5B4386', tag: '调休/考' },
-          '2027-01-13': { lunar: '腊初六', dot: '#1E5663', tag: '放寒假' }
+          '2027-01-04': { lunar: '冬廿六', dot: '#5B4386', tag: '补周四课' },
+          '2027-01-06': { lunar: '冬廿八', dot: '#A6512B', tag: '考试周起' },
+          '2027-01-15': { lunar: '腊初八', dot: '#A6512B', tag: '考试结束' },
+          '2027-01-16': { lunar: '腊初九', dot: '#1E5663', tag: '寒假开始' },
+          '2027-02-06': { lunar: '正月初一', dot: '#D95338', tag: '春节' },
+          '2027-02-19': { lunar: '正月十四', dot: '#5B4386', tag: '报到注册' },
+          '2027-02-22': { lunar: '正月十七', dot: '#1E5663', tag: '春学期课' }
         };
         for (var day = 1; day <= daysInM; day++) {
           var ds = y + '-' + (m < 10 ? '0' : '') + m + '-' + (day < 10 ? '0' : '') + day;
@@ -1323,21 +1848,33 @@
         ];
         document.getElementById('quadrant-grid').innerHTML = quads.map(function (q) {
           var items = state.quadTasks.filter(function (t) { return t.q === q.key; });
-          return '<div class="surf rounded-2xl border p-4 space-y-2.5">' +
-            '<div class="text-xs font-medium txt-soft">' + q.name + '</div>' +
+          return '<div class="snap-card-84 min-w-0 surf rounded-2xl border p-4 space-y-2.5">' +
+            '<div class="flex items-center justify-between text-xs font-medium txt-soft"><span>' + q.name + '</span><span class="num-tab text-[11px] txt-faint">' + items.length + ' 项</span></div>' +
             (items.length ? items.map(function (t) {
-              var subsHtml = (t.subs && t.subs.length) ? (
-                '<div class="pl-5 pt-1 space-y-1">' + t.subs.map(function (sb) {
-                  return '<button type="button" data-qsub="' + t.id + '|' + sb.id + '" class="qsub-btn flex items-center gap-1.5 text-[11px] txt-soft">' +
-                    '<span>' + (sb.done ? '☑' : '☐') + '</span><span class="' + (sb.done ? 'line-through txt-faint' : '') + '">' + sb.title + '</span></button>';
+              var subTotal = (t.subs || []).length;
+              var subDone = (t.subs || []).filter(function (x) { return x.done; }).length;
+              var subsHtml = subTotal ? (
+                '<div class="pl-5 pt-1.5 space-y-1.5">' + t.subs.map(function (sb) {
+                  return '<div class="flex items-center justify-between gap-2 text-[11px]">' +
+                    '<button type="button" data-qsub="' + t.id + '|' + sb.id + '" class="qsub-btn flex items-center gap-1.5 txt-soft text-left min-w-0">' +
+                    '<span class="shrink-0">' + (sb.done ? '☑' : '☐') + '</span><span class="truncate ' + (sb.done ? 'line-through txt-faint' : '') + '">' + sb.title + '</span></button>' +
+                    '<button type="button" data-del-qsub="' + t.id + '|' + sb.id + '" class="del-qsub txt-faint px-1 shrink-0">×</button></div>';
                 }).join('') + '</div>'
               ) : '';
-              return '<div class="py-1"><div class="flex items-center justify-between gap-2">' +
-                '<button type="button" data-qt="' + t.id + '" class="qt-btn flex items-center gap-2 text-left text-xs min-w-0">' +
-                '<span class="w-3.5 h-3.5 rounded-full border flex items-center justify-center text-[9px] shrink-0 ' + (t.done ? 'day-active border-transparent' : 'txt-faint') + '" style="' + (t.done ? '' : 'border-color:var(--line)') + '">✓</span>' +
-                '<span class="truncate ' + (t.done ? 'line-through txt-faint' : 'txt-main') + '">' + t.title + '</span></button>' +
-                '<button type="button" data-del-qt="' + t.id + '" class="del-qt text-[11px] txt-faint shrink-0">删</button>' +
-                '</div>' + subsHtml + '</div>';
+              var subAddRow = (state.openSubAdd === t.id)
+                ? ('<div class="pl-5 pt-1.5 flex items-center gap-1.5">' +
+                  '<input type="text" data-sub-inp="' + t.id + '" placeholder="输入子任务，回车添加..." class="sub-add-inp flex-1 min-w-0 px-2 py-1 rounded-lg surf-2 border text-[11px] focus:outline-none" style="border-color:var(--line)">' +
+                  '<button type="button" data-sub-save="' + t.id + '" class="sub-save-btn px-2.5 py-1 rounded-lg text-[11px] shrink-0" style="background:var(--ink);color:var(--bg)">加</button></div>')
+                : '';
+              return '<div class="py-1.5 border-b last:border-b-0" style="border-color:var(--line)"><div class="flex items-center justify-between gap-1.5">' +
+                '<button type="button" data-qt="' + t.id + '" class="qt-btn flex items-center gap-2 text-left text-xs min-w-0 flex-1">' +
+                '<span class="w-4 h-4 rounded-full border flex items-center justify-center text-[9px] shrink-0 ' + (t.done ? 'day-active border-transparent' : 'txt-faint') + '" style="' + (t.done ? '' : 'border-color:var(--line)') + '">✓</span>' +
+                '<span class="truncate ' + (t.done ? 'line-through txt-faint' : 'txt-main') + '">' + t.title + '</span>' +
+                (subTotal ? '<span class="text-[10px] px-1.5 py-0.5 rounded-full surf-2 txt-faint num-tab shrink-0">' + subDone + '/' + subTotal + '</span>' : '') +
+                '</button>' +
+                '<button type="button" data-open-sub="' + t.id + '" class="open-sub-btn px-1.5 py-0.5 rounded surf-2 text-[10px] txt-soft shrink-0">+子项</button>' +
+                '<button type="button" data-del-qt="' + t.id + '" class="del-qt text-[11px] txt-faint shrink-0 px-1">删</button>' +
+                '</div>' + subsHtml + subAddRow + '</div>';
             }).join('') : '<div class="text-xs txt-faint">暂无</div>') +
             '</div>';
         }).join('');
@@ -1383,8 +1920,15 @@
         var okrs = [
           { title: '数学分析上下册 4 个月收官', sub: '已过 ' + anaDone + ' / ' + studyWeeks.length + ' 周章节', pct: Math.round((anaDone / studyWeeks.length) * 100), color: '#1E5663' },
           { title: '101 代数学从矩阵补齐全册', sub: '已过 ' + algDone + ' / ' + studyWeeks.length + ' 周章节', pct: Math.round((algDone / studyWeeks.length) * 100), color: '#5B4386' },
-          { title: '冬学期 GPA 目标（' + gpaTarget.toFixed(2) + '）', sub: '实时联动成绩构成：当前 ' + gStat.gpa.toFixed(2) + ' / 加权 ' + gStat.avg.toFixed(1), pct: gpaPct, color: '#A6512B' }
+          { title: '学期 GPA 目标（' + gpaTarget.toFixed(2) + '）', sub: '实时联动成绩构成：当前 ' + gStat.gpa.toFixed(2) + ' / 加权 ' + gStat.avg.toFixed(1), pct: gpaPct, color: '#A6512B' }
         ];
+        (state.tracks || []).forEach(function (tr) {
+          if (!tr.builtin && tr.status === 'active') {
+            var tot = (tr.milestones || []).length;
+            var dn = (tr.milestones || []).filter(function (m) { return !!m.done; }).length;
+            okrs.push({ title: '专题 · ' + tr.title, sub: (tr.dates ? tr.dates + ' · ' : '') + '已完成 ' + dn + ' / ' + tot + ' 项', pct: tot ? Math.round((dn / tot) * 100) : 0, color: '#2F5D50' });
+          }
+        });
         document.getElementById('okr-list').innerHTML = okrs.map(function (o) {
           return '<div class="space-y-1.5"><div class="flex items-baseline justify-between text-xs">' +
             '<span class="txt-main font-medium">' + o.title + '</span>' +
@@ -1418,15 +1962,40 @@
             '<text x="' + (66 + w) + '" y="' + (y + 13) + '" font-size="11" fill="currentColor" opacity="0.85">¥' + e.v.toFixed(0) + '</text>';
         }).join('');
 
+        var curTrack = (state.tracks || []).find(function (t) { return t.id === state.activeTrackId; }) || (state.tracks && state.tracks[0]);
+        if (curTrack) {
+          document.getElementById('track-meta-sub').textContent = (curTrack.status === 'archived' ? '已归档专题：' : '当前专题：') + curTrack.title + (curTrack.dates ? '（' + curTrack.dates + '）' : '');
+          document.getElementById('btn-archive-track').textContent = curTrack.status === 'archived' ? '恢复进行中' : '归档此专题';
+          document.getElementById('tracks-strip').innerHTML = state.tracks.map(function (tr) {
+            var on = tr.id === curTrack.id;
+            return '<button type="button" data-track-sel="' + tr.id + '" class="track-sel-btn px-3 py-1 rounded-full text-xs border whitespace-nowrap shrink-0 transition ' + (on ? 'day-active border-transparent' : 'surf txt-soft') + '">' +
+              tr.title + (tr.status === 'archived' ? ' (已归档)' : '') + '</button>';
+          }).join('');
+          document.getElementById('phase-strip').classList.toggle('hidden', !curTrack.builtin);
+        }
+
+        if (curTrack && !curTrack.builtin) {
+          var ms = curTrack.milestones || [];
+          document.getElementById('chapters-list').innerHTML = ms.length ? ms.map(function (m, idx) {
+            return '<div class="snap-card-82 min-w-0 surf rounded-2xl border p-4 flex items-center justify-between gap-2">' +
+              '<div class="min-w-0"><div class="text-[11px] txt-faint">节点 ' + (idx + 1) + '</div>' +
+              (m.url ? '<a href="' + m.url + '" target="_blank" rel="noopener noreferrer" class="text-xs sm:text-sm txt-main hover:underline block truncate ' + (m.done ? 'line-through txt-faint' : '') + '">' + m.title + ' ↗</a>'
+                     : '<div class="text-xs sm:text-sm txt-main truncate ' + (m.done ? 'line-through txt-faint' : '') + '">' + m.title + '</div>') +
+              '</div><button type="button" data-track-ms="' + curTrack.id + '|' + m.id + '" class="track-ms-btn shrink-0 whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] border ' + (m.done ? 'bg-[#2F5D50] border-[#2F5D50] text-white' : 'txt-soft') + '" style="' + (m.done ? '' : 'border-color:var(--line)') + '">' + (m.done ? '已过' : '标记') + '</button></div>';
+          }).join('') : '<div class="surf rounded-2xl border p-4 text-xs txt-faint">该专题暂无里程碑</div>';
+          return;
+        }
+
         var list = WEEKS.filter(function (w) { return state.phase === 'all' || w.phase === state.phase; });
         document.getElementById('chapters-list').innerHTML = list.map(function (w) {
+          var isCurW = (WEEKS[state.weekIdx] && WEEKS[state.weekIdx].id === w.id);
           if (w.rest) {
-            return '<div class="px-4 py-3.5 rounded-2xl surf-2 text-xs txt-soft flex items-center justify-between">' +
+            return '<div data-chap-cur="' + (isCurW ? '1' : '0') + '" class="snap-card-82 px-4 py-3.5 rounded-2xl surf-2 text-xs txt-soft flex items-center justify-between">' +
               '<span>' + w.label + ' · ' + w.dates + '</span><span>' + w.ana + '</span></div>';
           }
           var aOk = !!state.doneAna[w.id];
           var gOk = !!state.doneAlg[w.id];
-          return '<div class="surf rounded-2xl border p-4 space-y-3">' +
+          return '<div data-chap-cur="' + (isCurW ? '1' : '0') + '" class="snap-card-82 min-w-0 surf rounded-2xl border p-4 space-y-3' + (isCurW ? ' ring-1 ring-[#1E5663]/40' : '') + '">' +
             '<div class="flex items-center justify-between text-xs txt-faint">' +
             '<span class="font-medium txt-main">' + w.label + '</span>' +
             '<span class="num-tab">' + w.dates + '</span></div>' +
@@ -1541,37 +2110,168 @@
 
         renderSleepDetail();
 
-        // Multi-component Grades + What-If
+        // Multi-Semester + Mixed-Scale Collapsible Grade Tree
+        var semSel = document.getElementById('sem-select');
+        semSel.innerHTML = (state.semesters || []).map(function (sm) {
+          return '<option value="' + sm.id + '"' + (sm.id === state.activeSemId ? ' selected' : '') + '>' + sm.name + '</option>';
+        }).join('');
+        var scopeBtn = document.getElementById('btn-toggle-gpa-scope');
+        scopeBtn.textContent = state.gpaScope === 'all' ? '口径：全部学期累计' : '口径：仅本学期';
+        scopeBtn.className = 'px-2.5 py-1 rounded-full text-[11px] border whitespace-nowrap shrink-0 ' + (state.gpaScope === 'all' ? 'day-active border-transparent' : 'surf txt-soft');
+        document.getElementById('gpa-scope-lbl').textContent = state.gpaScope === 'all' ? '跨学期累计加权均绩' : '本学期加权均绩';
+
         var gStat = computeGradeStats();
         document.getElementById('gpa-val').textContent = gStat.gpa.toFixed(2);
         document.getElementById('avg-score-val').textContent = '加权均分 ' + gStat.avg.toFixed(1);
+        document.getElementById('gpa-credits-val').textContent = gStat.earnedCr;
+        document.getElementById('gpa-preset-sel').value = state.gpaPreset || 'zju5';
         var attBtn = document.getElementById('btn-toggle-att-grade');
-        attBtn.textContent = '平时分联动考勤/作业：' + (state.attGradeCoupling ? '开' : '关');
-        attBtn.className = 'px-3 py-1.5 rounded-full text-xs border transition ' + (state.attGradeCoupling ? 'day-active border-transparent' : 'surf txt-soft');
+        attBtn.textContent = '考勤/作业自动分：' + (state.attGradeCoupling ? '开' : '关');
+        attBtn.className = 'px-3 py-1.5 rounded-full text-xs border transition whitespace-nowrap shrink-0 ' + (state.attGradeCoupling ? 'day-active border-transparent' : 'surf txt-soft');
 
-        document.getElementById('grades-list').innerHTML = gStat.rows.map(function (row) {
-          var g = row.g;
-          var partsHtml = g.parts.map(function (pt, pIdx) {
-            var isAuto = state.attGradeCoupling && pt.n === '平时';
-            var sc = isAuto ? row.autoRegular : pt.s;
-            return '<div class="flex items-center justify-between text-xs py-1">' +
-              '<span class="txt-soft">' + pt.n + ' <span class="num-tab txt-faint">(' + pt.w + '%)</span>' + (isAuto ? ' <span class="text-[10px] px-1.5 py-0.5 rounded surf-2">自动折算</span>' : '') + '</span>' +
-              '<div class="flex items-center gap-1.5">' +
-              (isAuto ? '' : '<button type="button" data-gp="' + g.id + '|' + pIdx + '|-1" class="gp-step w-5 h-5 rounded-full surf-2 txt-soft">-</button>') +
-              '<span class="num-tab w-7 text-center font-medium txt-main">' + sc + '</span>' +
-              (isAuto ? '' : '<button type="button" data-gp="' + g.id + '|' + pIdx + '|1" class="gp-step w-5 h-5 rounded-full surf-2 txt-soft">+</button>') +
-              '</div></div>';
-          }).join('');
-          var whatIfStr = row.needFinal <= 100
-            ? ('What-If：目标总评 ' + g.target + ' 分，期末至少考 <strong class="txt-main num-tab">' + Math.max(0, row.needFinal) + '</strong> 分')
-            : ('What-If：即使期末满分也难达 ' + g.target + ' 分，建议调低目标');
-          return '<div class="surf rounded-2xl border p-4 space-y-2.5">' +
-            '<div class="flex items-baseline justify-between border-b pb-2" style="border-color:var(--line)">' +
-            '<div><span class="font-semibold txt-main text-sm">' + g.name + '</span> <span class="text-[11px] txt-faint num-tab">' + g.credit + ' 学分</span></div>' +
-            '<div class="num-tab text-xs font-semibold text-[#1E5663]">总评 ' + row.total.toFixed(1) + ' · GPA ' + row.gp.toFixed(2) + '</div></div>' +
-            '<div>' + partsHtml + '</div>' +
-            '<div class="pt-1.5 border-t text-[11px] txt-faint" style="border-color:var(--line)">' + whatIfStr + '</div></div>';
+        var cntAll = gStat.rows.length;
+        var cntGpa = gStat.rows.filter(function (r) { return r.g.scale === 'percent'; }).length;
+        var cntPass = gStat.rows.filter(function (r) { return r.g.scale === 'pass'; }).length;
+        var cntLevel = gStat.rows.filter(function (r) { return r.g.scale === 'level'; }).length;
+        var cntUnscored = gStat.rows.filter(function (r) { return r.g.scale === 'percent' && r.total == null; }).length;
+        var filters = [
+          { k: 'all', lbl: '全部 (' + cntAll + ')' },
+          { k: 'percent', lbl: '百分绩点 (' + cntGpa + ')' },
+          { k: 'pass', lbl: '及格制 (' + cntPass + ')' },
+          { k: 'level', lbl: '等级制 (' + cntLevel + ')' },
+          { k: 'unscored', lbl: '未出分 (' + cntUnscored + ')' }
+        ];
+        document.getElementById('grade-filter-strip').innerHTML = filters.map(function (f) {
+          var on = (state.gradeFilter || 'all') === f.k;
+          return '<button type="button" data-gfilter="' + f.k + '" class="gfilter-btn px-2.5 py-1 rounded-full border whitespace-nowrap shrink-0 ' + (on ? 'day-active border-transparent' : 'surf txt-soft') + '">' + f.lbl + '</button>';
         }).join('');
+
+        function renderTreeNodeHtml(gid, node, depth, autoReg) {
+          var hasKids = node.children && node.children.length > 0;
+          var pad = Math.min(depth * 14, 28);
+          var isAuto = state.attGradeCoupling && !hasKids && node.source === 'attendance';
+          var computed = evalGradeNode(node, autoReg);
+          var scoreVal = isAuto ? autoReg : (node.score == null ? '' : node.score);
+          var scoreCtrl = hasKids
+            ? '<span class="num-tab text-[11px] txt-soft px-1.5 whitespace-nowrap shrink-0">小计 ' + (computed != null ? computed.toFixed(1) : '—') + '</span>'
+            : (isAuto
+              ? '<span class="num-tab w-11 text-center font-medium text-[#1E5663] whitespace-nowrap shrink-0">' + autoReg + '</span>'
+              : '<input type="number" step="0.5" min="0" max="150" placeholder="分" data-gnode-s="' + gid + '|' + node.id + '" value="' + scoreVal + '" class="gnode-s w-11 shrink-0 px-1 py-1 rounded surf-2 border text-xs num-tab text-center txt-main focus:outline-none" style="border-color:var(--line)">');
+
+          var html = '<div class="py-1.5 border-b last:border-b-0 text-xs" style="padding-left:' + pad + 'px;border-color:var(--line)">' +
+            '<div class="flex flex-wrap items-center gap-1.5">' +
+              '<div class="flex items-center gap-1 min-w-[96px] flex-1">' +
+                (depth > 0 ? '<span class="txt-faint text-[10px] shrink-0">└</span>' : '') +
+                '<input type="text" data-gnode-name="' + gid + '|' + node.id + '" value="' + String(node.name || '').replace(/"/g, '&quot;') + '" class="gnode-name w-full min-w-[64px] px-2 py-1 rounded surf-2 border text-xs txt-main focus:outline-none" style="border-color:var(--line)">' +
+              '</div>' +
+              '<div class="flex items-center gap-1 shrink-0">' +
+                '<input type="number" step="1" min="0" max="100" data-gnode-w="' + gid + '|' + node.id + '" value="' + (node.weight || 0) + '" class="gnode-w w-10 shrink-0 px-1 py-1 rounded surf-2 border text-xs num-tab text-right txt-soft focus:outline-none" style="border-color:var(--line)">' +
+                '<span class="text-[10px] txt-faint shrink-0">%</span>' +
+                scoreCtrl +
+              '</div>' +
+              '<div class="flex items-center gap-1 shrink-0 ml-auto">' +
+                (!hasKids ? '<button type="button" data-gnode-auto="' + gid + '|' + node.id + '" title="切换绑定考勤/作业自动分" class="gnode-auto text-[10px] px-1.5 py-0.5 rounded whitespace-nowrap shrink-0 ' + (node.source === 'attendance' ? 'bg-[#E6F2F4] text-[#133C46]' : 'surf-2 txt-faint') + '">' + (node.source === 'attendance' ? '联动' : '手动') + '</button>' : '') +
+                '<button type="button" data-gnode-add="' + gid + '|' + node.id + '" title="拆出/新增子项" class="gnode-add px-1.5 py-0.5 rounded surf-2 text-[10px] txt-soft whitespace-nowrap shrink-0">+子项</button>' +
+                '<button type="button" data-gnode-del="' + gid + '|' + node.id + '" title="删除该分项" class="gnode-del px-1 py-0.5 text-[10px] txt-faint shrink-0">✕</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+          if (hasKids) {
+            node.children.forEach(function (ch) { html += renderTreeNodeHtml(gid, ch, depth + 1, autoReg); });
+          }
+          return html;
+        }
+
+        var filteredRows = gStat.rows.filter(function (r) {
+          var f = state.gradeFilter || 'all';
+          if (f === 'all') return true;
+          if (f === 'unscored') return r.g.scale === 'percent' && r.total == null;
+          return r.g.scale === f;
+        });
+        document.getElementById('grades-list').innerHTML = filteredRows.length ? filteredRows.map(function (row) {
+          var g = row.g;
+          var isOpen = !!(state.expandedGradeCards && state.expandedGradeCards[g.id]);
+          var isEditing = state.expandedGradeEdit === g.id;
+          var scaleTag = g.scale === 'pass' ? '及格制' : (g.scale === 'level' ? '等级制' : '百分制');
+          var badge = g.scale === 'pass'
+            ? (g.passed ? '通过 (P)' : '未通过 (NP)')
+            : ('总评 ' + (row.total != null ? row.total.toFixed(1) : '—') + ' · GPA ' + (row.gp != null ? row.gp.toFixed(2) : '—'));
+
+          var bodyHtml = '';
+          if (g.scale === 'pass') {
+            bodyHtml = '<div class="flex items-center justify-between text-xs py-1"><span class="txt-soft">通过制（计已获学分，不计入均绩）</span>' +
+              '<button type="button" data-gpass="' + g.id + '" class="gpass-btn px-3 py-1 rounded-full surf-2 txt-main">' + (g.passed ? '✓ 已通过（点此切换）' : '未通过（点此切换）') + '</button></div>';
+          } else if (g.scale === 'level') {
+            bodyHtml = '<div class="flex items-center justify-between text-xs py-1"><span class="txt-soft">五级等级制</span><div class="flex gap-1">' +
+              ['A', 'B', 'C', 'D', 'F'].map(function (lv) {
+                return '<button type="button" data-glevel="' + g.id + '|' + lv + '" class="glevel-btn px-2.5 py-1 rounded-full text-xs ' + (g.level === lv ? 'day-active' : 'surf-2 txt-soft') + '">' + lv + '</button>';
+              }).join('') + '</div></div>';
+          } else {
+            var ch = (g.root && g.root.children) ? g.root.children : [];
+            bodyHtml = ch.map(function (c) { return renderTreeNodeHtml(g.id, c, 0, row.autoRegular); }).join('') +
+              '<div class="pt-1.5 flex flex-wrap items-center gap-1.5">' +
+              '<button type="button" data-gnode-add="' + g.id + '|' + g.root.id + '" class="gnode-add px-2.5 py-1 rounded-full surf-2 text-[11px] txt-main">+ 新增一级分项</button>' +
+              Object.keys(GRADE_TEMPLATES).map(function (tk) {
+                return '<button type="button" data-gtpl="' + g.id + '|' + tk + '" class="gtpl-btn px-2 py-1 rounded-full surf-2 text-[10px] txt-soft">' + GRADE_TEMPLATES[tk].label + '</button>';
+              }).join('') +
+              '</div>';
+            if (row.issues.length) {
+              bodyHtml += '<div class="mt-2 px-2.5 py-1.5 rounded-xl bg-amber-500/10 text-[11px] text-amber-700 dark:text-amber-300 flex items-center justify-between gap-2">' +
+                '<span>权重提醒：' + row.issues.map(function (is) { return is.name + '子项和=' + is.sum + '%'; }).join('；') + '</span>' +
+                '<button type="button" data-gbal="' + g.id + '" class="gbal-btn underline font-medium shrink-0">一键配平 100%</button></div>';
+            }
+          }
+
+          var hypoDeltaHtml = '';
+          if (g.hypo !== '' && g.hypo != null && !isNaN(Number(g.hypo)) && g.scale !== 'pass') {
+            var sim = computeGradeStats(g.id, Number(g.hypo));
+            var dg = sim.gpa - gStat.gpa;
+            hypoDeltaHtml = ' → 整体 GPA <strong class="txt-main num-tab">' + sim.gpa.toFixed(2) + '</strong> (' + (dg >= 0 ? '+' : '') + dg.toFixed(2) + ')';
+          }
+          var whatIfLine = '';
+          if (g.scale === 'percent' && row.needFinal != null) {
+            whatIfLine = (row.needFinal <= 100
+              ? ('目标 ' + g.target + ' 分：末项需考 <strong class="txt-main num-tab">' + Math.max(0, row.needFinal) + '</strong> 分（及格需 ' + row.need60 + ' 分）')
+              : ('目标 ' + g.target + ' 分即使末项满分也难达（及格需 ' + row.need60 + ' 分）'));
+          }
+
+          var footerHtml = (g.scale !== 'pass')
+            ? ('<div class="pt-2 border-t space-y-1.5 text-[11px] txt-faint" style="border-color:var(--line)">' +
+              (whatIfLine ? '<div>' + whatIfLine + '</div>' : '') +
+              '<div class="flex flex-wrap items-center gap-2">' +
+              '<span>假设总评</span>' +
+              '<input type="number" min="0" max="100" step="1" placeholder="试算分" data-ghypo="' + g.id + '" value="' + (g.hypo == null ? '' : g.hypo) + '" class="ghypo-inp w-16 px-2 py-0.5 rounded surf-2 border text-[11px] num-tab txt-main focus:outline-none" style="border-color:var(--line)">' +
+              '<span>' + hypoDeltaHtml + '</span></div></div>')
+            : '';
+
+          var metaEditHtml = isEditing
+            ? ('<div class="p-2.5 rounded-xl surf-2 flex flex-wrap items-center gap-2 text-[11px]">' +
+              '<label class="flex items-center gap-1">学分<input type="number" step="0.5" min="0" max="12" data-gcr="' + g.id + '" value="' + g.credit + '" class="gcr-inp w-14 px-1.5 py-0.5 rounded surf border num-tab txt-main" style="border-color:var(--line)"></label>' +
+              '<label class="flex items-center gap-1">目标<input type="number" step="1" min="60" max="100" data-gtgt="' + g.id + '" value="' + (g.target || 90) + '" class="gtgt-inp w-14 px-1.5 py-0.5 rounded surf border num-tab txt-main" style="border-color:var(--line)"></label>' +
+              '<select data-gscale="' + g.id + '" class="gscale-sel px-2 py-0.5 rounded surf border txt-main" style="border-color:var(--line)">' +
+              '<option value="percent"' + (g.scale === 'percent' ? ' selected' : '') + '>百分制</option>' +
+              '<option value="level"' + (g.scale === 'level' ? ' selected' : '') + '>等级制</option>' +
+              '<option value="pass"' + (g.scale === 'pass' ? ' selected' : '') + '>通过制</option></select>' +
+              '<button type="button" data-gdel="' + g.id + '" class="gdel-btn ml-auto text-red-600 dark:text-red-400 underline">删除课程</button></div>')
+            : '';
+
+          return '<div class="min-w-0 surf rounded-2xl border p-3.5 sm:p-4 space-y-2.5">' +
+            '<div class="flex items-center justify-between gap-2 ' + (isOpen ? 'border-b pb-2' : '') + '" style="border-color:var(--line)">' +
+            '<div class="flex items-center gap-1.5 min-w-0 flex-1">' +
+            '<span class="font-semibold txt-main text-sm truncate">' + g.name + '</span>' +
+            '<span class="text-[10px] px-1.5 py-0.5 rounded surf-2 txt-soft whitespace-nowrap shrink-0">' + scaleTag + '</span>' +
+            '<span class="text-[11px] txt-faint num-tab whitespace-nowrap shrink-0">' + g.credit + '学分</span></div>' +
+            '<div class="flex items-center gap-2 shrink-0">' +
+            '<span class="num-tab text-xs font-semibold text-[#1E5663] whitespace-nowrap">' + badge + '</span>' +
+            '<button type="button" data-gopen="' + g.id + '" class="gopen-btn px-2 py-0.5 rounded-full surf-2 text-[10px] txt-main whitespace-nowrap">' + (isOpen ? '收起 ▴' : '展开 ▾') + '</button>' +
+            '</div></div>' +
+            (isOpen ? (
+              '<div class="flex items-center justify-between text-[11px] txt-faint">' +
+              '<span>构成树与试算</span>' +
+              '<button type="button" data-gedit="' + g.id + '" class="gedit-btn underline whitespace-nowrap">' + (isEditing ? '收起设置' : '改学分/制式/删课') + '</button></div>' +
+              metaEditHtml + '<div>' + bodyHtml + '</div>' + footerHtml
+            ) : '') + '</div>';
+        }).join('') : '<div class="surf rounded-2xl border p-5 text-xs txt-faint text-center">当前筛选下暂无课程</div>';
 
         // Ledger
         var spend = state.ledger.reduce(function (s, x) { return s + (Number(x.amt) || 0); }, 0);
@@ -1718,6 +2418,64 @@
         var qsub = e.target.closest('.qsub-btn');
         if (qsub) { var sp = qsub.getAttribute('data-qsub').split('|'); state.quadTasks.forEach(function (t) { if (t.id === sp[0] && t.subs) t.subs.forEach(function (sb) { if (sb.id === sp[1]) sb.done = !sb.done; }); }); save(); renderList(); return; }
 
+        var openSub = e.target.closest('.open-sub-btn');
+        if (openSub) {
+          var osid = openSub.getAttribute('data-open-sub');
+          state.openSubAdd = (state.openSubAdd === osid) ? null : osid;
+          renderList();
+          if (state.openSubAdd) {
+            var inpS = document.querySelector('[data-sub-inp="' + osid + '"]');
+            if (inpS) inpS.focus();
+          }
+          return;
+        }
+
+        var saveSub = e.target.closest('.sub-save-btn');
+        if (saveSub) {
+          var ssid = saveSub.getAttribute('data-sub-save');
+          var inpS2 = document.querySelector('[data-sub-inp="' + ssid + '"]');
+          var valS = inpS2 ? inpS2.value.trim() : '';
+          if (valS) {
+            state.quadTasks.forEach(function (t) {
+              if (t.id === ssid) {
+                if (!t.subs) t.subs = [];
+                t.subs.push({ id: 's' + Date.now(), title: valS, done: false });
+              }
+            });
+            save(); renderList(); toast('已添加子任务');
+            var inpAgain = document.querySelector('[data-sub-inp="' + ssid + '"]');
+            if (inpAgain) inpAgain.focus();
+          }
+          return;
+        }
+
+        var delSub = e.target.closest('.del-qsub');
+        if (delSub) {
+          var snapSb = JSON.stringify(state);
+          var dsp = delSub.getAttribute('data-del-qsub').split('|');
+          state.quadTasks.forEach(function (t) {
+            if (t.id === dsp[0] && t.subs) t.subs = t.subs.filter(function (sb) { return sb.id !== dsp[1]; });
+          });
+          save(); renderList(); toast('已删除子任务', snapSb);
+          return;
+        }
+
+        var axisFocus = e.target.closest('.axis-focus-btn');
+        if (axisFocus) {
+          state.dayIdx = parseInt(axisFocus.getAttribute('data-axis-focus'), 10) || 0;
+          save(); renderAll();
+          return;
+        }
+
+        if (e.target.id === 'axis-pad-prev') {
+          if (state.weekIdx > 0) { state.weekIdx -= 1; save(); renderAll(); }
+          return;
+        }
+        if (e.target.id === 'axis-pad-next') {
+          if (state.weekIdx < WEEKS.length - 1) { state.weekIdx += 1; save(); renderAll(); }
+          return;
+        }
+
         var delQt = e.target.closest('.del-qt');
         if (delQt) { var snapQ = JSON.stringify(state); var dqid = delQt.getAttribute('data-del-qt'); state.quadTasks = state.quadTasks.filter(function (t) { return t.id !== dqid; }); save(); renderList(); toast('已删除待办', snapQ); return; }
 
@@ -1743,17 +2501,132 @@
         var algBtn = e.target.closest('.done-alg-btn');
         if (algBtn) { var wid2 = algBtn.getAttribute('data-done-alg'); state.doneAlg[wid2] = !state.doneAlg[wid2]; save(); renderAll(); return; }
 
-        var gpStep = e.target.closest('.gp-step');
-        if (gpStep) {
-          var gp = gpStep.getAttribute('data-gp').split('|');
-          var gid = gp[0], pIdx = parseInt(gp[1], 10), delta = parseInt(gp[2], 10);
-          state.grades.forEach(function (g) {
-            if (g.id === gid && g.parts[pIdx]) {
-              g.parts[pIdx].s = Math.min(100, Math.max(40, g.parts[pIdx].s + delta));
+        var trSel = e.target.closest('.track-sel-btn');
+        if (trSel) { state.activeTrackId = trSel.getAttribute('data-track-sel'); save(); renderProgress(); return; }
+
+        var trMs = e.target.closest('.track-ms-btn');
+        if (trMs) {
+          var p = trMs.getAttribute('data-track-ms').split('|');
+          (state.tracks || []).forEach(function (tr) {
+            if (tr.id === p[0]) (tr.milestones || []).forEach(function (m) { if (m.id === p[1]) m.done = !m.done; });
+          });
+          save(); renderProgress(); return;
+        }
+
+        var gfBtn = e.target.closest('.gfilter-btn');
+        if (gfBtn) { state.gradeFilter = gfBtn.getAttribute('data-gfilter'); save(); renderLife(); return; }
+
+        var gOpen = e.target.closest('.gopen-btn');
+        if (gOpen) {
+          var goid = gOpen.getAttribute('data-gopen');
+          if (!state.expandedGradeCards) state.expandedGradeCards = {};
+          state.expandedGradeCards[goid] = !state.expandedGradeCards[goid];
+          renderLife(); return;
+        }
+
+        var gEdit = e.target.closest('.gedit-btn');
+        if (gEdit) { var geid = gEdit.getAttribute('data-gedit'); state.expandedGradeEdit = (state.expandedGradeEdit === geid ? null : geid); renderLife(); return; }
+
+        var gDel = e.target.closest('.gdel-btn');
+        if (gDel) { var snapG = JSON.stringify(state); var gdid = gDel.getAttribute('data-gdel'); state.grades = state.grades.filter(function (x) { return x.id !== gdid; }); save(); renderAll(); toast('已删除课程成绩', snapG); return; }
+
+        var gPass = e.target.closest('.gpass-btn');
+        if (gPass) { var gpid = gPass.getAttribute('data-gpass'); state.grades.forEach(function (x) { if (x.id === gpid) x.passed = !x.passed; }); save(); renderAll(); return; }
+
+        var gLv = e.target.closest('.glevel-btn');
+        if (gLv) { var gl = gLv.getAttribute('data-glevel').split('|'); state.grades.forEach(function (x) { if (x.id === gl[0]) x.level = gl[1]; }); save(); renderAll(); return; }
+
+        var gTpl = e.target.closest('.gtpl-btn');
+        if (gTpl) {
+          var gt = gTpl.getAttribute('data-gtpl').split('|');
+          var tpl = GRADE_TEMPLATES[gt[1]];
+          if (tpl) {
+            state.grades.forEach(function (x) {
+              if (x.id === gt[0] && x.root) {
+                var oldScores = {};
+                collectLeafScores(x.root, oldScores);
+                x.root.children = tpl.make();
+                applySavedLeafScores(x.root, oldScores);
+              }
+            });
+            save(); renderAll(); toast('已套用「' + tpl.label + '」模板并保留同名分数');
+          }
+          return;
+        }
+
+        var gBal = e.target.closest('.gbal-btn');
+        if (gBal) {
+          var gbid = gBal.getAttribute('data-gbal');
+          state.grades.forEach(function (x) {
+            if (x.id === gbid && x.root) {
+              function balAll(nd) {
+                if (nd.children && nd.children.length) {
+                  normalizeNodeWeights(nd, 100);
+                  nd.children.forEach(balAll);
+                }
+              }
+              balAll(x.root);
             }
           });
-          save();
-          renderAll();
+          save(); renderAll(); toast('已将各级子项权重配平为 100%');
+          return;
+        }
+
+        var gNodeAdd = e.target.closest('.gnode-add');
+        if (gNodeAdd) {
+          var ga = gNodeAdd.getAttribute('data-gnode-add').split('|');
+          state.grades.forEach(function (x) {
+            if (x.id === ga[0] && x.root) {
+              var found = findNodeAndParent(x.root, ga[1]);
+              if (found && found.node) {
+                var nd = found.node;
+                if (!nd.children) nd.children = [];
+                if (nd.id !== x.root.id && nd.children.length === 0) {
+                  nd.children = [
+                    { id: 'n' + Date.now() + 'a', name: nd.name + '明细1', weight: 50, score: nd.score, children: [] },
+                    { id: 'n' + Date.now() + 'b', name: nd.name + '明细2', weight: 50, score: null, children: [] }
+                  ];
+                  nd.score = null;
+                } else {
+                  var curSum = nd.children.reduce(function (acc, c) { return acc + (Number(c.weight) || 0); }, 0);
+                  var rem = Math.max(0, Math.round((100 - curSum) * 10) / 10);
+                  nd.children.push({ id: 'n' + Date.now(), name: '新分项', weight: rem > 0 ? rem : 10, score: null, children: [] });
+                }
+              }
+            }
+          });
+          save(); renderAll();
+          return;
+        }
+
+        var gNodeDel = e.target.closest('.gnode-del');
+        if (gNodeDel) {
+          var snapNd = JSON.stringify(state);
+          var gd = gNodeDel.getAttribute('data-gnode-del').split('|');
+          state.grades.forEach(function (x) {
+            if (x.id === gd[0] && x.root) {
+              var found = findNodeAndParent(x.root, gd[1]);
+              if (found && found.parent && found.parent.children) {
+                found.parent.children = found.parent.children.filter(function (c) { return c.id !== gd[1]; });
+              }
+            }
+          });
+          save(); renderAll(); toast('已删除成绩分项', snapNd);
+          return;
+        }
+
+        var gNodeAuto = e.target.closest('.gnode-auto');
+        if (gNodeAuto) {
+          var gna = gNodeAuto.getAttribute('data-gnode-auto').split('|');
+          state.grades.forEach(function (x) {
+            if (x.id === gna[0] && x.root) {
+              var found = findNodeAndParent(x.root, gna[1]);
+              if (found && found.node) {
+                found.node.source = (found.node.source === 'attendance') ? null : 'attendance';
+              }
+            }
+          });
+          save(); renderAll();
           return;
         }
 
@@ -1780,6 +2653,22 @@
       });
 
       document.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && e.target.classList.contains('sub-add-inp')) {
+          var sid = e.target.getAttribute('data-sub-inp');
+          var sv = e.target.value.trim();
+          if (sv) {
+            state.quadTasks.forEach(function (t) {
+              if (t.id === sid) {
+                if (!t.subs) t.subs = [];
+                t.subs.push({ id: 's' + Date.now(), title: sv, done: false });
+              }
+            });
+            save(); renderList(); toast('已添加子任务');
+            var nextInp = document.querySelector('[data-sub-inp="' + sid + '"]');
+            if (nextInp) nextInp.focus();
+          }
+          return;
+        }
         if (e.key === 'Enter' && e.target.classList.contains('att-note-inp')) {
           var ak = e.target.getAttribute('data-att-note');
           var prev = state.attendance[ak] || { status: '自学' };
@@ -1841,10 +2730,163 @@
       document.getElementById('btn-close-search').addEventListener('click', function () { document.getElementById('search-modal').classList.add('hidden'); });
       document.getElementById('global-search-input').addEventListener('input', function () { renderSearch(this.value); });
 
+      document.getElementById('btn-toggle-week-mode').addEventListener('click', function () { state.weekAxisCompact = !state.weekAxisCompact; save(); renderWeekAxis(); });
+      document.getElementById('btn-center-today-axis').addEventListener('click', function () { state.weekIdx = NOW_WEEK_IDX; state.dayIdx = NOW_DAY_IDX; save(); renderAll(); toast('已居中到今日'); });
+      window.addEventListener('resize', function () { if (state.tab === 'list' && state.listSub === 'timetable') renderWeekAxis(); });
       document.getElementById('btn-week-prev').addEventListener('click', function () { if (state.weekIdx > 0) { state.weekIdx -= 1; state.selectedWeekBlock = null; save(); renderAll(); } });
       document.getElementById('btn-week-next').addEventListener('click', function () { if (state.weekIdx < WEEKS.length - 1) { state.weekIdx += 1; state.selectedWeekBlock = null; save(); renderAll(); } });
       document.getElementById('wbd-toggle-done').addEventListener('click', function () { if (!state.selectedWeekBlock) return; state.blockDone[state.selectedWeekBlock] = !state.blockDone[state.selectedWeekBlock]; save(); renderAll(); });
       document.getElementById('wbd-toggle-cancel').addEventListener('click', function () { if (!state.selectedWeekBlock) return; state.skipped[state.selectedWeekBlock] = !state.skipped[state.selectedWeekBlock]; save(); renderAll(); });
+
+      document.addEventListener('change', function (e) {
+        var el = e.target;
+        if (el.classList.contains('gnode-name')) {
+          var a = el.getAttribute('data-gnode-name').split('|');
+          state.grades.forEach(function (x) { if (x.id === a[0] && x.root) { var f = findNodeAndParent(x.root, a[1]); if (f) f.node.name = el.value.trim() || '分项'; } });
+          save(); renderAll(); return;
+        }
+        if (el.classList.contains('gnode-w')) {
+          var b = el.getAttribute('data-gnode-w').split('|');
+          var wv = Math.max(0, Math.min(100, parseFloat(el.value) || 0));
+          state.grades.forEach(function (x) { if (x.id === b[0] && x.root) { var f = findNodeAndParent(x.root, b[1]); if (f) f.node.weight = wv; } });
+          save(); renderAll(); return;
+        }
+        if (el.classList.contains('gnode-s')) {
+          var c = el.getAttribute('data-gnode-s').split('|');
+          var sv = el.value === '' ? null : Math.max(0, Math.min(150, parseFloat(el.value)));
+          state.grades.forEach(function (x) { if (x.id === c[0] && x.root) { var f = findNodeAndParent(x.root, c[1]); if (f) f.node.score = isNaN(sv) ? null : sv; } });
+          save(); renderAll(); return;
+        }
+        if (el.classList.contains('ghypo-inp')) {
+          var gid = el.getAttribute('data-ghypo');
+          state.grades.forEach(function (x) { if (x.id === gid) x.hypo = el.value === '' ? '' : parseFloat(el.value); });
+          save(); renderLife(); return;
+        }
+        if (el.classList.contains('gcr-inp')) {
+          var gid2 = el.getAttribute('data-gcr');
+          state.grades.forEach(function (x) { if (x.id === gid2) x.credit = Math.max(0, parseFloat(el.value) || 0); });
+          save(); renderAll(); return;
+        }
+        if (el.classList.contains('gtgt-inp')) {
+          var gid3 = el.getAttribute('data-gtgt');
+          state.grades.forEach(function (x) { if (x.id === gid3) x.target = Math.max(60, Math.min(100, parseFloat(el.value) || 90)); });
+          save(); renderAll(); return;
+        }
+        if (el.classList.contains('gscale-sel')) {
+          var gid4 = el.getAttribute('data-gscale');
+          state.grades.forEach(function (x) { if (x.id === gid4) x.scale = el.value; });
+          save(); renderAll(); return;
+        }
+      });
+
+      document.getElementById('sem-select').addEventListener('change', function () {
+        state.activeSemId = this.value;
+        save(); renderAll();
+      });
+
+      document.getElementById('btn-toggle-gpa-scope').addEventListener('click', function () {
+        state.gpaScope = (state.gpaScope === 'all') ? 'current' : 'all';
+        save(); renderAll();
+      });
+
+      document.getElementById('btn-add-semester').addEventListener('click', function () {
+        document.getElementById('add-sem-box').classList.toggle('hidden');
+      });
+
+      document.getElementById('btn-save-new-sem').addEventListener('click', function () {
+        var nm = (document.getElementById('new-sem-name').value || '').trim();
+        if (!nm) return;
+        var sid = 'sem-' + Date.now();
+        state.semesters.push({ id: sid, name: nm, startDate: '2027-02-22', weeks: 8 });
+        state.activeSemId = sid;
+        state.gpaScope = 'current';
+        document.getElementById('new-sem-name').value = '';
+        document.getElementById('add-sem-box').classList.add('hidden');
+        save(); renderAll(); toast('已建立并切换到「' + nm + '」');
+      });
+
+      document.getElementById('btn-toggle-new-track').addEventListener('click', function () {
+        document.getElementById('new-track-box').classList.toggle('hidden');
+      });
+
+      document.getElementById('btn-archive-track').addEventListener('click', function () {
+        (state.tracks || []).forEach(function (tr) {
+          if (tr.id === state.activeTrackId) {
+            tr.status = (tr.status === 'archived') ? 'active' : 'archived';
+            toast(tr.status === 'archived' ? ('已归档「' + tr.title + '」') : ('已恢复「' + tr.title + '」'));
+          }
+        });
+        save(); renderProgress();
+      });
+
+      document.getElementById('btn-save-new-track').addEventListener('click', function () {
+        var title = (document.getElementById('nt-title').value || '').trim();
+        var dates = (document.getElementById('nt-dates').value || '').trim();
+        var raw = (document.getElementById('nt-items').value || '').trim();
+        if (!title && !raw) return;
+        var tid = 'tr-' + Date.now();
+        var newTr = null;
+        if (raw.charAt(0) === '{') {
+          try {
+            var parsed = JSON.parse(raw);
+            newTr = {
+              id: tid, builtin: false,
+              title: parsed.title || title || '导入专题',
+              dates: parsed.dates || dates || '',
+              status: 'active',
+              milestones: (parsed.milestones || []).map(function (m, i) {
+                return { id: 'm' + Date.now() + i, title: m.title || String(m), url: m.url || '', done: !!m.done };
+              })
+            };
+          } catch (err) { toast('JSON 格式有误'); return; }
+        } else {
+          var lines = raw.split(/\r?\n/).map(function (l) { return l.trim(); }).filter(Boolean);
+          newTr = {
+            id: tid, builtin: false,
+            title: title || '新自学专题',
+            dates: dates,
+            status: 'active',
+            milestones: lines.map(function (l, i) {
+              var pts = l.split('|');
+              return { id: 'm' + Date.now() + i, title: pts[0].trim(), url: pts[1] ? pts[1].trim() : '', done: false };
+            })
+          };
+        }
+        state.tracks.push(newTr);
+        state.activeTrackId = tid;
+        document.getElementById('nt-title').value = '';
+        document.getElementById('nt-dates').value = '';
+        document.getElementById('nt-items').value = '';
+        document.getElementById('new-track-box').classList.add('hidden');
+        save(); renderProgress(); toast('已创建并启用专题「' + newTr.title + '」');
+      });
+
+      document.getElementById('gpa-preset-sel').addEventListener('change', function () {
+        state.gpaPreset = this.value;
+        save();
+        renderAll();
+      });
+
+      document.getElementById('btn-add-course-grade').addEventListener('click', function () {
+        document.getElementById('add-grade-box').classList.toggle('hidden');
+      });
+
+      document.getElementById('btn-save-new-grade').addEventListener('click', function () {
+        var name = (document.getElementById('new-g-name').value || '').trim();
+        if (!name) return;
+        var cr = Math.max(0.5, parseFloat(document.getElementById('new-g-credit').value) || 3);
+        var sc = document.getElementById('new-g-scale').value || 'percent';
+        var gid = 'g' + Date.now();
+        state.grades.push({
+          id: gid, semId: state.activeSemId || '2026-winter', name: name, credit: cr, scale: sc, level: 'A', passed: true, target: 90, hypo: '',
+          root: { id: 'r' + Date.now(), name: '总评', weight: 100, score: null, children: GRADE_TEMPLATES['40_60'].make() }
+        });
+        if (!state.expandedGradeCards) state.expandedGradeCards = {};
+        state.expandedGradeCards[gid] = true;
+        document.getElementById('new-g-name').value = '';
+        document.getElementById('add-grade-box').classList.add('hidden');
+        save(); renderAll(); toast('已添加课程「' + name + '」');
+      });
 
       document.getElementById('btn-parse-sleep').addEventListener('click', function () {
         var txt = (document.getElementById('sl-nlp-input').value || '').trim();
@@ -1853,14 +2895,117 @@
         var mLight = /浅睡\s*(\d+)/.exec(txt);
         var mRem = /REM\s*(\d+)/i.exec(txt);
         var mAwake = /清醒\s*(\d+)/.exec(txt);
+        var mSteps = /步数\s*(\d+)/.exec(txt);
+        var mKcal = /消耗\s*(\d+)/.exec(txt);
         if (mRange) { state.sleepRec.start = mRange[1]; state.sleepRec.end = mRange[2]; }
         if (mDeep) state.sleepRec.deep = parseInt(mDeep[1], 10);
         if (mLight) state.sleepRec.light = parseInt(mLight[1], 10);
         if (mRem) state.sleepRec.rem = parseInt(mRem[1], 10);
         if (mAwake) state.sleepRec.awake = parseInt(mAwake[1], 10);
+        if (mSteps) state.sleepRec.steps = parseInt(mSteps[1], 10);
+        if (mKcal) state.sleepRec.activeKcal = parseInt(mKcal[1], 10);
         save();
         renderAll();
         toast('已按小米健康模型重新推算');
+      });
+
+      // Health Connect Native Bridge (Capacitor APK) with clear PWA fallback
+      document.getElementById('btn-hc-sync').addEventListener('click', function () {
+        var hc = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.HealthConnect;
+        var statusEl = document.getElementById('hc-status-line');
+        if (!hc) {
+          statusEl.textContent = '当前为网页 PWA 环境，浏览器受系统权限限制无法直接读取 Android Health Connect；请点击右侧「导入小米 CSV」或下方速记更新。打包为安卓 APK 后此按钮会自动拉取小米手环数据。';
+          toast('网页版不支持 Health Connect，可导入小米 CSV');
+          return;
+        }
+        statusEl.textContent = '正在请求 Health Connect 权限并读取近 14 天睡眠与步数…';
+        Promise.resolve(hc.requestHealthPermissions()).then(function () {
+          return Promise.all([hc.readSleep({ days: 14 }), hc.readMetrics({ days: 14 })]);
+        }).then(function (res) {
+          var sleeps = (res[0] && res[0].sessions) ? res[0].sessions : [];
+          var days = (res[1] && res[1].days) ? res[1].days : [];
+          if (sleeps.length) {
+            var latest = sleeps[0];
+            state.sleepRec.start = latest.start || state.sleepRec.start;
+            state.sleepRec.end = latest.end || state.sleepRec.end;
+            if (latest.deepMinutes != null) state.sleepRec.deep = latest.deepMinutes;
+            if (latest.lightMinutes != null) state.sleepRec.light = latest.lightMinutes;
+            if (latest.remMinutes != null) state.sleepRec.rem = latest.remMinutes;
+            if (latest.awakeMinutes != null) state.sleepRec.awake = latest.awakeMinutes;
+            if (latest.awakenings != null) state.sleepRec.awakenings = latest.awakenings;
+          }
+          if (days.length) {
+            var todayM = days[days.length - 1];
+            if (todayM.steps != null) state.sleepRec.steps = todayM.steps;
+            if (todayM.calories != null) state.sleepRec.activeKcal = Math.round(todayM.calories);
+          }
+          statusEl.textContent = '已从安卓 Health Connect 同步最新小米手环数据。';
+          save(); renderAll(); toast('Health Connect 同步完成');
+        }).catch(function () {
+          statusEl.textContent = 'Health Connect 读取失败，请确认已在系统健康连接中授予权限。';
+          toast('Health Connect 同步失败');
+        });
+      });
+
+      // Xiaomi Mi Fitness GDPR CSV & Zepp Life / Generic CSV Importer
+      document.getElementById('xiaomi-csv-file').addEventListener('change', function (e) {
+        var file = e.target.files && e.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function () {
+          var text = String(reader.result || '');
+          var lines = text.split(/\r?\n/).filter(function (l) { return l.trim(); });
+          var updated = false;
+          for (var i = lines.length - 1; i >= 1; i--) {
+            var ln = lines[i];
+            var jStart = ln.indexOf('{');
+            if (jStart > 0) {
+              try {
+                var rawJson = ln.slice(jStart).replace(/""/g, '"').replace(/"$/, '');
+                var obj = JSON.parse(rawJson);
+                if (obj.sleep_deep_duration != null || obj.deep_duration != null || obj.duration != null) {
+                  var div = (obj.sleep_deep_duration > 600 || obj.duration > 1440) ? 60 : 1;
+                  if (obj.sleep_deep_duration != null) state.sleepRec.deep = Math.round(obj.sleep_deep_duration / div);
+                  if (obj.sleep_light_duration != null) state.sleepRec.light = Math.round(obj.sleep_light_duration / div);
+                  if (obj.sleep_rem_duration != null) state.sleepRec.rem = Math.round(obj.sleep_rem_duration / div);
+                  if (obj.sleep_awake_duration != null) state.sleepRec.awake = Math.round(obj.sleep_awake_duration / div);
+                  updated = true; break;
+                }
+                if (obj.steps != null) {
+                  state.sleepRec.steps = Math.round(Number(obj.steps) || 0);
+                  if (obj.calories != null) state.sleepRec.activeKcal = Math.round(Number(obj.calories) || 0);
+                  updated = true;
+                }
+              } catch (err) {}
+            }
+          }
+          if (!updated && lines.length >= 2) {
+            var hdr = lines[0].toLowerCase().split(',');
+            var lastCols = lines[lines.length - 1].split(',');
+            var idxOf = function (keys) {
+              for (var k = 0; k < keys.length; k++) {
+                for (var h = 0; h < hdr.length; h++) if (hdr[h].indexOf(keys[k]) >= 0) return h;
+              }
+              return -1;
+            };
+            var iDeep = idxOf(['deep', '深睡']), iLight = idxOf(['shallow', 'light', '浅睡']), iRem = idxOf(['rem']), iAwk = idxOf(['wake', '清醒']), iSteps = idxOf(['step', '步数']), iCal = idxOf(['cal', '热量', '千卡']);
+            if (iDeep >= 0) { state.sleepRec.deep = parseInt(lastCols[iDeep], 10) || state.sleepRec.deep; updated = true; }
+            if (iLight >= 0) { state.sleepRec.light = parseInt(lastCols[iLight], 10) || state.sleepRec.light; updated = true; }
+            if (iRem >= 0) { state.sleepRec.rem = parseInt(lastCols[iRem], 10) || state.sleepRec.rem; updated = true; }
+            if (iAwk >= 0) { state.sleepRec.awake = parseInt(lastCols[iAwk], 10) || state.sleepRec.awake; updated = true; }
+            if (iSteps >= 0) { state.sleepRec.steps = parseInt(lastCols[iSteps], 10) || state.sleepRec.steps; updated = true; }
+            if (iCal >= 0) { state.sleepRec.activeKcal = parseInt(lastCols[iCal], 10) || state.sleepRec.activeKcal; updated = true; }
+          }
+          e.target.value = '';
+          if (updated) {
+            save(); renderAll();
+            document.getElementById('hc-status-line').textContent = '已从 CSV 文件（' + file.name + '）导入最新健康数据。';
+            toast('小米 CSV 导入成功');
+          } else {
+            toast('未在 CSV 中识别到睡眠或步数记录');
+          }
+        };
+        reader.readAsText(file, 'utf-8');
       });
 
       document.getElementById('habit-vocab').addEventListener('click', function () { state.vocabDone = !state.vocabDone; save(); renderToday(); });
@@ -2013,6 +3158,21 @@
         try { document.execCommand('copy'); toast('存档已复制'); } catch (e) { toast('复制失败'); }
         document.body.removeChild(ta);
       }
+
+      
+      document.getElementById('btn-native-notify').addEventListener('click', function () {
+        var np = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Notify;
+        if (!np) { toast('网页版请点右侧「导出 .ics」写入系统日历；安装安卓 APK 后可启用原生闹钟提醒'); return; }
+        Promise.resolve(np.requestPermission()).then(function () {
+          var now = new Date();
+          var target2330 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 30, 0).getTime();
+          if (target2330 < Date.now()) target2330 += 86400000;
+          return np.schedule({ items: [
+            { id: 1001, at: target2330, title: '日迹 · 23:30 收尾提醒', body: '准备收尾，00:00 准时入睡', route: 'today' }
+          ]});
+        }).then(function () { toast('已开启安卓系统提醒（含 23:30 收尾）'); })
+          .catch(function () { toast('请在系统设置中允许通知与闹钟权限'); });
+      });
 
       document.getElementById('btn-export-ics').addEventListener('click', function () {
         var ics = [
