@@ -1,4 +1,4 @@
-const CACHE_NAME = 'study-os-v22';
+const CACHE_NAME = 'study-os-v24';
 const CORE_ASSETS = [
   './',
   './index.html',

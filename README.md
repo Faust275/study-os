@@ -39,9 +39,10 @@
 study-os/
 ├── index.html              单页应用：视图 + 业务逻辑（无构建步骤）
 ├── app.css                 离线样式，check:classes 保证类名不悬空
-├── sw.js                   Service Worker，缓存版本 study-os-v20
+├── sw.js                   Service Worker，缓存版本 study-os-v24
 ├── manifest.json           PWA 清单
 ├── tools/check-classes.mjs CSS 类名门禁（CI 必跑）
+├── tools/verify-web.mjs    Web 行为回归测试（固定时钟，CI 必跑）
 ├── .github/workflows/      云端构建 APK + 明文密钥扫描
 └── android/
     ├── app/src/main/java/com/faust275/studyos/
@@ -55,7 +56,7 @@ study-os/
 - **Web 层**：原生 JS（无框架、无打包器），`localStorage` + `IndexedDB` 双持久化，自动快照用于回滚。
 - **原生层**：Capacitor 8；Health Connect 使用 `AggregateGroupByPeriodRequest` + `LocalDateTime` 过滤；小组件快照采用临时文件 + rename 原子落盘，勾选队列 peek→ack。
 - **离线**：Service Worker 逐项缓存，导航/静态资源缺失时返回明确的 503/504，而不是抛 `TypeError`。
-- **CI**：`check:classes` → 构建 → 上传 APK；构建前扫描 Token/私钥/keystore，命中即中止。
+- **CI**：`check:classes` + `test:web` → 构建与 JVM 单测 → 上传 APK；构建前扫描 Token/私钥/keystore，命中即中止。
 
 ## 数据与隐私
 
@@ -69,7 +70,8 @@ study-os/
 **网页**：无构建步骤，直接打开 `index.html` 即可。提交前跑：
 
 ```bash
-npm run check:classes     # index.html 用到的类必须存在于 app.css
+npm run check:classes     # index.html 用到的类必须存在于 app.css / inline style
+npm run test:web          # 固定时钟 Web 行为与交互回归测试
 ```
 
 **Android**（需 JDK 21 + Android SDK 36）：
@@ -81,7 +83,7 @@ npx cap sync android
 cd android && ./gradlew testDebugUnitTest assembleDebug
 ```
 
-`testDebugUnitTest` 里包含 Health Connect 请求契约测试，锁定「聚合请求必须用 `LocalDateTime`」这一行为。
+`testDebugUnitTest` 里包含 `HealthConnectRequestContractTest`（锁定聚合请求必须用 `LocalDateTime`）与 `WidgetSnapshotContractTest`（锁定小组件 7 日课表快照与跨日契约）。
 
 **CI 出包**：推送 `main` 或打 `v*` 标签，Actions 会跑 `check:classes`、扫描明文密钥并上传 APK。未配置签名 Secret 时产出 debug 包，但 debug 证书每次可能不同，**不能用于长期覆盖升级**。
 
@@ -105,7 +107,7 @@ keytool -genkeypair -v \
 
 4. 从 debug 包切到签名包只需一次：旧包「设置 → 导出备份」→ 卸载 → 安装签名包 → 导入备份。之后同签名的新包可直接覆盖升级。
 
-**versionCode 规则**：由 `package.json` 版本推导（`1.0.9 → 10009`）；CI 取 `max(推导值, 10000 + run_number)`，保证递增。手工构建被提示版本过低时，用 `APP_VERSION_CODE` 覆盖。
+**versionCode 规则**：由 `package.json` 版本推导（`1.0.10 → 10010`）；CI 取 `max(推导值, 10000 + run_number)`，保证递增。手工构建被提示版本过低时，用 `APP_VERSION_CODE` 覆盖。
 
 ## 已知限制
 
@@ -125,7 +127,7 @@ keytool -genkeypair -v \
 ## 更新记录
 
 ### v1.0.10
-- 清空示例与数据隔离：按演示种子精确清理示例成绩、考勤、补录、四象限（未改动的子任务）与专注底数，保留用户新增或修改的真实记录；APK 安装版中自动隐藏仅限网页同源使用的知识库同步入口。
+- 清空示例与数据隔离：按演示种子清理未改动的示例成绩、考勤、补录、四象限、日记、账本、饮食与专注底数，按可判定字段保留用户新增及已修改的真实记录；APK 安装版中自动隐藏仅限网页同源使用的知识库同步入口。
 - 月历与倒数：月历网格补全整月农历显示，月份切换改用 `YYYY-MM` 并支持跨年翻月；「近期关键倒数」改为按当前日期动态计算并自动递补未过期节点。
 - 专注与配额闭环：新增 `focusHistory` 按日专注字典，打通月历历史回看与周复盘；「本周额度计划」按周分桶存储（自动迁移旧版扁平数据），背单词与 23:30 收尾额度直接联动每日习惯打卡。
 - 提醒与 `.ics` 导出：统一通过 `getEffectiveDayItems` 消费跳过与顺延状态，修正顺延跨午夜的结束日期与稳定 `UID`/递增 `SEQUENCE`/`STATUS:CANCELLED`；日程变更后自动防抖重排系统闹钟；`NotifyScheduler.cancelAll` 改为按已存排程与固定区间兜底取消。

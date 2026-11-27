@@ -28,6 +28,15 @@ function makeFixedDate(isoStr) {
   return FixedDate;
 }
 
+async function waitFor(cond, msg = 'Condition timed out', timeoutMs = 500) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (cond()) return;
+    await new Promise((r) => setTimeout(r, 5));
+  }
+  assert(cond(), msg);
+}
+
 class FakeClassList {
   constructor(el) { this.el = el; this.set = new Set(); }
   _syncFromAttr(cls) { this.set = new Set(String(cls || '').split(/\s+/).filter(Boolean)); }
@@ -91,6 +100,7 @@ class FakeElement {
 
 function createHarness(initialStorage = {}, opts = {}) {
   const isNative = opts.isNative !== false;
+  const asyncHistory = !!opts.asyncHistory;
   const nowIso = opts.nowIso || '2026-11-27T12:00:00Z';
   const elements = new Map();
   const document = {
@@ -176,12 +186,27 @@ function createHarness(initialStorage = {}, opts = {}) {
   let historyIdx = 0;
   let historyPushCount = 0;
   let historyBackCount = 0;
+  let popstateCount = 0;
   let minimizeCount = 0;
   const backHandlers = [];
   const winListeners = new Map();
 
   function dispatchWindow(type, extra = {}) {
+    if (type === 'popstate') popstateCount++;
     (winListeners.get(type) || []).forEach((fn) => fn({ type, ...extra }));
+  }
+
+  function stepBackAndDispatch() {
+    if (asyncHistory) {
+      const t = globalThis.setTimeout(() => {
+        if (historyIdx > 0) historyIdx--;
+        dispatchWindow('popstate', { state: historyStack[historyIdx] });
+      }, 15);
+      if (t && typeof t.unref === 'function') t.unref();
+    } else {
+      if (historyIdx > 0) historyIdx--;
+      dispatchWindow('popstate', { state: historyStack[historyIdx] });
+    }
   }
 
   const sandbox = {
@@ -206,8 +231,14 @@ function createHarness(initialStorage = {}, opts = {}) {
     isNaN,
     isFinite,
     encodeURIComponent,
-    setTimeout: (fn) => { fn(); return 1; },
-    clearTimeout: () => {},
+    setTimeout: asyncHistory
+      ? (fn, ms) => {
+          const t = globalThis.setTimeout(fn, ms);
+          if (t && typeof t.unref === 'function') t.unref();
+          return t;
+        }
+      : (fn) => { fn(); return 1; },
+    clearTimeout: asyncHistory ? (t) => globalThis.clearTimeout(t) : () => {},
     setInterval: () => 1,
     clearInterval: () => {},
     Date: makeFixedDate(nowIso),
@@ -224,10 +255,7 @@ function createHarness(initialStorage = {}, opts = {}) {
       },
       back() {
         historyBackCount++;
-        if (historyIdx > 0) {
-          historyIdx--;
-          dispatchWindow('popstate', { state: historyStack[historyIdx] });
-        }
+        if (historyIdx > 0) stepBackAndDispatch();
       }
     }
   };
@@ -285,14 +313,12 @@ function createHarness(initialStorage = {}, opts = {}) {
     FakeElement,
     getHistoryPushCount: () => historyPushCount,
     getHistoryBackCount: () => historyBackCount,
+    getPopstateCount: () => popstateCount,
     getHistoryIndex: () => historyIdx,
     getHistoryState: () => historyStack[historyIdx],
     getMinimizeCount: () => minimizeCount,
     browserBack: () => {
-      if (historyIdx > 0) {
-        historyIdx--;
-        dispatchWindow('popstate', { state: historyStack[historyIdx] });
-      }
+      if (historyIdx > 0) stepBackAndDispatch();
     },
     triggerBack: () => backHandlers.forEach((fn) => fn()),
     dispatchWindow
@@ -541,3 +567,43 @@ assert(/<header\b[^>]*\bclass="[^"]*\bapp-header\b[^"]*"/.test(html), '<header> 
 assert(html.includes('.app-header { padding-top: var(--safe-t); }'), 'Missing .app-header safe-t rule');
 assert(html.includes('.app-body { padding-bottom: calc(6rem + var(--safe-b)); }'), 'Missing .app-body safe-b rule');
 console.log('[PASS] Top & bottom safe-area CSS contract verified');
+
+// Test Case I: True async history.back()/browserBack() sentinel cleanup + condition polling + LIFO z-index alignment
+const hAsync = createHarness({}, { isNative: false, asyncHistory: true, nowIso: '2026-11-27T12:00:00Z' });
+hAsync.elements.get('btn-open-settings').click();
+assert.equal(hAsync.getHistoryIndex(), 1);
+assert.equal(hAsync.getPopstateCount(), 0);
+hAsync.elements.get('btn-close-settings').click();
+assert(hAsync.elements.get('settings-modal').classList.contains('hidden'));
+assert.equal(hAsync.getHistoryIndex(), 1, 'history.back() must stay pending synchronously before async popstate');
+await waitFor(
+  () => hAsync.getPopstateCount() === 1 && hAsync.getHistoryIndex() === 0 && hAsync.getHistoryState() === null,
+  'Async history.back() must decrement index and deliver popstate'
+);
+
+hAsync.elements.get('btn-open-focus').click();
+hAsync.elements.get('btn-open-settings').click();
+const zFocus = Number(hAsync.elements.get('focus-modal').style.zIndex);
+const zSettings = Number(hAsync.elements.get('settings-modal').style.zIndex);
+assert(zFocus >= 40 && zSettings > zFocus && zSettings < 50,
+  `Expected dynamic z-index settings(${zSettings}) > focus(${zFocus}) and < 50`);
+hAsync.elements.get('btn-close-settings').click();
+assert.equal(hAsync.elements.get('settings-modal').style.zIndex, '', 'Closed modal zIndex must reset');
+assert(!hAsync.elements.get('focus-modal').classList.contains('hidden'));
+hAsync.elements.get('btn-close-focus').click();
+await waitFor(
+  () => hAsync.getPopstateCount() === 2 && hAsync.getHistoryIndex() === 0 && hAsync.getHistoryState() === null,
+  'Closing last stacked overlay must deliver async popstate and clear sentinel'
+);
+assert.equal(hAsync.elements.get('focus-modal').style.zIndex, '');
+
+// True async browserBack() after reopen must close modal cleanly without being swallowed
+hAsync.elements.get('btn-open-settings').click();
+assert.equal(hAsync.getHistoryIndex(), 1);
+hAsync.browserBack();
+assert(!hAsync.elements.get('settings-modal').classList.contains('hidden'), 'browserBack() must execute asynchronously');
+await waitFor(
+  () => hAsync.getPopstateCount() === 3 && hAsync.elements.get('settings-modal').classList.contains('hidden') && hAsync.getHistoryIndex() === 0,
+  'True async browserBack() must close reopened settings-modal'
+);
+console.log('[PASS] True async popstate/browserBack sentinel cleanup & LIFO modal z-index alignment verified');

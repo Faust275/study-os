@@ -4529,9 +4529,20 @@
       }
 
       var OVERLAY_FALLBACK_IDS = ['search-modal', 'goal-modal', 'focus-modal', 'settings-modal', 'quick-add-box'];
+      // 3B 若新增可与其它弹层叠加的悬浮 sheet/modal 且走 openOverlay()，须同步登记在此
+      var MODAL_OVERLAY_IDS = { 'search-modal': 1, 'goal-modal': 1, 'focus-modal': 1, 'settings-modal': 1 };
       var overlayStack = [];
       var webOverlayPushed = false;
       var ignoringOverlayPop = false;
+      var ignorePopTimer = null;
+      function syncOverlayZIndices() {
+        for (var i = 0; i < overlayStack.length; i++) {
+          var oid = overlayStack[i];
+          if (!MODAL_OVERLAY_IDS[oid]) continue;
+          var mel = document.getElementById(oid);
+          if (mel) mel.style.zIndex = String(40 + i);
+        }
+      }
       function pruneOverlayStack() {
         overlayStack = overlayStack.filter(function (id) {
           var el = document.getElementById(id);
@@ -4550,6 +4561,8 @@
       function pushOverlayHistoryState() {
         // 仅在 Web/PWA 注册 history 哨兵，APK 统一走 Capacitor App backButton
         if (window.Capacitor) return;
+        if (ignorePopTimer) { clearTimeout(ignorePopTimer); ignorePopTimer = null; }
+        ignoringOverlayPop = false;
         if (typeof history === 'undefined' || typeof history.pushState !== 'function') return;
         if (!webOverlayPushed) {
           try { history.pushState({ studyOsOverlay: true }, ''); webOverlayPushed = true; } catch (e) {}
@@ -4560,9 +4573,15 @@
         if (!webOverlayPushed || hasOpenOverlay()) return;
         webOverlayPushed = false;
         if (typeof history !== 'undefined' && typeof history.back === 'function' && history.state && history.state.studyOsOverlay === true) {
+          if (ignorePopTimer) { clearTimeout(ignorePopTimer); ignorePopTimer = null; }
           ignoringOverlayPop = true;
           try { history.back(); } catch (e) { ignoringOverlayPop = false; }
-          setTimeout(function () { ignoringOverlayPop = false; }, 150);
+          if (ignoringOverlayPop) {
+            ignorePopTimer = setTimeout(function () {
+              ignoringOverlayPop = false;
+              ignorePopTimer = null;
+            }, 120);
+          }
         }
       }
       function openOverlay(id) {
@@ -4570,11 +4589,13 @@
         if (el) el.classList.remove('hidden');
         overlayStack = overlayStack.filter(function (x) { return x !== id; });
         overlayStack.push(id);
+        syncOverlayZIndices();
         pushOverlayHistoryState();
       }
       function closeOverlay(id, fromPopstate) {
         overlayStack = overlayStack.filter(function (x) { return x !== id; });
         var el = document.getElementById(id);
+        if (el && MODAL_OVERLAY_IDS[id]) el.style.zIndex = '';
         if (id === 'search-modal') {
           if (el) el.classList.add('hidden');
           var sInp = document.getElementById('global-search-input');
@@ -4585,6 +4606,7 @@
         } else if (el) {
           el.classList.add('hidden');
         }
+        syncOverlayZIndices();
         if (!fromPopstate) cleanupOverlayHistoryState();
       }
       function closeSearchModal() {
@@ -4612,6 +4634,7 @@
         window.addEventListener('popstate', function () {
           if (ignoringOverlayPop) {
             ignoringOverlayPop = false;
+            if (ignorePopTimer) { clearTimeout(ignorePopTimer); ignorePopTimer = null; }
             return;
           }
           webOverlayPushed = false;
