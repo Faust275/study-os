@@ -8,8 +8,6 @@ import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
-import androidx.health.connect.client.records.DistanceRecord
-import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.records.StepsRecord
@@ -37,9 +35,8 @@ import java.time.format.DateTimeFormatter
 /**
  * 健康联动（Android Health Connect）插件（Kotlin 实现）
  * --------------------------------------------------
- * 读取系统级 Health Connect 中的睡眠会话（SleepSessionRecord）、日常活动量与运动会话（ExerciseSessionRecord）。
- * 支持状态诊断（isAvailable）、一键打开系统 Health Connect 权限设置页（openSettings），
- * 以及读取手环同步的锻炼记录（readWorkouts）。
+ * 只读读取系统级 Health Connect 中的睡眠会话（SleepSessionRecord）、步数与活动热量。
+ * 支持状态诊断（isAvailable）与一键打开系统 Health Connect 权限设置页（openSettings）。
  */
 @CapacitorPlugin(name = "HealthConnect")
 class HealthConnectPlugin : Plugin() {
@@ -134,7 +131,7 @@ class HealthConnectPlugin : Plugin() {
                     context.startActivity(market)
                     ret.put("opened", true)
                     call.resolve(ret)
-                } catch (e2: Exception) {
+                } catch (_: Exception) {
                     ret.put("opened", false)
                     ret.put("error", e.message ?: "无法打开 Health Connect 设置")
                     call.resolve(ret)
@@ -156,6 +153,11 @@ class HealthConnectPlugin : Plugin() {
             call.reject("当前环境无法发起授权，请尝试从系统设置开启 Health Connect 权限")
             return
         }
+        val act = activity
+        if (act == null) {
+            call.reject("当前页面尚未就绪")
+            return
+        }
         val perms = requiredPermissions()
         // 上一次授权还挂在系统弹窗上时，若再次发起会覆盖 pendingPermissionCall，让先前的 call 永久悬挂
         if (pendingPermissionCall != null) {
@@ -163,7 +165,7 @@ class HealthConnectPlugin : Plugin() {
             return
         }
         pendingPermissionCall = call
-        activity.runOnUiThread { launcher.launch(perms) }
+        act.runOnUiThread { launcher.launch(perms) }
     }
 
     /** 前端自动同步前查询已授予的读权限，避免每次启动都弹系统授权页。 */
@@ -194,16 +196,15 @@ class HealthConnectPlugin : Plugin() {
                 ret.put("grantedAll", false)
                 ret.put("error", e.message ?: "读取权限状态失败")
             }
-            activity.runOnUiThread { call.resolve(ret) }
+            activity?.runOnUiThread { call.resolve(ret) } ?: call.resolve(ret)
         }
     }
 
+    /** 与 AndroidManifest.xml 声明的只读健康权限严格一一对应 */
     private fun requiredPermissions(): Set<String> = setOf(
         HealthPermission.getReadPermission(SleepSessionRecord::class),
         HealthPermission.getReadPermission(StepsRecord::class),
-        HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
-        HealthPermission.getReadPermission(DistanceRecord::class),
-        HealthPermission.getReadPermission(ExerciseSessionRecord::class)
+        HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class)
     )
 
     @PluginMethod
@@ -264,9 +265,9 @@ class HealthConnectPlugin : Plugin() {
                 }
                 val ret = JSObject()
                 ret.put("sessions", sessions)
-                activity.runOnUiThread { call.resolve(ret) }
+                activity?.runOnUiThread { call.resolve(ret) } ?: call.resolve(ret)
             } catch (e: Exception) {
-                activity.runOnUiThread { call.reject(e.message, e) }
+                activity?.runOnUiThread { call.reject(e.message, e) } ?: call.reject(e.message, e)
             }
         }
     }
@@ -288,13 +289,12 @@ class HealthConnectPlugin : Plugin() {
                 val start = LocalDate.now(zone).minusDays(days.toLong() - 1).atStartOfDay()
                 val end = LocalDateTime.now(zone)
                 if (!end.isAfter(start)) {
-                    activity.runOnUiThread { call.reject("时间范围无效") }
+                    activity?.runOnUiThread { call.reject("时间范围无效") } ?: call.reject("时间范围无效")
                     return@launch
                 }
 
                 val steps = HashMap<String, Long>()
                 val cals = HashMap<String, Double>()
-                val dists = HashMap<String, Double>()
                 val denied = JSArray()
 
                 // 累计类数据用 Aggregate API：系统按用户设置的应用优先级去重，避免多来源（手环+手机）重复计数
@@ -312,7 +312,7 @@ class HealthConnectPlugin : Plugin() {
                         val k = b.startTime.toLocalDate().toString()
                         steps[k] = (steps[k] ?: 0L) + v
                     }
-                } catch (e: SecurityException) {
+                } catch (_: SecurityException) {
                     denied.put("步数")
                 }
                 try {
@@ -329,29 +329,12 @@ class HealthConnectPlugin : Plugin() {
                         val k = b.startTime.toLocalDate().toString()
                         cals[k] = (cals[k] ?: 0.0) + v.inKilocalories
                     }
-                } catch (e: SecurityException) {
+                } catch (_: SecurityException) {
                     denied.put("活动热量")
-                }
-                try {
-                    val resp = client.aggregateGroupByPeriod(
-                        AggregateGroupByPeriodRequest(
-                            metrics = setOf(DistanceRecord.DISTANCE_TOTAL),
-                            timeRangeFilter = TimeRangeFilter.between(start, end),
-                            timeRangeSlicer = Period.ofDays(1)
-                        )
-                    )
-                    for (b in resp) {
-                        if (!b.result.contains(DistanceRecord.DISTANCE_TOTAL)) continue
-                        val v = b.result[DistanceRecord.DISTANCE_TOTAL] ?: continue
-                        val k = b.startTime.toLocalDate().toString()
-                        dists[k] = (dists[k] ?: 0.0) + v.inMeters
-                    }
-                } catch (e: SecurityException) {
-                    denied.put("距离")
                 }
 
                 val keys = LinkedHashSet<String>()
-                keys.addAll(steps.keys); keys.addAll(cals.keys); keys.addAll(dists.keys)
+                keys.addAll(steps.keys); keys.addAll(cals.keys)
 
                 val arr = JSArray()
                 for (k in keys.sorted()) {
@@ -359,57 +342,15 @@ class HealthConnectPlugin : Plugin() {
                     s.put("date", k)
                     s.put("steps", steps[k] ?: 0L)
                     s.put("calories", Math.round(cals[k] ?: 0.0))
-                    s.put("distance", Math.round(dists[k] ?: 0.0))
                     arr.put(s)
                 }
                 val ret = JSObject()
                 ret.put("days", arr)
                 ret.put("denied", denied)
-                activity.runOnUiThread { call.resolve(ret) }
+                activity?.runOnUiThread { call.resolve(ret) } ?: call.resolve(ret)
             } catch (e: Exception) {
-                activity.runOnUiThread { call.reject("hc_read_failed: " + (e.message ?: e.javaClass.simpleName), e) }
-            }
-        }
-    }
-
-    @PluginMethod
-    fun readWorkouts(call: PluginCall) {
-        if (hcClient == null) refreshStatus()
-        val client = hcClient
-        if (client == null) {
-            val empty = JSObject()
-            empty.put("workouts", JSArray())
-            call.resolve(empty)
-            return
-        }
-        val days = (call.getInt("days", 14) ?: 14).coerceIn(1, 60)
-        val zone = ZoneId.systemDefault()
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val end = Instant.now()
-                val start = end.minus(Duration.ofDays(days.toLong()))
-                val records = readAll(client, ExerciseSessionRecord::class, start, end)
-                val workouts = JSArray()
-                for (r in records) {
-                    val zs = r.startTime.atZone(zone)
-                    val ze = r.endTime.atZone(zone)
-                    val dur = Duration.between(r.startTime, r.endTime).toMinutes().coerceAtLeast(1L)
-                    val w = JSObject()
-                    w.put("date", zs.toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE))
-                    w.put("start", String.format("%02d:%02d", zs.hour, zs.minute))
-                    w.put("end", String.format("%02d:%02d", ze.hour, ze.minute))
-                    w.put("durationMinutes", dur)
-                    w.put("exerciseType", r.exerciseType.toString())
-                    if (!r.title.isNullOrBlank()) w.put("title", r.title)
-                    workouts.put(w)
-                }
-                val ret = JSObject()
-                ret.put("workouts", workouts)
-                activity.runOnUiThread { call.resolve(ret) }
-            } catch (e: Exception) {
-                val empty = JSObject()
-                empty.put("workouts", JSArray())
-                activity.runOnUiThread { call.resolve(empty) }
+                val msg = "hc_read_failed: " + (e.message ?: e.javaClass.simpleName)
+                activity?.runOnUiThread { call.reject(msg, e) } ?: call.reject(msg, e)
             }
         }
     }

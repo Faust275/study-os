@@ -36,7 +36,9 @@ open class CourseWidgetProvider : AppWidgetProvider() {
             val todoId = intent.getStringExtra("todo_id") ?: ""
             if (todoId.isNotEmpty()) {
                 val snap = WidgetData.load(context)
-                val curDone = snap?.nextTodo?.done ?: false
+                val todayIso = LocalDate.now().toString()
+                val activeTodo = snap?.activeTodoOn(todayIso)
+                val curDone = if (activeTodo?.id == todoId) activeTodo.done else (snap?.nextTodo?.done ?: false)
                 val newDone = !curDone
                 // 1. 记入版本化 Mutation Log
                 WidgetMutations.recordToggle(context, todoId, newDone)
@@ -74,23 +76,23 @@ open class CourseWidgetProvider : AppWidgetProvider() {
 
     companion object {
         const val ACTION_TOGGLE_TODO = "com.faust275.studyos.ACTION_TOGGLE_TODO"
+        private const val REQ_LAUNCH_TODAY = 0
+        private const val REQ_LIST_TEMPLATE = 1001
+        private const val REQ_TOGGLE_TODO = 2001
 
-        /** 快照不是今天的（跨午夜后 App 没再打开过）：标题和课程都可能过期。 */
-        private fun isStale(snap: WidgetSnapshot): Boolean =
-            snap.today.isNotEmpty() && snap.today != LocalDate.now().toString()
-
-        private fun computeDynamicHeaderTitle(snap: WidgetSnapshot): String {
-            if (isStale(snap)) return "打开 App 同步今日课程"
-            if (snap.courses.isEmpty()) return "今日无课"
+        private fun computeDynamicHeaderTitle(snap: WidgetSnapshot, todayIso: String): String {
+            if (snap.isStaleOn(todayIso)) return "打开 App 同步今日课程"
+            val dayCourses = snap.coursesFor(todayIso)
+            if (dayCourses.isEmpty()) return "今日无课"
             val now = LocalTime.now()
             val nowHm = String.format("%02d:%02d", now.hour, now.minute)
-            val ongoing = snap.courses.firstOrNull { c ->
+            val ongoing = dayCourses.firstOrNull { c ->
                 c.start.isNotEmpty() && c.end.isNotEmpty() && c.start <= nowHm && nowHm <= c.end
             }
             if (ongoing != null) {
                 return "上课中 · ${ongoing.name}"
             }
-            val nextCourse = snap.courses
+            val nextCourse = dayCourses
                 .filter { c -> c.start.isNotEmpty() && c.start > nowHm }
                 .minByOrNull { c -> c.start }
             if (nextCourse != null) {
@@ -107,52 +109,63 @@ open class CourseWidgetProvider : AppWidgetProvider() {
         ) {
             val views = RemoteViews(context.packageName, layoutRes)
             val snap = WidgetData.load(context)
+            val todayIso = LocalDate.now().toString()
+            val hasCourseList = layoutRes != R.layout.widget_layout_1x2
 
             if (snap != null) {
-                views.setTextViewText(R.id.widget_title, computeDynamicHeaderTitle(snap))
+                val stale = snap.isStaleOn(todayIso)
+                views.setTextViewText(R.id.widget_title, computeDynamicHeaderTitle(snap, todayIso))
                 views.setTextViewText(
                     R.id.widget_date,
-                    if (isStale(snap)) "数据停在 ${snap.today} · 打开 App 同步"
-                    else "${snap.weekday} · ${snap.today}"
+                    if (stale) "数据停在 ${snap.today} · 打开 App 同步"
+                    else "${snap.weekdayFor(todayIso)} · $todayIso"
                 )
             } else {
                 views.setTextViewText(R.id.widget_title, "日迹")
                 views.setTextViewText(R.id.widget_date, "打开 App 一次以同步")
             }
 
-            val serviceIntent = Intent(context, CourseWidgetService::class.java).apply {
-                putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-                data = android.net.Uri.parse("widget://course/$appWidgetId")
-            }
-            views.setRemoteAdapter(R.id.widget_list, serviceIntent)
-            views.setEmptyView(R.id.widget_list, R.id.widget_empty)
+            if (hasCourseList) {
+                val emptyText = if (snap == null || snap.isStaleOn(todayIso)) {
+                    "打开 App 同步今日日程"
+                } else {
+                    "今天没有课"
+                }
+                views.setTextViewText(R.id.widget_empty, emptyText)
 
-            val todo = snap?.nextTodo
+                val serviceIntent = Intent(context, CourseWidgetService::class.java).apply {
+                    putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+                    data = android.net.Uri.parse("widget://course/$appWidgetId")
+                }
+                views.setRemoteAdapter(R.id.widget_list, serviceIntent)
+                views.setEmptyView(R.id.widget_list, R.id.widget_empty)
+            }
+
+            val todo = snap?.activeTodoOn(todayIso)
             val exam = snap?.nextExam
             if (todo != null) {
                 val isDone = todo.done
                 views.setTextViewText(R.id.todo_label, if (isDone) "✓ 已完成待办" else "下一个待办")
-                val remain = when (todo.remainDays) {
-                    null -> ""
+                val remDays = snap.remainDaysFor(todo, todayIso)
+                val remain = when (remDays) {
+                    null -> todo.due
                     0 -> "今天"
                     1 -> "明天"
-                    else -> "${todo.remainDays} 天后"
+                    else -> "${remDays} 天后"
                 }
                 views.setTextViewText(R.id.todo_title, if (isDone) "✓ ${todo.title}" else todo.title)
                 views.setTextViewText(R.id.todo_remain, if (isDone) "已达成" else remain)
 
-                // 绑定免拉起桌面打勾 Intent
+                // 绑定免拉起桌面打勾 Intent（显式广播 + 固定 requestCode + IMMUTABLE）
                 if (todo.id.isNotEmpty()) {
                     val toggleIntent = Intent(context, CourseWidgetProvider::class.java).apply {
                         action = ACTION_TOGGLE_TODO
                         putExtra("todo_id", todo.id)
                     }
-                    val toggleFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-                    else PendingIntent.FLAG_UPDATE_CURRENT
+                    val toggleFlags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     val pendingToggle = PendingIntent.getBroadcast(
                         context,
-                        todo.id.hashCode(),
+                        REQ_TOGGLE_TODO,
                         toggleIntent,
                         toggleFlags
                     )
@@ -160,7 +173,7 @@ open class CourseWidgetProvider : AppWidgetProvider() {
                     views.setOnClickPendingIntent(R.id.todo_remain, pendingToggle)
                 }
             } else if (exam != null && exam.date.isNotEmpty()) {
-                views.setTextViewText(R.id.todo_label, "近期考试")
+                views.setTextViewText(R.id.todo_label, "近期节点")
                 val days = try {
                     ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.parse(exam.date)).toInt()
                 } catch (_: Exception) { null }
@@ -178,31 +191,33 @@ open class CourseWidgetProvider : AppWidgetProvider() {
                 views.setTextViewText(R.id.todo_remain, "")
             }
 
-            // 点组件根区域直接落到「今日」，课程列表项落到「课表」；其余区域保持原行为
+            // 点组件根区域直接落到「今日」，课程列表项落到「课表」
             val launch = context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
                 putExtra("cp_route", "today")
             }
-            val listLaunch = launch?.let { Intent(it).apply { putExtra("cp_route", "schedule") } }
-            val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            else PendingIntent.FLAG_UPDATE_CURRENT
-            val pending = PendingIntent.getActivity(context, 0, launch, flags)
+            val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            val pending = PendingIntent.getActivity(context, REQ_LAUNCH_TODAY, launch, flags)
             views.setOnClickPendingIntent(R.id.widget_root, pending)
 
-            // 绑定课程列表项点击进入 App 的 PendingIntentTemplate，激活 ListView 点击响应
-            val listClickFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-            else PendingIntent.FLAG_UPDATE_CURRENT
-            val listClickPending = PendingIntent.getActivity(context, 1001, listLaunch ?: launch, listClickFlags)
-            views.setPendingIntentTemplate(R.id.widget_list, listClickPending)
+            if (hasCourseList) {
+                val listLaunch = launch?.let { Intent(it).apply { putExtra("cp_route", "schedule") } }
+                // ListView 的 PendingIntentTemplate 需要配合 fillInIntent 使用，必须保留 FLAG_MUTABLE
+                val listClickFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+                else PendingIntent.FLAG_UPDATE_CURRENT
+                val listClickPending = PendingIntent.getActivity(context, REQ_LIST_TEMPLATE, listLaunch ?: launch, listClickFlags)
+                views.setPendingIntentTemplate(R.id.widget_list, listClickPending)
+            }
 
             appWidgetManager.updateAppWidget(appWidgetId, views)
-            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list)
+            if (hasCourseList) {
+                appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list)
+            }
         }
     }
 }
 
-/** 1×2 迷你胶囊小组件（1行×2列） */
+/** 1×2 迷你胶囊小组件（1行×2列，仅展示标题与待办速览，无课程列表） */
 class CourseWidgetProv1x2A : CourseWidgetProvider() {
     override val layoutRes: Int = R.layout.widget_layout_1x2
 }

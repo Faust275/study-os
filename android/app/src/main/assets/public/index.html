@@ -2,62 +2,174 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>日迹 · 冬学期日程与生活</title>
   <link rel="stylesheet" href="./app.css">
 <style>
     :root {
-      --bg: #F7F6F3;
-      --surface: #FFFFFF;
-      --surface-2: #F2F0EC;
-      --ink: #1C1F2B;
-      --ink-soft: #5C6274;
-      --ink-faint: #8E93A4;
-      --line: #E7E5E0;
-      --ana: #1E5663;
-      --alg: #5B4386;
-      --due: #A6512B;
-      --font-serif: "Source Han Serif SC", "Source Han Serif CN", "Noto Serif SC", "Songti SC", "STSong", serif;
+      color-scheme: light;
+      --safe-t: env(safe-area-inset-top, 0px);
+      --safe-b: env(safe-area-inset-bottom, 0px);
+      --bg: #F6F3EC;
+      --surface: #FFFEFA;
+      --surface-2: #EFECE4;
+      --surface-elev: rgba(255, 254, 250, 0.88);
+      --ink: #191C24;
+      --ink-soft: #555B6E;
+      --ink-faint: #888E9F;
+      --line: #E4DFD5;
+      --line-strong: #D3CCC0;
+      --ana: #1B5461;
+      --ana-ink: #123D47;
+      --ana-soft: rgba(27, 84, 97, 0.10);
+      --ana-border: rgba(27, 84, 97, 0.28);
+      --alg: #5A4185;
+      --alg-ink: #3E2A63;
+      --alg-soft: rgba(90, 65, 133, 0.10);
+      --alg-border: rgba(90, 65, 133, 0.28);
+      --due: #A84F28;
+      --due-ink: #7A3516;
+      --due-soft: rgba(168, 79, 40, 0.11);
+      --due-border: rgba(168, 79, 40, 0.30);
+      --rest: #C25466;
+      --rest-ink: #882337;
+      --rest-soft: rgba(194, 84, 102, 0.10);
+      --rest-border: rgba(194, 84, 102, 0.28);
+      --ok: #2B6150;
+      --ok-ink: #1B4739;
+      --ok-soft: rgba(43, 97, 80, 0.12);
+      --ok-border: rgba(43, 97, 80, 0.30);
+      --danger: #D14932;
+      --danger-ink: #8E2614;
+      --danger-soft: rgba(209, 73, 50, 0.10);
+      --danger-border: rgba(209, 73, 50, 0.34);
+      --warn-ink: #9A4D0C;
+      --warn-soft: rgba(217, 119, 6, 0.11);
+      --warn-border: rgba(217, 119, 6, 0.30);
+      --shadow-card: 0 1px 2px rgba(25, 28, 36, 0.04), 0 6px 18px -6px rgba(25, 28, 36, 0.05);
+      --shadow-float: 0 14px 34px -8px rgba(25, 28, 36, 0.14), 0 2px 6px rgba(25, 28, 36, 0.05);
+      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "HarmonyOS Sans SC", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+      --font-serif: "Source Han Serif SC", "Source Han Serif CN", "Noto Serif SC", "Songti SC", "STSong", Georgia, serif;
     }
     html.dark {
-      --bg: #141519;
-      --surface: #1D1F25;
-      --surface-2: #262932;
-      --ink: #EAECEF;
-      --ink-soft: #A0A6B5;
-      --ink-faint: #6D7382;
-      --line: #2C2F3A;
+      color-scheme: dark;
+      --bg: #12141A;
+      --surface: #1A1D25;
+      --surface-2: #232733;
+      --surface-elev: rgba(26, 29, 37, 0.88);
+      --ink: #ECEAE4;
+      --ink-soft: #A3A8B8;
+      --ink-faint: #6E7485;
+      --line: #2A2F3D;
+      --line-strong: #383E50;
+      --ana: #4BA3B5;
+      --ana-ink: #9ADAE7;
+      --ana-soft: rgba(75, 163, 181, 0.16);
+      --ana-border: rgba(75, 163, 181, 0.38);
+      --alg: #9E82D6;
+      --alg-ink: #D1C2F2;
+      --alg-soft: rgba(158, 130, 214, 0.16);
+      --alg-border: rgba(158, 130, 214, 0.38);
+      --due: #E08256;
+      --due-ink: #F7BFA5;
+      --due-soft: rgba(224, 130, 86, 0.16);
+      --due-border: rgba(224, 130, 86, 0.38);
+      --rest: #E87A8D;
+      --rest-ink: #FBC2CC;
+      --rest-soft: rgba(232, 122, 141, 0.15);
+      --rest-border: rgba(232, 122, 141, 0.36);
+      --ok: #4CA387;
+      --ok-ink: #A3E4CE;
+      --ok-soft: rgba(76, 163, 135, 0.16);
+      --ok-border: rgba(76, 163, 135, 0.38);
+      --danger: #EB6A54;
+      --danger-ink: #FECACA;
+      --danger-soft: rgba(235, 106, 84, 0.15);
+      --danger-border: rgba(235, 106, 84, 0.40);
+      --warn-ink: #FCD34D;
+      --warn-soft: rgba(245, 158, 11, 0.15);
+      --warn-border: rgba(245, 158, 11, 0.34);
+      --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.30), 0 8px 24px -8px rgba(0, 0, 0, 0.38);
+      --shadow-float: 0 16px 38px -8px rgba(0, 0, 0, 0.58);
     }
     body {
-      font-family: var(--font-serif);
-      background: var(--bg);
+      font-family: var(--font-sans);
+      background-color: var(--bg);
+      background-image: radial-gradient(ellipse at top, rgba(255, 255, 255, 0.55), transparent 70%);
       color: var(--ink);
       font-size: 14px;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
       transition: background-color 0.2s ease, color 0.2s ease;
     }
-    .surf { background: var(--surface); border-color: var(--line); }
+    html.dark body {
+      background-image: radial-gradient(ellipse at top, rgba(75, 163, 181, 0.05), transparent 65%);
+    }
+    .font-serif-ink,
+    #top-date-title,
+    #now-title,
+    #cal-month-title,
+    #week-axis-title,
+    #diary-feed,
+    #diary-input,
+    #wp-summary,
+    section h1,
+    .brand-serif {
+      font-family: var(--font-serif);
+      letter-spacing: 0.01em;
+    }
+    .surf { background: var(--surface); border-color: var(--line); box-shadow: var(--shadow-card); }
     .surf-2 { background: var(--surface-2); }
     .txt-main { color: var(--ink); }
     .txt-soft { color: var(--ink-soft); }
     .txt-faint { color: var(--ink-faint); }
+    .txt-ana { color: var(--ana); }
+    .txt-danger { color: var(--danger-ink); }
+    .txt-warn { color: var(--warn-ink); }
+    .tint-ana { background: var(--ana-soft); border-color: var(--ana-border); color: var(--ana-ink); }
+    .tint-alg { background: var(--alg-soft); border-color: var(--alg-border); color: var(--alg-ink); }
+    .tint-due { background: var(--due-soft); border-color: var(--due-border); color: var(--due-ink); }
+    .tint-rest { background: var(--rest-soft); border-color: var(--rest-border); color: var(--rest-ink); }
+    .tint-ok { background: var(--ok-soft); border-color: var(--ok-border); color: var(--ok-ink); }
+    .tint-danger { background: var(--danger-soft); border-color: var(--danger-border); color: var(--danger-ink); }
+    .tint-warn { background: var(--warn-soft); border-color: var(--warn-border); color: var(--warn-ink); }
+    .modal-mask {
+      background: rgba(12, 14, 20, 0.46);
+      -webkit-backdrop-filter: blur(5px);
+      backdrop-filter: blur(5px);
+    }
+    .sheet-panel { box-shadow: var(--shadow-float); }
+    .app-header { padding-top: var(--safe-t); }
+    .app-nav { background: var(--surface-elev); border-color: var(--line); }
+    .app-toast { bottom: calc(5rem + var(--safe-b)); box-shadow: var(--shadow-float); }
+    @media (max-width: 1023px) {
+      .app-nav { padding-bottom: var(--safe-b); }
+      .app-body { padding-bottom: calc(6rem + var(--safe-b)); }
+    }
+    @media (max-width: 639px) {
+      .sheet-panel { padding-bottom: calc(1.5rem + var(--safe-b)); }
+    }
     .num-tab { font-variant-numeric: tabular-nums; }
     .nav-item-active { color: var(--ink); font-weight: 700; }
     .nav-item-active .nav-dot { opacity: 1; }
     .day-active { background: var(--ink); color: var(--bg); }
     .subtab-active { color: var(--ink); font-weight: 700; border-bottom: 2px solid var(--ink); }
     .overdue-block {
-      background: rgba(217, 83, 56, 0.12) !important;
-      border-color: #D95338 !important;
-      color: #C43E22 !important;
+      background: var(--danger-soft) !important;
+      border-color: var(--danger-border) !important;
+      color: var(--danger-ink) !important;
     }
-    html.dark .overdue-block { color: #FCA5A5 !important; }
-    .done-block { opacity: 0.42; filter: saturate(0.4); }
+    .done-block { opacity: 0.44; filter: saturate(0.45); }
     .fade-in { animation: fadeIn 0.16s ease-out; }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(3px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
     }
     input[type="number"]::-webkit-inner-spin-button,
     input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
@@ -77,28 +189,9 @@
       }
       .snap-card-82 { flex: 0 0 82%; scroll-snap-align: center; }
       .snap-card-84 { flex: 0 0 84%; scroll-snap-align: center; }
-      .snap-card-88 { flex: 0 0 88%; scroll-snap-align: center; }
-    }
-    .week-3d-scroll {
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-    }
-    .week-3d-col {
-      flex: 0 0 calc((100% - 42px) / 3);
-      scroll-snap-align: center;
-    }
-    .week-3d-pad {
-      flex: 0 0 calc((100% - 42px) / 3);
-    }
-    .week-sticky-gutter {
-      position: sticky;
-      left: 0;
-      z-index: 15;
-      background: var(--surf);
     }
   </style>
-  <meta name="theme-color" content="#F7F6F3">
+  <meta id="meta-theme-color" name="theme-color" content="#F6F3EC">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="日迹">
@@ -106,10 +199,10 @@
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="./icon-192.png">
 </head>
-<body class="min-h-screen pb-24 lg:pb-10 lg:pl-48">
+<body class="app-body min-h-screen lg:pb-10 lg:pl-48">
 
   <!-- Quiet Top Bar -->
-  <header class="sticky top-0 z-20 backdrop-blur border-b" style="background: color-mix(in srgb, var(--bg) 90%, transparent); border-color: var(--line);">
+  <header class="app-header sticky top-0 z-20 backdrop-blur border-b" style="background: color-mix(in srgb, var(--bg) 90%, transparent); border-color: var(--line);">
     <div class="max-w-2xl lg:max-w-5xl mx-auto px-4 sm:px-5 py-2 min-h-[54px] flex items-center justify-between gap-2">
       <div class="flex flex-col sm:flex-row sm:items-baseline sm:gap-2 min-w-0">
         <span id="top-date-title" class="text-[15px] sm:text-base font-bold txt-main leading-tight shrink-0">11月28日</span>
@@ -189,7 +282,7 @@
       <!-- Same-origin Math-Course-Hub Doubtful Examples Queue -->
       <div id="hub-mastery-box" class="hidden surf rounded-2xl border p-3.5 space-y-2">
         <div class="flex items-center justify-between text-xs">
-          <span class="font-medium txt-main">知识库存疑例题（同源自动同步）</span>
+          <span class="font-medium txt-main">知识库存疑例题</span>
           <span id="hub-mastery-cnt" class="text-[11px] txt-faint num-tab"></span>
         </div>
         <div id="hub-mastery-list" class="flex flex-wrap gap-1.5"></div>
@@ -223,7 +316,7 @@
       <!-- Deferred / Makeup Pool -->
       <div id="makeup-pool-wrap" class="hidden space-y-2.5 fade-in">
         <div class="flex items-center justify-between">
-          <h2 class="text-xs font-medium text-[#C43E22]">被突发事项挤出的待补块</h2>
+          <h2 class="text-xs font-medium txt-danger">被突发事项挤出的待补块</h2>
           <button type="button" id="btn-clear-makeup" class="text-[11px] txt-faint">清空</button>
         </div>
         <div id="makeup-pool-list" class="space-y-2"></div>
@@ -288,16 +381,20 @@
       <div id="list-sub-calendar" class="list-sub-panel hidden space-y-4">
         <div class="surf rounded-2xl border p-4 space-y-3">
           <div class="flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <div id="cal-month-title" class="text-sm font-bold txt-main">2026 年 11 月</div>
-              <div class="text-[11px] txt-faint">农历 · 节假调休 · 当日全维回顾与时间块补录</div>
+            <div class="flex items-center gap-1.5">
+              <button type="button" id="btn-cal-prev" class="w-7 h-7 rounded-full hover:opacity-75 txt-soft flex items-center justify-center text-sm" aria-label="上个月">‹</button>
+              <div>
+                <div id="cal-month-title" class="text-sm font-bold txt-main">2026 年 11 月</div>
+                <div class="text-[11px] txt-faint">农历 · 节假调休 · 当日全维回顾与时间块补录</div>
+              </div>
+              <button type="button" id="btn-cal-next" class="w-7 h-7 rounded-full hover:opacity-75 txt-soft flex items-center justify-center text-sm" aria-label="下个月">›</button>
             </div>
             <div class="flex items-center gap-1.5 text-xs">
-              <button type="button" data-cal-m="11" class="cal-m-btn px-2.5 py-1 rounded-full surf-2 txt-main font-medium">11月</button>
-              <button type="button" data-cal-m="12" class="cal-m-btn px-2.5 py-1 rounded-full txt-soft">12月</button>
-              <button type="button" data-cal-m="1" class="cal-m-btn px-2.5 py-1 rounded-full txt-soft">1月</button>
-              <button type="button" data-cal-m="2" class="cal-m-btn px-2.5 py-1 rounded-full txt-soft">2月</button>
-              <button type="button" data-cal-m="3" class="cal-m-btn px-2.5 py-1 rounded-full txt-soft">3月</button>
+              <button type="button" data-cal-ym="2026-11" class="cal-m-btn px-2.5 py-1 rounded-full surf-2 txt-main font-medium">11月</button>
+              <button type="button" data-cal-ym="2026-12" class="cal-m-btn px-2.5 py-1 rounded-full txt-soft">12月</button>
+              <button type="button" data-cal-ym="2027-01" class="cal-m-btn px-2.5 py-1 rounded-full txt-soft">1月</button>
+              <button type="button" data-cal-ym="2027-02" class="cal-m-btn px-2.5 py-1 rounded-full txt-soft">2月</button>
+              <button type="button" data-cal-ym="2027-03" class="cal-m-btn px-2.5 py-1 rounded-full txt-soft">3月</button>
             </div>
           </div>
           <div class="grid grid-cols-7 text-center text-[11px] txt-faint py-1 border-b" style="border-color:var(--line)">
@@ -311,7 +408,6 @@
           <div class="flex items-center justify-between gap-2">
             <div id="cal-day-header" class="text-xs font-semibold txt-main">2026-11-28 · 计划正式启动</div>
             <div class="flex items-center gap-2 shrink-0">
-              <button type="button" id="btn-copy-freeslots" class="hidden text-[11px] txt-soft hover:underline">复制本周空闲时段</button>
               <button type="button" id="btn-cal-open-day" class="text-[11px] txt-soft hover:underline">查看当日安排 →</button>
             </div>
           </div>
@@ -327,23 +423,7 @@
         <!-- Upcoming Key Countdowns -->
         <div class="surf rounded-2xl border p-4 space-y-2.5">
           <div class="text-xs font-semibold txt-main">近期关键倒数</div>
-          <div class="grid grid-cols-3 gap-2 text-center text-xs">
-            <div class="p-2.5 rounded-xl surf-2">
-              <div class="text-[11px] txt-faint">全校停课考试</div>
-              <div class="text-sm font-bold num-tab txt-main mt-0.5">39 天后</div>
-              <div class="text-[10px] txt-faint">1月6日</div>
-            </div>
-            <div class="p-2.5 rounded-xl surf-2">
-              <div class="text-[11px] txt-faint">寒假开始</div>
-              <div class="text-sm font-bold num-tab txt-main mt-0.5">49 天后</div>
-              <div class="text-[10px] txt-faint">1月16日</div>
-            </div>
-            <div class="p-2.5 rounded-xl surf-2">
-              <div class="text-[11px] txt-faint">春节休整周</div>
-              <div class="text-sm font-bold num-tab txt-main mt-0.5">70 天后</div>
-              <div class="text-[10px] txt-faint">2月6日</div>
-            </div>
-          </div>
+          <div id="cal-countdowns" class="grid grid-cols-3 gap-2 text-center text-xs"></div>
         </div>
       </div>
 
@@ -518,7 +598,7 @@
             </div>
             <div class="text-right">
               <div class="text-xs txt-faint">睡眠评分</div>
-              <div id="sl-score" class="text-2xl font-bold num-tab text-[#1E5663]">89</div>
+              <div id="sl-score" class="text-2xl font-bold num-tab txt-ana">89</div>
             </div>
           </div>
 
@@ -559,7 +639,7 @@
 
         <div class="surf rounded-2xl border p-4 space-y-3">
           <button type="button" id="btn-toggle-10d" class="w-full flex items-center justify-between text-xs font-semibold txt-main">
-            <span>完整健康 10 维洞察（早八对比 · 社交时差 · TDEE · 规律性）</span>
+            <span>完整健康 10 维洞察（早八对比 · 社交时差 · 热量收支 · 规律性）</span>
             <span id="toggle-10d-lbl" class="txt-faint font-normal">展开 ▾</span>
           </button>
           <div id="health-10d-grid" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 border-t text-xs" style="border-color:var(--line)"></div>
@@ -695,9 +775,9 @@
   </main>
 
   <!-- Responsive Navigation: Bottom 4-Tab Bar on Phone/Tablet, Fixed Left Sidebar on Desktop -->
-  <nav class="fixed bottom-0 inset-x-0 lg:inset-y-0 lg:right-auto lg:w-48 z-20 surf border-t lg:border-t-0 lg:border-r backdrop-blur" aria-label="主导航">
+  <nav class="app-nav fixed bottom-0 inset-x-0 lg:inset-y-0 lg:right-auto lg:w-48 z-20 border-t lg:border-t-0 lg:border-r backdrop-blur" aria-label="主导航">
     <div class="hidden lg:flex flex-col px-5 pt-6 pb-4 border-b" style="border-color:var(--line)">
-      <div class="text-base font-bold txt-main">日迹</div>
+      <div class="text-base font-bold txt-main brand-serif">日迹</div>
       <div class="text-[11px] txt-faint mt-0.5">26–27 冬学期日程</div>
     </div>
     <div class="max-w-2xl mx-auto px-4 h-16 grid grid-cols-4 items-center lg:h-auto lg:flex lg:flex-col lg:items-stretch lg:gap-1.5 lg:p-3">
@@ -721,8 +801,8 @@
   </nav>
 
   <!-- Global Search Modal -->
-  <div id="search-modal" class="hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-[1px] flex items-start justify-center p-4 pt-16">
-    <div class="surf w-full max-w-lg rounded-2xl border p-4 space-y-3 shadow-xl">
+  <div id="search-modal" class="modal-mask hidden fixed inset-0 z-40 flex items-start justify-center p-4 pt-16">
+    <div class="surf sheet-panel w-full max-w-lg rounded-2xl border p-4 space-y-3">
       <div class="flex items-center gap-2 border-b pb-2.5" style="border-color:var(--line)">
         <input id="global-search-input" type="text" placeholder="搜章节 / 待办 / 专题 / 考勤 / 日记 / 例题与时间戳（如 01:14:30）..." class="flex-1 text-xs bg-transparent focus:outline-none txt-main">
         <button type="button" id="btn-close-search" class="text-xs txt-faint">关闭</button>
@@ -732,8 +812,8 @@
   </div>
 
   <!-- Focus Drawer Modal (with Course Attribution) -->
-  <div id="focus-modal" class="hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-[1px] flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="surf w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl border p-6 space-y-5 shadow-xl text-center">
+  <div id="focus-modal" class="modal-mask hidden fixed inset-0 z-40 flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="surf sheet-panel w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl border p-6 space-y-5 text-center">
       <div class="flex items-center justify-between text-xs txt-faint">
         <span>专注计时（自动计入课程投入）</span>
         <button type="button" id="btn-close-focus" class="hover:opacity-80">收起</button>
@@ -757,16 +837,15 @@
         <button type="button" id="btn-timer-toggle" class="px-7 py-2 rounded-full text-xs font-medium" style="background:var(--ink);color:var(--bg)">开始</button>
         <button type="button" id="btn-timer-reset" class="px-5 py-2 rounded-full surf-2 txt-soft text-xs">重置</button>
       </div>
-      <div class="pt-3 border-t flex items-center justify-between text-xs txt-faint" style="border-color:var(--line)">
+      <div class="pt-3 border-t flex items-center justify-center text-xs txt-faint" style="border-color:var(--line)">
         <span>今天已专注 <strong id="focus-today-mins" class="txt-main num-tab">0</strong> 分钟</span>
-        <button type="button" id="btn-white-noise" class="hidden txt-soft">白噪音：关</button>
       </div>
     </div>
   </div>
 
   <!-- Goal Modal -->
-  <div id="goal-modal" class="hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-[1px] flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="surf w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl border p-6 space-y-4 shadow-xl max-h-[85vh] overflow-y-auto">
+  <div id="goal-modal" class="modal-mask hidden fixed inset-0 z-40 flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="surf sheet-panel w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl border p-6 space-y-4 max-h-[85vh] overflow-y-auto">
       <div class="flex items-center justify-between">
         <h2 id="goal-modal-title" class="text-sm font-semibold txt-main">新建目标</h2>
         <button type="button" id="btn-close-goal" class="text-xs txt-faint">关闭</button>
@@ -816,8 +895,8 @@
   </div>
 
   <!-- Settings Modal -->
-  <div id="settings-modal" class="hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-[1px] flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="surf w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl border p-6 space-y-4 shadow-xl max-h-[85vh] overflow-y-auto">
+  <div id="settings-modal" class="modal-mask hidden fixed inset-0 z-40 flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="surf sheet-panel w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl border p-6 space-y-4 max-h-[85vh] overflow-y-auto">
       <div class="flex items-center justify-between">
         <h2 class="text-sm font-semibold txt-main">设置与联动</h2>
         <button type="button" id="btn-close-settings" class="text-xs txt-faint">关闭</button>
@@ -848,7 +927,7 @@
             <button type="button" id="btn-rollback-backup" class="px-2.5 py-1 rounded-full surf border txt-soft text-xs whitespace-nowrap">回滚上次恢复</button>
           </div>
           <div id="backup-remind" class="hidden flex flex-wrap items-center justify-between gap-2">
-            <span id="backup-remind-text" class="leading-relaxed" style="color:#B45309"></span>
+            <span id="backup-remind-text" class="leading-relaxed txt-warn"></span>
             <button type="button" id="btn-backup-remind" class="px-2.5 py-1 rounded-full surf border txt-main text-xs whitespace-nowrap">立即导出</button>
           </div>
         </div>
@@ -860,7 +939,7 @@
   </div>
 
   <!-- Undo / Quiet Toast -->
-  <div id="toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 opacity-0 pointer-events-none transition-opacity duration-200 px-4 py-2 rounded-full text-xs shadow-md flex items-center gap-3" style="background:var(--ink);color:var(--bg)">
+  <div id="toast" class="app-toast fixed left-1/2 -translate-x-1/2 z-50 opacity-0 pointer-events-none transition-opacity duration-200 px-4 py-2 rounded-full text-xs flex items-center gap-3" style="background:var(--ink);color:var(--bg)">
     <span id="toast-msg"></span>
     <button type="button" id="btn-undo" class="hidden underline font-semibold">撤销</button>
   </div>
@@ -1201,6 +1280,15 @@
         { id: 'w15', startIso: '2027-03-15', endIso: '2027-03-25', label: '收尾周', dates: '03.15–03.25', phase: 'spring', anaShort: '全书定理总复盘', ana: '全书核心定理复盘与查漏', anaUrl: 'course-analysis.html', algShort: '高代综合复盘', alg: '高代综合复盘与反例归档', algUrl: 'course-algebra.html', cShort: '' }
       ];
 
+      var KEY_MILESTONES = [
+        { name: '全校停课考试', date: '2027-01-06', inCal: true },
+        { name: '考试周收官（至1/15）', date: '2027-01-15', inCal: false },
+        { name: '寒假开始', date: '2027-01-16', inCal: true },
+        { name: '春节休整周', date: '2027-02-06', inCal: true },
+        { name: '春学期正式开课', date: '2027-02-22', inCal: true },
+        { name: '本轮计划收尾', date: '2027-03-25', inCal: true }
+      ];
+
       var _nowCtx = computeNowContext();
       var NOW_WEEK_IDX = _nowCtx.weekIdx;
       var NOW_DAY_IDX = _nowCtx.dayIdx;
@@ -1465,27 +1553,40 @@
       var QUOTA_DEFS = [
         { id: 'q-ana', title: '数学分析深度整块', target: 4, color: '#1E5663' },
         { id: 'q-alg', title: '代数学补基推进', target: 4, color: '#5B4386' },
-        { id: 'q-vocab', title: '每日 20 分钟背单词', target: 7, color: '#1C1F2B' },
-        { id: 'q-sleep', title: '23:30 收尾 · 零点睡', target: 7, color: '#A6512B' }
+        { id: 'q-vocab', title: '每日 20 分钟背单词', target: 7, color: '#1C1F2B', habitField: 'vocabDone' },
+        { id: 'q-sleep', title: '23:30 收尾 · 零点睡', target: 7, color: '#A6512B', habitField: 'sleepDone' }
       ];
+
+      function isValidYm(ym) {
+        return /^\d{4}-(?:0[1-9]|1[0-2])$/.test(String(ym || ''));
+      }
+      function shiftYm(ym, delta) {
+        var base = isValidYm(ym) ? ym : '2026-11';
+        var p = base.split('-');
+        var dt = new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1 + delta, 1);
+        return dt.getFullYear() + '-' + pad2(dt.getMonth() + 1);
+      }
 
       function initState() {
         var nc = computeNowContext();
         var todayDt = parseIso(nc.todayIso);
+        var initIso = nc.preLaunch ? LAUNCH_ISO : nc.todayIso;
         return {
           schemaVersion: SCHEMA_VERSION,
           isDemoData: true,
+          demoFocusCleared: false,
           followToday: true,
           dark: false,
           weekIdx: nc.weekIdx,
           dayIdx: nc.dayIdx,
-          uiIso: nc.preLaunch ? LAUNCH_ISO : nc.todayIso,
+          uiIso: initIso,
           tab: 'today',
           listSub: 'timetable',
           lifeSub: 'sleep',
-          calMonth: (todayDt.getFullYear() === 2026 && todayDt.getMonth() + 1 < 11) ? 11 : (todayDt.getMonth() + 1),
-          calSelected: nc.preLaunch ? LAUNCH_ISO : nc.todayIso,
+          calYm: (todayDt.getFullYear() === 2026 && todayDt.getMonth() + 1 < 11) ? '2026-11' : initIso.slice(0, 7),
+          calSelected: initIso,
           sleepHistory: [],
+          focusHistory: {},
           lastHcSyncAt: 0,
           lastExportAt: 0,
           focusDate: nc.todayIso,
@@ -1508,7 +1609,7 @@
           expandedItem: null,
           customItems: {},
           makeupPool: [],
-          quotaCounts: { 'q-ana': 0, 'q-alg': 0, 'q-vocab': 1, 'q-sleep': 1 },
+          quotaCounts: {},
           goals: [],
           lastReviewWeek: '',
           courseFocusMins: { '数学分析': 270, '代数学': 180, '几何学': 90, 'C 程': 120 },
@@ -1540,7 +1641,7 @@
             { id: 'dt2', name: '午饭 · 食堂套餐', kcal: 680, isoDate: '2026-11-28' }
           ],
           semesters: [
-            { id: '2026-winter', name: '2026–27 冬学期', startDate: '2026-11-09', weeks: 8 }
+            { id: '2026-winter', name: '2026–27 冬学期' }
           ],
           activeSemId: '2026-winter',
           gpaScope: 'current',
@@ -1621,8 +1722,7 @@
           focusToday: 0,
           focusCourse: '数学分析',
           focusTitle: '南开 ch05 导数应用',
-          focusHub: 'textbook-analysis-lichengzhang-ch05.html',
-          whiteNoise: false
+          focusHub: 'textbook-analysis-lichengzhang-ch05.html'
         };
       }
 
@@ -1692,6 +1792,8 @@
         n.weight = cleanNum(n.weight, 0, 1000, 0);
         n.score = (n.score === '' || n.score == null) ? null : cleanNum(n.score, 0, 150, null);
         n.source = n.source === 'attendance' ? 'attendance' : null;
+        if (n.userEdited === true) n.userEdited = true;
+        else delete n.userEdited;
         n.children = cleanObjectArray(n.children).map(function (c) { return cleanGradeNode(c, prefix); });
         return n;
       }
@@ -1715,8 +1817,40 @@
         if (raw.diet !== undefined && !Array.isArray(raw.diet)) return '备份饮食数据格式无效';
         if (raw.quadTasks !== undefined && !Array.isArray(raw.quadTasks)) return '备份四象限数据格式无效';
         if (raw.courseFocusMins !== undefined && !isRecord(raw.courseFocusMins)) return '备份专注数据格式无效';
+        if (raw.focusHistory !== undefined && !isRecord(raw.focusHistory)) return '备份每日专注数据格式无效';
         if (raw.sleepRec !== undefined && !isRecord(raw.sleepRec)) return '备份睡眠数据格式无效';
         return '';
+      }
+
+      function normalizeQuotaCounts(rawQuota, defaultWid, isDemo) {
+        if (!isRecord(rawQuota)) return {};
+        var out = {};
+        var hasFlat = false;
+        var flatBucket = {};
+        Object.keys(rawQuota).forEach(function (k) {
+          var v = rawQuota[k];
+          if (typeof v === 'number' && isFinite(v) && v >= 0) {
+            hasFlat = true;
+            if (k === 'q-ana' || k === 'q-alg') {
+              var n = Math.min(20, Math.round(v));
+              if (n > 0) flatBucket[k] = n;
+            }
+          } else if (isRecord(v) && /^w\d+$/.test(k)) {
+            var wkObj = {};
+            Object.keys(v).forEach(function (qk) {
+              if (qk === 'q-ana' || qk === 'q-alg') {
+                var qn = cleanNum(v[qk], 0, 20, 0);
+                if (qn > 0) wkObj[qk] = Math.round(qn);
+              }
+            });
+            if (Object.keys(wkObj).length) out[k] = wkObj;
+          }
+        });
+        if (hasFlat && !isDemo && Object.keys(flatBucket).length) {
+          var wid = defaultWid || 'w1';
+          out[wid] = Object.assign({}, flatBucket, out[wid] || {});
+        }
+        return out;
       }
 
       function migrateState(raw) {
@@ -1725,6 +1859,7 @@
         var merged = Object.assign({}, def, raw);
         merged.schemaVersion = SCHEMA_VERSION;
         merged.isDemoData = raw.isDemoData === true;
+        merged.demoFocusCleared = raw.demoFocusCleared === true;
         merged.semesters = cleanObjectArray(merged.semesters);
         if (!merged.semesters.length) merged.semesters = def.semesters;
         merged.tracks = cleanObjectArray(merged.tracks).map(function (tr) {
@@ -1797,7 +1932,7 @@
             });
           });
         });
-        ['blockDone', 'dueDone', 'skipped', 'shifted', 'quotaCounts'].forEach(function (field) {
+        ['blockDone', 'dueDone', 'skipped', 'shifted'].forEach(function (field) {
           if (!isRecord(raw[field])) merged[field] = {};
         });
         merged.courseFocusMins = isRecord(raw.courseFocusMins) ? raw.courseFocusMins : {};
@@ -1806,6 +1941,16 @@
           if (!isFinite(v) || v < 0) delete merged.courseFocusMins[k];
           else merged.courseFocusMins[k] = v;
         });
+        merged.focusHistory = {};
+        if (isRecord(raw.focusHistory)) {
+          Object.keys(raw.focusHistory).forEach(function (fk) {
+            var fv = Number(raw.focusHistory[fk]);
+            if (isValidIso(fk) && isFinite(fv) && fv >= 0) merged.focusHistory[fk] = Math.round(fv);
+          });
+        }
+        if (isValidIso(raw.focusDate) && Number(raw.focusToday) > 0 && merged.focusHistory[raw.focusDate] == null) {
+          merged.focusHistory[raw.focusDate] = Math.round(Number(raw.focusToday));
+        }
         merged.sleepRec = isRecord(raw.sleepRec) ? raw.sleepRec : emptySleepRec();
         if (!merged.sleepRec.source) merged.sleepRec.source = merged.isDemoData ? 'demo' : 'manual';
         if (!isRecord(merged.expandedGradeCards)) merged.expandedGradeCards = { g1: true };
@@ -1821,6 +1966,19 @@
         merged.uiIso = ui;
         merged.weekIdx = segmentIndexFor(ui);
         merged.dayIdx = weekdayMon0(ui);
+        merged.calSelected = isValidIso(raw.calSelected) ? raw.calSelected : ui;
+        if (isValidYm(raw.calYm)) {
+          merged.calYm = raw.calYm;
+        } else if (raw.calMonth != null && Number(raw.calMonth) >= 1 && Number(raw.calMonth) <= 12) {
+          var cm = Math.round(Number(raw.calMonth));
+          merged.calYm = (cm <= 6 ? '2027-' : '2026-') + pad2(cm);
+        } else {
+          merged.calYm = merged.calSelected.slice(0, 7);
+        }
+        delete merged.calMonth;
+        delete merged.whiteNoise;
+        var curWid = (WEEKS[merged.weekIdx] || WEEKS[0]).id;
+        merged.quotaCounts = normalizeQuotaCounts(raw.quotaCounts, curWid, merged.isDemoData);
         merged.vocabDone = normalizeHabitMap(merged.vocabDone, ui);
         merged.sleepDone = normalizeHabitMap(merged.sleepDone, ui);
         if (Array.isArray(merged.diet)) {
@@ -1831,6 +1989,8 @@
         if (merged.focusDate !== nc.todayIso) {
           merged.focusToday = 0;
           merged.focusDate = nc.todayIso;
+        } else if (Number(merged.focusToday) > 0) {
+          merged.focusHistory[nc.todayIso] = Math.round(Number(merged.focusToday));
         }
         return merged;
       }
@@ -1867,7 +2027,7 @@
         }
         state.uiIso = iso;
         state.calSelected = iso;
-        state.calMonth = parseInt(iso.slice(5, 7), 10);
+        state.calYm = iso.slice(0, 7);
         state.followToday = (typeof o.follow === 'boolean') ? o.follow : (!nc.preLaunch && iso === nc.todayIso);
         state.selectedWeekBlock = null;
         state.expandedItem = null;
@@ -1877,22 +2037,33 @@
       }
 
       function applyTheme() {
-        document.documentElement.classList.toggle('dark', !!state.dark);
-        try { window.localStorage.setItem('wb_theme', state.dark ? 'dark' : 'light'); } catch (e) {}
+        var isDark = !!state.dark;
+        document.documentElement.classList.toggle('dark', isDark);
+        var tc = document.getElementById('meta-theme-color');
+        if (tc) tc.setAttribute('content', isDark ? '#12141A' : '#F6F3EC');
+        try { window.localStorage.setItem('wb_theme', isDark ? 'dark' : 'light'); } catch (e) {}
       }
       applyTheme();
-      // === Native Android APK Bridges (Widget + HealthSyncWorker + Notify) ===
+      // === Native Android APK Bridges (Widget + HealthSync + Notify) ===
+      function mapWidgetCourse(it) {
+        var tr = parseTimeRange(it.effectiveTime || it.t || '', 45);
+        var note = (it.sub && it.sub !== '临时突发待办') ? String(it.sub) : '';
+        return { name: it.title, start: tr.startStr || '', end: tr.endStr || '', note: note };
+      }
+
       function pushAndroidWidgetSnapshot() {
         try {
           if (!(window.AndroidBridge && typeof window.AndroidBridge.pushSnapshot === 'function')) return;
           var now = new Date();
           var nc = computeNowContext(now);
           var todayIso = nc.todayIso;
-          var items = getDayItemsForDate(todayIso).filter(function (x) { return !x.divider; });
-          var courses = items.map(function (it) {
-            var rng = String(it.t || '').split('–');
-            return { name: it.title, start: rng[0] || '', end: rng[1] || '', location: it.sub || '' };
-          });
+          var scheduleByDate = {};
+          for (var dOff = 0; dOff < 7; dOff++) {
+            var dIso = addDaysIso(todayIso, dOff);
+            var eff = getEffectiveDayItems(dIso, { includeSkipped: false, includeDone: true, includeDividers: false, includeBoundary: false });
+            scheduleByDate[dIso] = eff.map(mapWidgetCourse);
+          }
+          var courses = scheduleByDate[todayIso] || [];
           var todos = dueRowsFor(todayIso).filter(function (row) { return !row.done; }).sort(function (a, b) {
             return a.iso < b.iso ? -1 : (a.iso > b.iso ? 1 : 0);
           }).map(function (row) {
@@ -1900,26 +2071,16 @@
             var rem = Math.max(0, Math.round((parseIso(row.iso) - parseIso(todayIso)) / 86400000));
             return { id: row.key, title: d.title, due: d.dueText, dueDate: row.iso, remainDays: rem, done: false };
           });
-          var nextMilestone;
-          if (todayIso < '2027-01-06') {
-            nextMilestone = { name: '冬学期停课考试', date: '2027-01-06', daysLeft: Math.max(0, Math.ceil((parseIso('2027-01-06') - now) / 86400000)) };
-          } else if (todayIso <= '2027-01-15') {
-            nextMilestone = { name: '考试周收官（至1/15）', date: '2027-01-15', daysLeft: Math.max(0, Math.ceil((parseIso('2027-01-15') - now) / 86400000)) };
-          } else if (todayIso < '2027-02-22') {
-            nextMilestone = { name: '春学期正式开课', date: '2027-02-22', daysLeft: Math.max(0, Math.ceil((parseIso('2027-02-22') - now) / 86400000)) };
-          } else {
-            nextMilestone = { name: '春学期计划收尾', date: '2027-03-25', daysLeft: Math.max(0, Math.ceil((parseIso('2027-03-25') - now) / 86400000)) };
-          }
-          var r = state.sleepRec || {};
+          var ms = KEY_MILESTONES.find(function (m) { return m.date >= todayIso; }) || KEY_MILESTONES[KEY_MILESTONES.length - 1];
           var snap = {
             today: todayIso,
             weekday: DAY_META[nc.dayIdx] ? DAY_META[nc.dayIdx].full : '',
             updatedAt: Date.now(),
             courses: courses,
-            tasks: todos,
+            scheduleByDate: scheduleByDate,
+            todos: todos,
             nextTodo: todos[0] || null,
-            nextExam: nextMilestone,
-            sleep: { start: r.start || '23:54', end: r.end || '07:20', totalMinutes: (r.deep || 0) + (r.light || 0) + (r.rem || 0) }
+            nextExam: ms ? { name: ms.name, date: ms.date } : null
           };
           window.AndroidBridge.pushSnapshot(JSON.stringify(snap));
         } catch (e) {}
@@ -1935,8 +2096,7 @@
             btn.click();
           }
           return Promise.resolve(true);
-        },
-        persistAllToStore: function () { return Promise.resolve(true); }
+        }
       };
 
       function syncWidgetMutations() {
@@ -1992,8 +2152,21 @@
         }).catch(function () {});
       }
 
+      var nativeBackBound = false;
+      function bindNativeBackButton() {
+        if (nativeBackBound) return;
+        var appPlugin = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App;
+        if (!appPlugin || typeof appPlugin.addListener !== 'function') return;
+        nativeBackBound = true;
+        appPlugin.addListener('backButton', function () {
+          if (closeTopOverlay({ fallbackToToday: true })) return;
+          if (typeof appPlugin.minimizeApp === 'function') appPlugin.minimizeApp();
+        });
+      }
+
       function runNativeBootTasks() {
         if (!(window.Capacitor && window.Capacitor.Plugins)) return;
+        bindNativeBackButton();
         syncWidgetMutations().then(function () { pushAndroidWidgetSnapshot(); });
         maybeAutoSyncHealth();
         if (state.notifyEnabled && window.Capacitor.Plugins.Notify) {
@@ -2010,7 +2183,15 @@
         var rolledOver = (nc.todayIso !== LAST_TODAY_ISO);
         LAST_TODAY_ISO = nc.todayIso;
         NOW_WEEK_IDX = nc.weekIdx; NOW_DAY_IDX = nc.dayIdx; NOW_MIN = nc.nowMin;
-        if (state.focusDate !== nc.todayIso) { state.focusToday = 0; state.focusDate = nc.todayIso; save(); }
+        if (state.focusDate !== nc.todayIso) {
+          if (Number(state.focusToday) > 0 && isValidIso(state.focusDate)) {
+            if (!isRecord(state.focusHistory)) state.focusHistory = {};
+            state.focusHistory[state.focusDate] = Math.round(Number(state.focusToday));
+          }
+          state.focusToday = 0;
+          state.focusDate = nc.todayIso;
+          save();
+        }
         if (rolledOver && state.followToday !== false && !nc.preLaunch) {
           state.uiIso = nc.todayIso;
           state.weekIdx = nc.weekIdx; state.dayIdx = nc.dayIdx;
@@ -2238,6 +2419,8 @@
       });
 
       var _lsWarned = false;
+      var notifyReschedTimer = null;
+      var lastNotifySig = '';
       function save() {
         state._savedAt = Date.now();
         var jsonStr = '';
@@ -2254,6 +2437,7 @@
         }
         Persist.scheduleWrite(jsonStr);
         pushAndroidWidgetSnapshot();
+        maybeAutoRescheduleNotify();
       }
 
       var undoSnapshot = null;
@@ -2294,6 +2478,22 @@
           return (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm;
         }
         return parts.length === 2 ? (shift(parts[0]) + '–' + shift(parts[1])) : shift(rangeStr);
+      }
+
+      function parseTimeRange(rangeStr, defaultDurMin) {
+        var raw = String(rangeStr || '').trim();
+        if (!raw) return { startStr: '', endStr: '', sM: null, eM: null, rawEndM: null, endDayOffset: 0 };
+        var parts = raw.split('–');
+        var sStr = (parts[0] || '').trim();
+        var eStr = parts[1] ? parts[1].trim() : '';
+        var sM = toMin(sStr);
+        var rawEndM = eStr ? toMin(eStr) : (sM != null ? (sM + (defaultDurMin || 45)) % 1440 : null);
+        if (sM == null || rawEndM == null) {
+          return { startStr: sStr, endStr: eStr, sM: sM, eM: rawEndM, rawEndM: rawEndM, endDayOffset: 0 };
+        }
+        var endDayOffset = rawEndM < sM ? 1 : 0;
+        var eM = rawEndM + endDayOffset * 1440;
+        return { startStr: sStr, endStr: eStr, sM: sM, eM: eM, rawEndM: rawEndM, endDayOffset: endDayOffset };
       }
 
       function esc(s) {
@@ -2617,7 +2817,6 @@
         document.getElementById('focus-title').textContent = state.focusTitle;
         document.getElementById('focus-course-sel').value = state.focusCourse;
         document.getElementById('focus-today-mins').textContent = state.focusToday;
-        document.getElementById('btn-white-noise').textContent = '白噪音：' + (state.whiteNoise ? '开（雨声）' : '关');
         var dot = document.getElementById('top-focus-dot');
         var lbl = document.getElementById('top-focus-label');
         if (running) {
@@ -2654,6 +2853,8 @@
         var today = timerTodayIso();
         if (state.focusDate !== today) { state.focusToday = 0; state.focusDate = today; }
         state.focusToday += mins;
+        if (!isRecord(state.focusHistory)) state.focusHistory = {};
+        state.focusHistory[today] = Math.round(state.focusToday);
         state.courseFocusMins[state.focusCourse] = (state.courseFocusMins[state.focusCourse] || 0) + mins;
       }
 
@@ -2663,6 +2864,8 @@
         var today = timerTodayIso();
         if (state.focusDate !== today) { state.focusToday = 0; state.focusDate = today; }
         state.focusToday = (Number(state.focusToday) || 0) + mins;
+        if (!isRecord(state.focusHistory)) state.focusHistory = {};
+        state.focusHistory[today] = Math.round(state.focusToday);
         if (!isRecord(state.courseFocusMins)) state.courseFocusMins = {};
         var course = settle.course || state.focusCourse;
         state.courseFocusMins[course] = (Number(state.courseFocusMins[course]) || 0) + mins;
@@ -2902,6 +3105,44 @@
         return getDayItems(wIdx, dIdx, iso);
       }
 
+      function getEffectiveDayItems(iso, opts) {
+        var o = opts || {};
+        var incSkip = o.includeSkipped !== false;
+        var incDone = o.includeDone !== false;
+        var incDiv = !!o.includeDividers;
+        var incBound = !!o.includeBoundary;
+        var raw = getDayItemsForDate(iso);
+        var out = [];
+        raw.forEach(function (it) {
+          if (it.divider) {
+            if (incDiv) out.push(it);
+            return;
+          }
+          if (it.id === 'term-boundary') {
+            if (incBound) out.push(Object.assign({}, it, { key: blockKey(iso, it.id), effectiveTime: '', done: false, skipped: false }));
+            return;
+          }
+          var k = blockKey(iso, it.id);
+          var skip = !!state.skipped[k];
+          var done = !!state.blockDone[k];
+          if (!incSkip && skip) return;
+          if (!incDone && done) return;
+          var effT = state.shifted[k] || it.t || '';
+          out.push(Object.assign({}, it, { key: k, effectiveTime: effT, done: done, skipped: skip }));
+        });
+        return out;
+      }
+
+      function hasEarly8Class(iso) {
+        if (!isInTermIso(iso)) return false;
+        var items = getEffectiveDayItems(iso, { includeSkipped: false, includeDone: true, includeDividers: false });
+        return items.some(function (it) {
+          if (it.type !== 'class' && !it.attendable) return false;
+          var tr = parseTimeRange(it.effectiveTime, 45);
+          return tr.sM != null && tr.sM <= 8 * 60;
+        });
+      }
+
       function renderToday() {
         var uiIso = syncLegacyWeekDay();
         var curCtx = computeNowContext();
@@ -2949,9 +3190,7 @@
           if (x.divider) return false;
           var k = blockKey(uiIso, x.id);
           if (state.skipped[k] || state.blockDone[k]) return false;
-          var tStr = state.shifted[k] || x.t || '';
-          var rng = String(tStr).split('–');
-          var eM = toMin(rng[1] || rng[0]);
+          var eM = parseTimeRange(state.shifted[k] || x.t || '', 45).eM;
           return eM == null || eM > curCtx.nowMin;
         }) : null) || allItems.find(function (x) {
           var k = blockKey(uiIso, x.id);
@@ -2981,39 +3220,49 @@
         vBtn.className = 'flex items-center gap-2 px-3.5 py-2 rounded-full text-xs border transition ' + (vocabOn ? 'day-active border-transparent' : 'surf txt-main');
         vBtn.innerHTML = '<span class="w-3.5 h-3.5 rounded-full border flex items-center justify-center text-[9px]" style="border-color:currentColor">' + (vocabOn ? '✓' : '') + '</span><span>背 20 分钟单词</span>';
 
+        var isNativeApp = !!window.Capacitor;
         try {
-          var engRaw = window.localStorage.getItem('wb_eng_wrong');
           var engLink = document.getElementById('hub-eng-link');
           if (engLink) {
-            var wrongCnt = engRaw ? Object.keys(JSON.parse(engRaw) || {}).length : 0;
-            engLink.textContent = wrongCnt > 0 ? ('错词本 ' + wrongCnt + ' 词待刷 ↗') : '英语听写与错词 ↗';
-            engLink.href = HUB + (wrongCnt > 0 ? 'english-quiz.html#wrong' : 'english.html');
+            if (isNativeApp) {
+              engLink.textContent = '英语听写与错词 ↗';
+              engLink.href = HUB + 'english.html';
+            } else {
+              var engRaw = window.localStorage.getItem('wb_eng_wrong');
+              var wrongCnt = engRaw ? Object.keys(JSON.parse(engRaw) || {}).length : 0;
+              engLink.textContent = wrongCnt > 0 ? ('错词本 ' + wrongCnt + ' 词待刷 ↗') : '英语听写与错词 ↗';
+              engLink.href = HUB + (wrongCnt > 0 ? 'english-quiz.html#wrong' : 'english.html');
+            }
           }
         } catch (e) {}
 
         try {
-          var doubtful = [];
-          for (var li = 0; li < window.localStorage.length; li++) {
-            var lk = window.localStorage.key(li);
-            if (lk && lk.indexOf('wb_mastery_') === 0) {
-              var lid = lk.slice('wb_mastery_'.length);
-              var mObj;
-              try { mObj = JSON.parse(window.localStorage.getItem(lk) || '{}') || {}; } catch (eM) { continue; }
-              Object.keys(mObj).forEach(function (exId) {
-                if (mObj[exId] === 1) doubtful.push({ lid: lid, exId: exId });
-              });
-            }
-          }
           var mBox = document.getElementById('hub-mastery-box');
           if (mBox) {
-            if (doubtful.length) {
-              mBox.classList.remove('hidden');
-              document.getElementById('hub-mastery-cnt').textContent = doubtful.length + ' 题待复盘';
-              document.getElementById('hub-mastery-list').innerHTML = doubtful.slice(0, 8).map(function (d) {
-                return '<a href="' + HUB + 'lecture-' + encodeURIComponent(d.lid) + '.html#' + encodeURIComponent(d.exId) + '" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-full surf-2 text-[11px] txt-main hover:opacity-80">' + esc(d.lid) + ' · ' + esc(d.exId.replace('wb-ex-', '例')) + ' ↗</a>';
-              }).join('');
-            } else {
+            if (isNativeApp) {
               mBox.classList.add('hidden');
+            } else {
+              var doubtful = [];
+              for (var li = 0; li < window.localStorage.length; li++) {
+                var lk = window.localStorage.key(li);
+                if (lk && lk.indexOf('wb_mastery_') === 0) {
+                  var lid = lk.slice('wb_mastery_'.length);
+                  var mObj;
+                  try { mObj = JSON.parse(window.localStorage.getItem(lk) || '{}') || {}; } catch (eM) { continue; }
+                  Object.keys(mObj).forEach(function (exId) {
+                    if (mObj[exId] === 1) doubtful.push({ lid: lid, exId: exId });
+                  });
+                }
+              }
+              if (doubtful.length) {
+                mBox.classList.remove('hidden');
+                document.getElementById('hub-mastery-cnt').textContent = doubtful.length + ' 题待复盘';
+                document.getElementById('hub-mastery-list').innerHTML = doubtful.slice(0, 8).map(function (d) {
+                  return '<a href="' + HUB + 'lecture-' + encodeURIComponent(d.lid) + '.html#' + encodeURIComponent(d.exId) + '" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-full surf-2 text-[11px] txt-main hover:opacity-80">' + esc(d.lid) + ' · ' + esc(d.exId.replace('wb-ex-', '例')) + ' ↗</a>';
+                }).join('');
+              } else {
+                mBox.classList.add('hidden');
+              }
             }
           }
         } catch (e) {}
@@ -3048,7 +3297,7 @@
           var skip = !!state.skipped[k];
           var open = state.expandedItem === k;
           var displayTime = state.shifted[k] || item.t;
-          var endM = toMin(displayTime.split('–')[1] || displayTime.split('–')[0]);
+          var endM = parseTimeRange(displayTime, 45).eM;
           var overdue = (item.type !== 'class' && item.type !== 'rest') && !done && !skip && isPastBlock(uiIso, endM);
           var att = state.attendance[k];
 
@@ -3097,10 +3346,10 @@
         if (state.makeupPool && state.makeupPool.length) {
           mpWrap.classList.remove('hidden');
           mpList.innerHTML = state.makeupPool.map(function (m) {
-            return '<div class="rounded-2xl border border-[#D95338]/40 bg-[#FFF1EE] px-4 py-3 flex items-center justify-between gap-3 text-xs">' +
-              '<div class="min-w-0"><div class="font-semibold text-[#8C2312] truncate">' + esc(m.title) + '</div>' +
-              '<div class="text-[11px] text-[#A6512B] mt-0.5">' + esc(m.reason) + '</div></div>' +
-              '<button type="button" data-done-makeup="' + m.id + '" class="done-makeup-btn px-2.5 py-1 rounded-full bg-white border border-[#D95338]/40 text-[#8C2312] shrink-0">已补完</button></div>';
+            return '<div class="rounded-2xl border tint-danger px-4 py-3 flex items-center justify-between gap-3 text-xs">' +
+              '<div class="min-w-0"><div class="font-semibold truncate">' + esc(m.title) + '</div>' +
+              '<div class="text-[11px] opacity-75 mt-0.5">' + esc(m.reason) + '</div></div>' +
+              '<button type="button" data-done-makeup="' + m.id + '" class="done-makeup-btn px-2.5 py-1 rounded-full surf border txt-danger shrink-0">已补完</button></div>';
           }).join('');
         } else { mpWrap.classList.add('hidden'); }
         renderTodayGoalStrip();
@@ -3171,7 +3420,7 @@
           var gap = total - Math.min(anaDone, algDone);
           weekLabel = '计划：已结束';
           chip = gap > 0 ? '还差 ' + gap + ' 周' : '已全部完成';
-          chipCls = gap > 0 ? 'bg-[#FFF1EE] text-[#A6512B]' : 'bg-[#E6F2F4] text-[#1E5663]';
+          chipCls = gap > 0 ? 'border tint-due' : 'border tint-ana';
         } else {
           var wk = WEEKS[ctx.weekIdx] || WEEKS[0];
           var expected = studyWeeks.filter(function (w) { return w.endIso < ctx.todayIso; }).length;
@@ -3182,10 +3431,10 @@
             chipCls = 'surf border txt-soft';
           } else if (diff > 0) {
             chip = '超前 ' + diff + ' 周';
-            chipCls = 'bg-[#E6F2F4] text-[#1E5663]';
+            chipCls = 'border tint-ana';
           } else {
             chip = '落后 ' + (-diff) + ' 周';
-            chipCls = 'bg-[#FFF1EE] text-[#A6512B]';
+            chipCls = 'border tint-due';
           }
         }
 
@@ -3317,11 +3566,12 @@
         var focusMins = 0;
         var covered = 0;
         days.forEach(function (d) {
-          if (d === ctx.todayIso) {
-            if (state.focusDate === d) {
-              focusMins += Number(state.focusToday) || 0;
-              covered++;
-            }
+          if (d === ctx.todayIso && state.focusDate === d) {
+            focusMins += Number(state.focusToday) || 0;
+            covered++;
+          } else if (state.focusHistory && state.focusHistory[d] != null) {
+            focusMins += Number(state.focusHistory[d]) || 0;
+            covered++;
           } else if (byIso[d] && byIso[d].focusDate === d) {
             focusMins += Number(byIso[d].focusToday) || 0;
             covered++;
@@ -3412,10 +3662,10 @@
         var HOURS = [8, 10, 12, 14, 16, 18, 20, 22];
 
         var blockColor = {
-          ana: 'bg-[#E6F2F4] border-[#1E5663]/40 text-[#133C46]',
-          alg: 'bg-[#EFEAF7] border-[#5B4386]/40 text-[#3F2C63]',
-          due: 'bg-[#FBECE6] border-[#A6512B]/40 text-[#7B3618]',
-          rest: 'bg-rose-50 border-rose-300 text-rose-900',
+          ana: 'tint-ana',
+          alg: 'tint-alg',
+          due: 'tint-due',
+          rest: 'tint-rest',
           class: 'surf-2 txt-soft'
         };
 
@@ -3437,10 +3687,8 @@
           var rawItems = getDayItemsForDate(iso).filter(function (x) { return !x.divider; });
           var parsed = rawItems.map(function (item) {
             var k = blockKey(iso, item.id);
-            var rng = (state.shifted[k] || item.t).split('–');
-            var sM = toMin(rng[0]);
-            var eM = rng[1] ? toMin(rng[1]) : (sM != null ? sM + 35 : null);
-            return { item: item, k: k, sM: sM, eM: eM, startStr: rng[0] };
+            var tr = parseTimeRange(state.shifted[k] || item.t, 35);
+            return { item: item, k: k, sM: tr.sM, eM: tr.eM, startStr: tr.startStr };
           }).filter(function (x) { return x.sM != null && x.eM != null; })
             .sort(function (a, b) { return a.sM - b.sM; });
 
@@ -3553,12 +3801,15 @@
 
       /* Living Calendar with Retrospective Capsules & Backfill */
       function renderCalendar() {
-        var m = state.calMonth;
+        var ym = isValidYm(state.calYm) ? state.calYm : '2026-11';
+        state.calYm = ym;
         document.querySelectorAll('.cal-m-btn').forEach(function (b) {
-          var on = parseInt(b.getAttribute('data-cal-m'), 10) === m;
+          var on = b.getAttribute('data-cal-ym') === ym;
           b.className = 'cal-m-btn px-2.5 py-1 rounded-full ' + (on ? 'surf-2 txt-main font-semibold' : 'txt-soft');
         });
-        var y = (m >= 1 && m <= 6) ? 2027 : 2026;
+        var ymParts = ym.split('-');
+        var y = parseInt(ymParts[0], 10);
+        var m = parseInt(ymParts[1], 10);
         document.getElementById('cal-month-title').textContent = y + ' 年 ' + m + ' 月';
         var daysInM = new Date(y, m, 0).getDate();
         var firstDow = new Date(y, m - 1, 1).getDay();
@@ -3567,39 +3818,54 @@
         for (var e = 0; e < offset; e++) cells += '<div></div>';
 
         var tags = {
-          '2026-11-28': { lunar: '十月二十', dot: '#1E5663', tag: '正式启动' },
-          '2026-12-31': { lunar: '冬月廿三', dot: '#D95338', tag: '学生节休' },
-          '2027-01-01': { lunar: '冬月廿四', dot: '#D95338', tag: '元旦休' },
-          '2027-01-04': { lunar: '冬月廿七', dot: '#5B4386', tag: '补周四课' },
-          '2027-01-06': { lunar: '冬月廿九', dot: '#A6512B', tag: '考试周起' },
-          '2027-01-15': { lunar: '腊月初八', dot: '#A6512B', tag: '考试结束' },
-          '2027-01-16': { lunar: '腊月初九', dot: '#1E5663', tag: '寒假开始' },
-          '2027-02-06': { lunar: '正月初一', dot: '#D95338', tag: '春节' },
-          '2027-02-19': { lunar: '正月十四', dot: '#5B4386', tag: '报到注册' },
-          '2027-02-22': { lunar: '正月十七', dot: '#1E5663', tag: '春学期课' }
+          '2026-11-28': { dot: '#1E5663', tag: '正式启动' },
+          '2026-12-31': { dot: '#D95338', tag: '学生节休' },
+          '2027-01-01': { dot: '#D95338', tag: '元旦休' },
+          '2027-01-04': { dot: '#5B4386', tag: '补周四课' },
+          '2027-01-06': { dot: '#A6512B', tag: '考试周起' },
+          '2027-01-15': { dot: '#A6512B', tag: '考试结束' },
+          '2027-01-16': { dot: '#1E5663', tag: '寒假开始' },
+          '2027-02-06': { dot: '#D95338', tag: '春节' },
+          '2027-02-19': { dot: '#5B4386', tag: '报到注册' },
+          '2027-02-22': { dot: '#1E5663', tag: '春学期课' }
         };
         for (var day = 1; day <= daysInM; day++) {
-          var ds = y + '-' + (m < 10 ? '0' : '') + m + '-' + (day < 10 ? '0' : '') + day;
+          var ds = y + '-' + pad2(m) + '-' + pad2(day);
           var info = tags[ds] || {};
+          var shortLunar = '';
+          if (window.Lunar && typeof window.Lunar.solarToLunar === 'function') {
+            var lu = window.Lunar.solarToLunar(y, m, day);
+            if (lu) {
+              shortLunar = lu.day === 1
+                ? ((lu.isLeap ? '闰' : '') + lunarMonthName(lu.month))
+                : lunarDayName(lu.day);
+            }
+          }
           var hasBf = state.backfills[ds] && state.backfills[ds].length;
           var sel = state.calSelected === ds;
           cells += '<button type="button" data-cal-day="' + ds + '" class="cal-day-btn p-1.5 rounded-xl border text-center transition ' + (sel ? 'day-active border-transparent' : 'surf border-transparent hover:border-stone-300') + '">' +
             '<div class="text-xs font-medium num-tab">' + day + '</div>' +
-            '<div class="text-[9px] opacity-70 truncate">' + (info.tag || info.lunar || '·') + '</div>' +
+            '<div class="text-[9px] opacity-70 truncate">' + (info.tag || shortLunar || '·') + '</div>' +
             ((info.dot || hasBf) ? '<span class="inline-block w-1.5 h-1.5 rounded-full mt-0.5" style="background:' + (info.dot || '#5B4386') + '"></span>' : '') +
             '</button>';
         }
         document.getElementById('cal-grid').innerHTML = cells;
 
-        var selDs = state.calSelected;
+        var selDs = isValidIso(state.calSelected) ? state.calSelected : LAST_TODAY_ISO;
         var selInfo = tags[selDs];
-        document.getElementById('cal-day-header').textContent = selDs + (selInfo ? (' · ' + selInfo.tag + '（农历' + selInfo.lunar + '）') : ' · 当日记录档案');
+        var selLunar = lunarLabelOf(parseIso(selDs));
+        document.getElementById('cal-day-header').textContent = selDs +
+          (selLunar ? (' · 农历' + selLunar) : '') +
+          (selInfo ? (' · ' + selInfo.tag) : ' · 当日记录档案');
 
         var mdSel = selDs.slice(5).replace(/^0/, '').replace('-0', '月').replace('-', '月') + '日';
         var histMatch = (state.sleepHistory || []).find(function (x) { return x && x.date === selDs; });
         var slRecDay = histMatch || ((selDs === LAST_TODAY_ISO && state.sleepRec && state.sleepRec.source !== 'empty') ? state.sleepRec : null);
         var slStrDay = slRecDay ? (((slRecDay.deep || 0) + (slRecDay.light || 0) + (slRecDay.rem || 0)) / 60).toFixed(1) + ' h' : '—';
-        var focusStrDay = (selDs === LAST_TODAY_ISO) ? (state.focusToday + ' min') : '—';
+        var dayFocusMin = (selDs === LAST_TODAY_ISO)
+          ? Number(state.focusToday || 0)
+          : ((state.focusHistory && state.focusHistory[selDs] != null) ? Number(state.focusHistory[selDs]) : null);
+        var focusStrDay = (dayFocusMin != null && (dayFocusMin > 0 || selDs === LAST_TODAY_ISO)) ? (Math.round(dayFocusMin) + ' min') : '—';
         var spendDay = state.ledger.filter(function (l) {
           if (l.isoDate) return l.isoDate === selDs;
           return l.date === mdSel;
@@ -3622,6 +3888,24 @@
             '<span><strong class="num-tab txt-soft mr-2">' + esc(b.t) + '</strong><span class="txt-main">' + esc(b.title) + '</span></span>' +
             '<button type="button" data-del-bf="' + esc(selDs + '|' + b.id) + '" class="del-bf txt-faint">删</button></div>';
         }).join('') : '<div class="text-[11px] txt-faint">当天暂无补录时间块（上课与手环睡眠默认作为底色保留）</div>';
+
+        var cdBox = document.getElementById('cal-countdowns');
+        if (cdBox) {
+          var cdToday = computeNowContext().todayIso;
+          var calPool = KEY_MILESTONES.filter(function (item) { return item.inCal; });
+          var upcoming = calPool.filter(function (item) { return item.date >= cdToday; }).slice(0, 3);
+          if (upcoming.length < 3) upcoming = calPool.slice(-3);
+          cdBox.innerHTML = upcoming.map(function (item) {
+            var diff = Math.round((parseIso(item.date) - parseIso(cdToday)) / 86400000);
+            var remainTxt = diff === 0 ? '今天' : (diff > 0 ? (diff + ' 天后') : '已过');
+            var dt = parseIso(item.date);
+            var dateLbl = (dt.getMonth() + 1) + '月' + dt.getDate() + '日';
+            return '<div class="p-2.5 rounded-xl surf-2">' +
+              '<div class="text-[11px] txt-faint truncate">' + esc(item.name) + '</div>' +
+              '<div class="text-sm font-bold num-tab txt-main mt-0.5">' + remainTxt + '</div>' +
+              '<div class="text-[10px] txt-faint">' + dateLbl + '</div></div>';
+          }).join('');
+        }
       }
 
       function renderList() {
@@ -3686,14 +3970,18 @@
         var wk = WEEKS[state.weekIdx] || WEEKS[0];
         document.getElementById('quota-week-label').textContent = wk.label + ' · ' + wk.dates;
 
+        var wkDates = datesBetween(wk.startIso, wk.endIso);
         document.getElementById('quota-plans-list').innerHTML = QUOTA_DEFS.map(function (q) {
-          var cnt = state.quotaCounts[q.id] || 0;
-          var badge = cnt >= q.target ? '本周已达标' : '推进中';
-          var badgeCls = cnt >= q.target ? 'text-[#1E5663] bg-[#E6F2F4]' : 'txt-soft surf-2';
+          var isHabit = !!q.habitField;
+          var cnt = isHabit
+            ? wkDates.filter(function (d) { return habitDoneAt(state[q.habitField], d); }).length
+            : ((state.quotaCounts[wk.id] && state.quotaCounts[wk.id][q.id]) || 0);
+          var badge = cnt >= q.target ? '本周已达标' : (isHabit ? '联动打卡' : '推进中');
+          var badgeCls = cnt >= q.target ? 'border tint-ana' : 'txt-soft surf-2';
           var dots = '';
           for (var i = 0; i < q.target; i++) {
             var filled = i < cnt;
-            dots += '<button type="button" data-qdot="' + q.id + '|' + (i + 1) + '" class="qdot-btn w-5 h-5 rounded-full border text-[10px] flex items-center justify-center transition ' +
+            dots += '<button type="button" data-qdot="' + wk.id + '|' + q.id + '|' + (i + 1) + '" class="qdot-btn w-5 h-5 rounded-full border text-[10px] flex items-center justify-center transition ' +
               (filled ? 'text-white border-transparent' : 'surf txt-faint') +
               '" style="' + (filled ? ('background:' + q.color) : 'border-color:var(--line)') + '">✓</button>';
           }
@@ -3965,6 +4253,24 @@
             jetLagStr = '需同时含工作日与周末睡眠记录';
           }
         }
+        // sleepHistory.date 存的是起床当天日期，直接与当天首节课是否为早八（≤08:00）比对
+        var early8Mins = [], nonEarly8Mins = [];
+        hist.slice(-30).forEach(function (x) {
+          if (!x || !isValidIso(x.date)) return;
+          var slp = (x.deep || 0) + (x.light || 0) + (x.rem || 0);
+          if (slp <= 0) return;
+          if (hasEarly8Class(x.date)) early8Mins.push(slp);
+          else nonEarly8Mins.push(slp);
+        });
+        var early8Str;
+        if (early8Mins.length >= 2 && nonEarly8Mins.length >= 2) {
+          var avgE8 = early8Mins.reduce(function (a, b) { return a + b; }, 0) / early8Mins.length;
+          var avgNo8 = nonEarly8Mins.reduce(function (a, b) { return a + b; }, 0) / nonEarly8Mins.length;
+          var d8 = Math.round(avgE8 - avgNo8);
+          early8Str = '早八 ' + (avgE8 / 60).toFixed(1) + 'h vs 非早八 ' + (avgNo8 / 60).toFixed(1) + 'h（' + (d8 >= 0 ? '+' : '') + d8 + 'm，N=' + early8Mins.length + '/' + nonEarly8Mins.length + '）';
+        } else {
+          early8Str = '样本积累中（早八 ' + early8Mins.length + ' 夜 / 非早八 ' + nonEarly8Mins.length + ' 夜，各满 2 夜自动对比）';
+        }
         var insights10 = [
           { k: '1. 精力预测', v: !total ? '暂无昨夜睡眠记录' : (qFactor >= 0.78 ? '充沛（适合深度证明）' : (qFactor >= 0.58 ? '良好（常规推进）' : '偏低（建议减负早睡）')) },
           { k: '2. 7日睡眠债', v: hCnt >= 3 ? ((r.debtMin / 60).toFixed(1) + 'h') : needMore },
@@ -3974,7 +4280,7 @@
           { k: '6. 步数均值', v: avgSteps.toLocaleString() + ' 步 / 天' + (hCnt < 3 ? '（当日）' : '（近7日）') },
           { k: '7. 热量收支', v: '摄入 ' + kcalIn + ' / 活动消耗 ' + r.activeKcal + ' kcal（未含估算BMR）' },
           { k: '8. 本周达标夜', v: hCnt >= 3 ? (met7h + ' / ' + Math.min(7, hCnt) + ' 夜达 7h+') : needMore },
-          { k: '9. 早八对比', v: '待接入课表联动（已记录 ' + hCnt + ' 夜样本）' },
+          { k: '9. 早八对比', v: early8Str },
           { k: '10. 社交时差', v: jetLagStr }
         ];
         var g10 = document.getElementById('health-10d-grid');
@@ -4053,7 +4359,7 @@
           var scoreCtrl = hasKids
             ? '<span class="num-tab text-[11px] txt-soft px-1.5 whitespace-nowrap shrink-0">小计 ' + (computed != null ? computed.toFixed(1) : '—') + '</span>'
             : (isAuto
-              ? '<span class="num-tab w-11 text-center font-medium text-[#1E5663] whitespace-nowrap shrink-0">' + autoReg + '</span>'
+              ? '<span class="num-tab w-11 text-center font-medium txt-ana whitespace-nowrap shrink-0">' + autoReg + '</span>'
               : '<input type="number" step="0.5" min="0" max="150" placeholder="分" data-gnode-s="' + gid + '|' + node.id + '" value="' + scoreVal + '" class="gnode-s w-11 shrink-0 px-1 py-1 rounded surf-2 border text-xs num-tab text-center txt-main focus:outline-none" style="border-color:var(--line)">');
 
           var html = '<div class="py-1.5 border-b last:border-b-0 text-xs" style="padding-left:' + pad + 'px;border-color:var(--line)">' +
@@ -4068,7 +4374,7 @@
                 scoreCtrl +
               '</div>' +
               '<div class="flex items-center gap-1 shrink-0 ml-auto">' +
-                (!hasKids ? '<button type="button" data-gnode-auto="' + gid + '|' + node.id + '" title="切换绑定考勤/作业自动分" class="gnode-auto text-[10px] px-1.5 py-0.5 rounded whitespace-nowrap shrink-0 ' + (node.source === 'attendance' ? 'bg-[#E6F2F4] text-[#133C46]' : 'surf-2 txt-faint') + '">' + (node.source === 'attendance' ? '联动' : '手动') + '</button>' : '') +
+                (!hasKids ? '<button type="button" data-gnode-auto="' + gid + '|' + node.id + '" title="切换绑定考勤/作业自动分" class="gnode-auto text-[10px] px-1.5 py-0.5 rounded whitespace-nowrap shrink-0 ' + (node.source === 'attendance' ? 'border tint-ana' : 'surf-2 txt-faint') + '">' + (node.source === 'attendance' ? '联动' : '手动') + '</button>' : '') +
                 '<button type="button" data-gnode-add="' + gid + '|' + node.id + '" title="拆出/新增子项" class="gnode-add px-1.5 py-0.5 rounded surf-2 text-[10px] txt-soft whitespace-nowrap shrink-0">+子项</button>' +
                 '<button type="button" data-gnode-del="' + gid + '|' + node.id + '" title="删除该分项" class="gnode-del px-1 py-0.5 text-[10px] txt-faint shrink-0">✕</button>' +
               '</div>' +
@@ -4114,7 +4420,7 @@
               }).join('') +
               '</div>';
             if (row.issues.length) {
-              bodyHtml += '<div class="mt-2 px-2.5 py-1.5 rounded-xl bg-amber-500/10 text-[11px] text-amber-700 dark:text-amber-300 flex items-center justify-between gap-2">' +
+              bodyHtml += '<div class="mt-2 px-2.5 py-1.5 rounded-xl border tint-warn text-[11px] flex items-center justify-between gap-2">' +
                 '<span>权重提醒：' + row.issues.map(function (is) { return esc(is.name) + '子项和=' + is.sum + '%'; }).join('；') + '</span>' +
                 '<button type="button" data-gbal="' + g.id + '" class="gbal-btn underline font-medium shrink-0">一键配平 100%</button></div>';
             }
@@ -4160,7 +4466,7 @@
             '<span class="text-[10px] px-1.5 py-0.5 rounded surf-2 txt-soft whitespace-nowrap shrink-0">' + scaleTag + '</span>' +
             '<span class="text-[11px] txt-faint num-tab whitespace-nowrap shrink-0">' + g.credit + '学分</span></div>' +
             '<div class="flex items-center gap-2 shrink-0">' +
-            '<span class="num-tab text-xs font-semibold text-[#1E5663] whitespace-nowrap">' + badge + '</span>' +
+            '<span class="num-tab text-xs font-semibold txt-ana whitespace-nowrap">' + badge + '</span>' +
             '<button type="button" data-gopen="' + g.id + '" class="gopen-btn px-2 py-0.5 rounded-full surf-2 text-[10px] txt-main whitespace-nowrap">' + (isOpen ? '收起 ▴' : '展开 ▾') + '</button>' +
             '</div></div>' +
             (isOpen ? (
@@ -4218,13 +4524,101 @@
         var arch = document.getElementById('btn-archive-goal');
         arch.classList.toggle('hidden', !g);
         arch.textContent = g && g.archivedAt ? '恢复到在办' : '归档';
-        document.getElementById('goal-modal').classList.remove('hidden');
+        openOverlay('goal-modal');
         document.getElementById('goal-title').focus();
       }
 
+      var OVERLAY_FALLBACK_IDS = ['search-modal', 'goal-modal', 'focus-modal', 'settings-modal', 'quick-add-box'];
+      var overlayStack = [];
+      var webOverlayPushed = false;
+      var ignoringOverlayPop = false;
+      function pruneOverlayStack() {
+        overlayStack = overlayStack.filter(function (id) {
+          var el = document.getElementById(id);
+          return !!(el && !el.classList.contains('hidden'));
+        });
+      }
+      function hasOpenOverlay() {
+        pruneOverlayStack();
+        if (overlayStack.length > 0) return true;
+        for (var i = 0; i < OVERLAY_FALLBACK_IDS.length; i++) {
+          var el = document.getElementById(OVERLAY_FALLBACK_IDS[i]);
+          if (el && !el.classList.contains('hidden')) return true;
+        }
+        return false;
+      }
+      function pushOverlayHistoryState() {
+        // 仅在 Web/PWA 注册 history 哨兵，APK 统一走 Capacitor App backButton
+        if (window.Capacitor) return;
+        if (typeof history === 'undefined' || typeof history.pushState !== 'function') return;
+        if (!webOverlayPushed) {
+          try { history.pushState({ studyOsOverlay: true }, ''); webOverlayPushed = true; } catch (e) {}
+        }
+      }
+      function cleanupOverlayHistoryState() {
+        if (window.Capacitor) return;
+        if (!webOverlayPushed || hasOpenOverlay()) return;
+        webOverlayPushed = false;
+        if (typeof history !== 'undefined' && typeof history.back === 'function' && history.state && history.state.studyOsOverlay === true) {
+          ignoringOverlayPop = true;
+          try { history.back(); } catch (e) { ignoringOverlayPop = false; }
+          setTimeout(function () { ignoringOverlayPop = false; }, 150);
+        }
+      }
+      function openOverlay(id) {
+        var el = document.getElementById(id);
+        if (el) el.classList.remove('hidden');
+        overlayStack = overlayStack.filter(function (x) { return x !== id; });
+        overlayStack.push(id);
+        pushOverlayHistoryState();
+      }
+      function closeOverlay(id, fromPopstate) {
+        overlayStack = overlayStack.filter(function (x) { return x !== id; });
+        var el = document.getElementById(id);
+        if (id === 'search-modal') {
+          if (el) el.classList.add('hidden');
+          var sInp = document.getElementById('global-search-input');
+          if (sInp) sInp.value = '';
+        } else if (id === 'goal-modal') {
+          editingGoalId = null;
+          if (el) el.classList.add('hidden');
+        } else if (el) {
+          el.classList.add('hidden');
+        }
+        if (!fromPopstate) cleanupOverlayHistoryState();
+      }
       function closeSearchModal() {
-        document.getElementById('search-modal').classList.add('hidden');
-        document.getElementById('global-search-input').value = '';
+        closeOverlay('search-modal', false);
+      }
+      function closeTopOverlay(opts) {
+        var fromPop = !!(opts && opts.fromPopstate);
+        pruneOverlayStack();
+        if (overlayStack.length > 0) {
+          closeOverlay(overlayStack[overlayStack.length - 1], fromPop);
+          return true;
+        }
+        for (var i = 0; i < OVERLAY_FALLBACK_IDS.length; i++) {
+          var fid = OVERLAY_FALLBACK_IDS[i];
+          var el = document.getElementById(fid);
+          if (el && !el.classList.contains('hidden')) {
+            closeOverlay(fid, fromPop);
+            return true;
+          }
+        }
+        if (opts && opts.fallbackToToday && state.tab !== 'today') { switchTab('today'); return true; }
+        return false;
+      }
+      if (!window.Capacitor) {
+        window.addEventListener('popstate', function () {
+          if (ignoringOverlayPop) {
+            ignoringOverlayPop = false;
+            return;
+          }
+          webOverlayPushed = false;
+          if (closeTopOverlay({ fallbackToToday: false, fromPopstate: true }) && hasOpenOverlay()) {
+            pushOverlayHistoryState();
+          }
+        });
       }
 
       function isoFromSearchKey(k) {
@@ -4255,7 +4649,7 @@
         };
 
         if (q && (/^\d{1,2}:\d{2}/.test(q) || q.indexOf('例') >= 0 || q.indexOf('证明') >= 0)) {
-          res.push('<a href="' + esc(HUB + '?q=' + encodeURIComponent(q)) + '" target="_blank" rel="noopener noreferrer" class="block p-2.5 rounded-xl border border-[#1E5663]/40 bg-[#E6F2F4] text-[#133C46]">在知识库跨课检索 “' + esc(q) + '”（含时间戳与例题） ↗</a>');
+          res.push('<a href="' + esc(HUB + '?q=' + encodeURIComponent(q)) + '" target="_blank" rel="noopener noreferrer" class="block p-2.5 rounded-xl border tint-ana">在知识库跨课检索 “' + esc(q) + '”（含时间戳与例题） ↗</a>');
         }
 
         if (q) {
@@ -4367,7 +4761,7 @@
             var spNc = computeNowContext();
             state.uiIso = spIso;
             state.calSelected = spIso;
-            state.calMonth = parseInt(spIso.slice(5, 7), 10);
+            state.calYm = spIso.slice(0, 7);
             state.followToday = (!spNc.preLaunch && spIso === spNc.todayIso);
             state.selectedWeekBlock = null;
             var spEx = spJump.getAttribute('data-search-expand') || '';
@@ -4437,7 +4831,7 @@
             var jNc = computeNowContext();
             state.uiIso = jIso;
             state.calSelected = jIso;
-            state.calMonth = parseInt(jIso.slice(5, 7), 10);
+            state.calYm = jIso.slice(0, 7);
             state.followToday = (!jNc.preLaunch && jIso === jNc.todayIso);
             state.selectedWeekBlock = null;
             state.expandedItem = null;
@@ -4459,13 +4853,21 @@
         if (lifesub) { state.lifeSub = lifesub.getAttribute('data-life-sub'); save(); renderLife(); return; }
 
         var calM = e.target.closest('.cal-m-btn');
-        if (calM) { state.calMonth = parseInt(calM.getAttribute('data-cal-m'), 10); save(); renderCalendar(); return; }
+        if (calM) {
+          var nextYm = calM.getAttribute('data-cal-ym');
+          if (isValidYm(nextYm)) { state.calYm = nextYm; save(); renderCalendar(); }
+          return;
+        }
 
         var calD = e.target.closest('.cal-day-btn');
         if (calD) {
-          state.calSelected = calD.getAttribute('data-cal-day');
-          save();
-          renderCalendar();
+          var pickedDs = calD.getAttribute('data-cal-day');
+          if (isValidIso(pickedDs)) {
+            state.calSelected = pickedDs;
+            state.calYm = pickedDs.slice(0, 7);
+            save();
+            renderCalendar();
+          }
           return;
         }
 
@@ -4483,11 +4885,8 @@
         var dayBtn = e.target.closest('.day-btn');
         if (dayBtn) {
           var dIso = dayBtn.getAttribute('data-day-iso');
-          if (dIso) { setUiIsoTo(dIso); return; }
-          state.dayIdx = parseInt(dayBtn.getAttribute('data-day'), 10) || 0;
-          state.uiIso = fmtIso(dateObjFor(state.weekIdx, state.dayIdx));
-          state.followToday = (state.weekIdx === NOW_WEEK_IDX && state.dayIdx === NOW_DAY_IDX);
-          state.expandedItem = null; save(); renderToday(); return;
+          if (dIso) setUiIsoTo(dIso);
+          return;
         }
 
         var axisFocus = e.target.closest('.axis-focus-btn');
@@ -4533,7 +4932,7 @@
           else if (act === 'shift') { state.shifted[ak2] = add30Min(state.shifted[ak2] || target.t); save(); renderAll(); toast('已顺延 30 分钟'); }
           else if (act === 'focus') {
             if (running) {
-              document.getElementById('focus-modal').classList.remove('hidden');
+              openOverlay('focus-modal');
               toast('专注进行中，请先在计时器里结束');
               return;
             }
@@ -4545,7 +4944,7 @@
             secLeft = 45 * 60;
             save();
             syncTimerUI();
-            document.getElementById('focus-modal').classList.remove('hidden');
+            openOverlay('focus-modal');
           }
           return;
         }
@@ -4554,7 +4953,27 @@
         if (dmBtn) { var snap = JSON.stringify(state); var mid = dmBtn.getAttribute('data-done-makeup'); state.makeupPool = state.makeupPool.filter(function (x) { return x.id !== mid; }); save(); renderToday(); toast('已从待补池消掉', snap); return; }
 
         var qdot = e.target.closest('.qdot-btn');
-        if (qdot) { var qp = qdot.getAttribute('data-qdot').split('|'); var qid = qp[0], val = parseInt(qp[1], 10); state.quotaCounts[qid] = (state.quotaCounts[qid] === val) ? (val - 1) : val; save(); renderProgress(); return; }
+        if (qdot) {
+          var qp = qdot.getAttribute('data-qdot').split('|');
+          var qWid = qp[0], qid = qp[1], val = parseInt(qp[2], 10) || 1;
+          var qDef = QUOTA_DEFS.find(function (x) { return x.id === qid; });
+          if (qDef && qDef.habitField) {
+            state[qDef.habitField] = toggleHabitAt(state[qDef.habitField], state.uiIso);
+            var hOn = habitDoneAt(state[qDef.habitField], state.uiIso);
+            save();
+            renderToday();
+            renderProgress();
+            toast((hOn ? '已打卡 ' : '已取消 ') + dayMetaForIso(state.uiIso).md + '「' + qDef.title + '」');
+            return;
+          }
+          if (!isRecord(state.quotaCounts)) state.quotaCounts = {};
+          if (!isRecord(state.quotaCounts[qWid])) state.quotaCounts[qWid] = {};
+          var curQ = state.quotaCounts[qWid][qid] || 0;
+          state.quotaCounts[qWid][qid] = (curQ === val) ? (val - 1) : val;
+          save();
+          renderProgress();
+          return;
+        }
 
         var goalBump = e.target.closest('[data-goal-bump]');
         if (goalBump) {
@@ -4799,6 +5218,24 @@
       });
 
       document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          if (e.isComposing || e.keyCode === 229) return;
+          var ae = document.activeElement;
+          var isEditable = !!(ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.tagName === 'SELECT' || ae.isContentEditable));
+          if (ae && ae.id === 'global-search-input') {
+            if (typeof e.preventDefault === 'function') e.preventDefault();
+            closeTopOverlay({ fallbackToToday: false });
+            return;
+          }
+          if (isEditable) {
+            if (typeof ae.blur === 'function') ae.blur();
+            return;
+          }
+          if (closeTopOverlay({ fallbackToToday: false })) {
+            if (typeof e.preventDefault === 'function') e.preventDefault();
+          }
+          return;
+        }
         if (e.key === 'Enter' && e.target.classList.contains('sub-add-inp')) {
           var sid = e.target.getAttribute('data-sub-inp');
           var sv = e.target.value.trim();
@@ -4867,11 +5304,15 @@
         toast('已补录到 ' + state.calSelected);
       });
 
-      document.getElementById('btn-copy-freeslots').addEventListener('click', function () {
-        var txt = '本周空闲时段：周六 08:20–14:45（全空出游）、周六 23:00–23:30、周日 22:00–23:30。';
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(txt).then(function () { toast('已复制本周空闲时段文本'); }).catch(function () { fallbackCopy(txt); });
-        } else { fallbackCopy(txt); }
+      document.getElementById('btn-cal-prev').addEventListener('click', function () {
+        state.calYm = shiftYm(state.calYm, -1);
+        save();
+        renderCalendar();
+      });
+      document.getElementById('btn-cal-next').addEventListener('click', function () {
+        state.calYm = shiftYm(state.calYm, 1);
+        save();
+        renderCalendar();
       });
 
       document.getElementById('btn-undo').addEventListener('click', function () {
@@ -4883,8 +5324,9 @@
 
       document.getElementById('btn-toggle-theme').addEventListener('click', function () { state.dark = !state.dark; applyTheme(); save(); });
       document.getElementById('btn-toggle-10d').addEventListener('click', function () { state.show10d = !state.show10d; save(); renderSleepDetail(); });
-      document.getElementById('btn-open-search').addEventListener('click', function () { document.getElementById('search-modal').classList.remove('hidden'); renderSearch(''); document.getElementById('global-search-input').focus(); });
+      document.getElementById('btn-open-search').addEventListener('click', function () { openOverlay('search-modal'); renderSearch(''); document.getElementById('global-search-input').focus(); });
       document.getElementById('btn-close-search').addEventListener('click', closeSearchModal);
+      document.getElementById('search-modal').addEventListener('click', function (e) { if (e.target === this) closeSearchModal(); });
       document.getElementById('global-search-input').addEventListener('input', function () { renderSearch(this.value); });
 
       document.getElementById('btn-toggle-week-mode').addEventListener('click', function () { state.weekAxisCompact = !state.weekAxisCompact; save(); renderWeekAxis(); });
@@ -4892,7 +5334,7 @@
         var nc = computeNowContext();
         state.uiIso = nc.preLaunch ? LAUNCH_ISO : nc.todayIso;
         state.calSelected = state.uiIso;
-        state.calMonth = parseInt(state.uiIso.slice(5, 7), 10);
+        state.calYm = state.uiIso.slice(0, 7);
         state.selectedWeekBlock = null;
         state.followToday = true;
         syncLegacyWeekDay(); save(); renderAll(); toast('已回到今日');
@@ -4933,7 +5375,15 @@
         if (el.classList.contains('gnode-s')) {
           var c = el.getAttribute('data-gnode-s').split('|');
           var sv = el.value === '' ? null : Math.max(0, Math.min(150, parseFloat(el.value)));
-          state.grades.forEach(function (x) { if (x.id === c[0] && x.root) { var f = findNodeAndParent(x.root, c[1]); if (f) f.node.score = isNaN(sv) ? null : sv; } });
+          state.grades.forEach(function (x) {
+            if (x.id === c[0] && x.root) {
+              var f = findNodeAndParent(x.root, c[1]);
+              if (f && f.node) {
+                f.node.score = isNaN(sv) ? null : sv;
+                f.node.userEdited = true;
+              }
+            }
+          });
           save(); renderAll(); return;
         }
         if (el.classList.contains('ghypo-inp')) {
@@ -4976,7 +5426,7 @@
         var nm = (document.getElementById('new-sem-name').value || '').trim();
         if (!nm) return;
         var sid = 'sem-' + Date.now();
-        state.semesters.push({ id: sid, name: nm, startDate: '2027-02-22', weeks: 8 });
+        state.semesters.push({ id: sid, name: nm });
         state.activeSemId = sid;
         state.gpaScope = 'current';
         document.getElementById('new-sem-name').value = '';
@@ -5083,7 +5533,6 @@
         if (mAwake) state.sleepRec.awake = parseInt(mAwake[1], 10);
         if (mSteps) state.sleepRec.steps = parseInt(mSteps[1], 10);
         if (mKcal) state.sleepRec.activeKcal = parseInt(mKcal[1], 10);
-        state.isDemoData = false;
         state.sleepRec.source = 'manual';
         state.sleepRec.stagePartial = false;
         var todayIsoS = computeNowContext().todayIso;
@@ -5230,7 +5679,6 @@
             state.sleepRec.awakenings = latest.awakenings != null ? latest.awakenings : 0;
             state.sleepRec.stagePartial = !hasSt;
             state.sleepRec.source = 'hc';
-            state.isDemoData = false;
           }
           if (days.length) {
             var sortedDays = days.slice().sort(function (a, b) { return String(b.date || '').localeCompare(String(a.date || '')); });
@@ -5385,7 +5833,6 @@
           e.target.value = '';
           if (sleepUpdated || activityUpdated) {
             if (sleepUpdated) {
-              state.isDemoData = false;
               state.sleepRec.source = 'csv';
               state.sleepRec.stagePartial = false;
               var csvDate = computeNowContext().todayIso;
@@ -5407,13 +5854,13 @@
         reader.readAsArrayBuffer(file);
       });
 
-      document.getElementById('habit-vocab').addEventListener('click', function () { state.vocabDone = toggleHabitAt(state.vocabDone, state.uiIso); save(); renderToday(); });
-      document.getElementById('habit-sleep').addEventListener('click', function () { state.sleepDone = toggleHabitAt(state.sleepDone, state.uiIso); save(); renderToday(); });
+      document.getElementById('habit-vocab').addEventListener('click', function () { state.vocabDone = toggleHabitAt(state.vocabDone, state.uiIso); save(); renderToday(); renderProgress(); });
+      document.getElementById('habit-sleep').addEventListener('click', function () { state.sleepDone = toggleHabitAt(state.sleepDone, state.uiIso); save(); renderToday(); renderProgress(); });
       document.getElementById('btn-toggle-all-due').addEventListener('click', function () { state.showAllDue = !state.showAllDue; save(); renderToday(); });
 
       document.getElementById('btn-now-focus').addEventListener('click', function () {
         if (running) {
-          document.getElementById('focus-modal').classList.remove('hidden');
+          openOverlay('focus-modal');
           toast('专注进行中，已保留当前计时');
           return;
         }
@@ -5422,13 +5869,13 @@
         secLeft = 45 * 60;
         save();
         syncTimerUI();
-        document.getElementById('focus-modal').classList.remove('hidden');
+        openOverlay('focus-modal');
         startTimer();
       });
 
-      document.getElementById('btn-open-focus').addEventListener('click', function () { document.getElementById('focus-modal').classList.remove('hidden'); });
-      document.getElementById('btn-close-focus').addEventListener('click', function () { document.getElementById('focus-modal').classList.add('hidden'); });
-      document.getElementById('focus-modal').addEventListener('click', function (e) { if (e.target === this) this.classList.add('hidden'); });
+      document.getElementById('btn-open-focus').addEventListener('click', function () { openOverlay('focus-modal'); });
+      document.getElementById('btn-close-focus').addEventListener('click', function () { closeOverlay('focus-modal'); });
+      document.getElementById('focus-modal').addEventListener('click', function (e) { if (e.target === this) closeOverlay('focus-modal'); });
       document.getElementById('btn-timer-toggle').addEventListener('click', function () { if (running) finishTimer(false); else startTimer(); });
       document.getElementById('btn-timer-reset').addEventListener('click', function () {
         if (running) {
@@ -5437,10 +5884,9 @@
         }
         stopTimer(); secLeft = state.focusMins * 60; syncTimerUI(); save();
       });
-      document.getElementById('btn-white-noise').addEventListener('click', function () { state.whiteNoise = !state.whiteNoise; save(); syncTimerUI(); });
 
-      document.getElementById('btn-quick-add').addEventListener('click', function () { switchTab('today'); document.getElementById('quick-add-box').classList.remove('hidden'); document.getElementById('qa-title').focus(); });
-      document.getElementById('btn-close-quick-add').addEventListener('click', function () { document.getElementById('quick-add-box').classList.add('hidden'); });
+      document.getElementById('btn-quick-add').addEventListener('click', function () { switchTab('today'); openOverlay('quick-add-box'); document.getElementById('qa-title').focus(); });
+      document.getElementById('btn-close-quick-add').addEventListener('click', function () { closeOverlay('quick-add-box'); });
       document.getElementById('btn-clear-makeup').addEventListener('click', function () { state.makeupPool = []; save(); renderToday(); });
 
       document.getElementById('btn-save-quick-add').addEventListener('click', function () {
@@ -5477,7 +5923,7 @@
         if (!state.customItems[ck]) state.customItems[ck] = [];
         state.customItems[ck].push({ id: 'c' + Date.now(), t: t, title: title, type: 'due', sub: '临时突发待办' });
         document.getElementById('qa-title').value = '';
-        document.getElementById('quick-add-box').classList.add('hidden');
+        closeOverlay('quick-add-box');
         save();
         renderAll();
         toast(displaced.length ? ('已加入，' + displaced.length + ' 项冲突任务已自动转入待补池') : ('已加进 ' + dayMetaForIso(ck).md));
@@ -5541,7 +5987,7 @@
         toast('已记录');
       });
 
-      document.getElementById('btn-open-settings').addEventListener('click', function () { document.getElementById('settings-modal').classList.remove('hidden'); refreshBackupReminder(); });
+      document.getElementById('btn-open-settings').addEventListener('click', function () { openOverlay('settings-modal'); refreshBackupReminder(); });
 
       document.getElementById('btn-new-goal').addEventListener('click', function () { openGoalDialog(null); });
       document.getElementById('today-goal-strip').addEventListener('click', function () {
@@ -5571,8 +6017,8 @@
         renderProgress();
         toast('已写入周复盘日记', snap);
       });
-      document.getElementById('btn-close-goal').addEventListener('click', function () { editingGoalId = null; document.getElementById('goal-modal').classList.add('hidden'); });
-      document.getElementById('goal-modal').addEventListener('click', function (e) { if (e.target === this) { editingGoalId = null; this.classList.add('hidden'); } });
+      document.getElementById('btn-close-goal').addEventListener('click', function () { closeOverlay('goal-modal'); });
+      document.getElementById('goal-modal').addEventListener('click', function (e) { if (e.target === this) closeOverlay('goal-modal'); });
 
       document.getElementById('btn-save-goal').addEventListener('click', function () {
         var title = (document.getElementById('goal-title').value || '').trim().slice(0, 40);
@@ -5600,8 +6046,7 @@
             deadline: dl, note: note, createdAt: Date.now(), archivedAt: ''
           });
         }
-        editingGoalId = null;
-        document.getElementById('goal-modal').classList.add('hidden');
+        closeOverlay('goal-modal');
         save(); renderProgress();
         toast(isEdit ? '目标已更新' : ('已创建目标「' + title + '」'));
       });
@@ -5611,8 +6056,7 @@
         if (!gDel) return;
         var snapGoal = JSON.stringify(state);
         state.goals = (state.goals || []).filter(function (x) { return x.id !== gDel.id; });
-        editingGoalId = null;
-        document.getElementById('goal-modal').classList.add('hidden');
+        closeOverlay('goal-modal');
         save(); renderProgress();
         toast('已删除目标「' + gDel.title + '」', snapGoal);
       });
@@ -5622,14 +6066,53 @@
         if (!gArc) return;
         gArc.archivedAt = gArc.archivedAt ? '' : new Date().toISOString();
         var msg = gArc.archivedAt ? ('已归档「' + gArc.title + '」') : ('已恢复「' + gArc.title + '」');
-        editingGoalId = null;
-        document.getElementById('goal-modal').classList.add('hidden');
+        closeOverlay('goal-modal');
         save(); renderProgress(); toast(msg);
       });
-      document.getElementById('btn-close-settings').addEventListener('click', function () { document.getElementById('settings-modal').classList.add('hidden'); });
-      document.getElementById('settings-modal').addEventListener('click', function (e) { if (e.target === this) this.classList.add('hidden'); });
+      document.getElementById('btn-close-settings').addEventListener('click', function () { closeOverlay('settings-modal'); });
+      document.getElementById('settings-modal').addEventListener('click', function (e) { if (e.target === this) closeOverlay('settings-modal'); });
 
       
+
+      var DEMO_QUAD_SEEDS = {
+        qt1: { q: 'q1', title: '完成本周分析学作业', subs: { s1: '周日中午 1.5h', s2: '周日晚 2h', s3: '周一晚 1.5h' } },
+        qt2: { q: 'q2', title: '重读陶哲轩第 10 章导数严格定义', subs: {} },
+        qt3: { q: 'q3', title: '周一晚交周志', subs: {} },
+        qt4: { q: 'q4', title: '周六上午出游与晚间电影', subs: {} }
+      };
+      var DEMO_LEDGER_SEEDS = {
+        l1: { amt: 18.5, note: '紫金港食堂午饭' },
+        l2: { amt: 24.0, note: '草稿纸与中性笔' },
+        l3: { amt: 38.0, note: '周六出游交通与饮品' }
+      };
+      var DEMO_DIET_SEEDS = {
+        dt1: { kcal: 420, name: '早饭 · 豆浆包子' },
+        dt2: { kcal: 680, name: '午饭 · 食堂套餐' }
+      };
+      var DEMO_DIARY_SEEDS = {
+        d1: 'x^n 在 [0,1] 逐点收敛但极限在 1 处间断，说明逐点收敛不保连续。',
+        d2: '隐函数定理本质上是切空间可逆线性映射诱导局部非线性可逆。'
+      };
+      var DEMO_GRADE_SCORES = {
+        'g1|r1p1a': 96, 'g1|r1p1b': 92, 'g1|r1p2': 88, 'g1|r1p3': 92,
+        'g2|r2p1': 90, 'g2|r2p2': 82, 'g2|r2p3': 88,
+        'g3|r3p1': 92, 'g3|r3p2': 89,
+        'g4|r4p1': 95, 'g4|r4p2': 86,
+        'g5|r5p1': 92,
+        'g6|r6p1': 94
+      };
+      var DEMO_COURSE_FOCUS = { '数学分析': 270, '代数学': 180, '几何学': 90, 'C 程': 120 };
+
+      function isUntouchedDemoQuadTask(t) {
+        var seed = t && DEMO_QUAD_SEEDS[t.id];
+        if (!seed || t.q !== seed.q || t.title !== seed.title || t.done) return false;
+        var expectedIds = Object.keys(seed.subs);
+        var subs = Array.isArray(t.subs) ? t.subs : [];
+        if (subs.length !== expectedIds.length) return false;
+        return subs.every(function (sb) {
+          return sb && !sb.done && seed.subs[sb.id] !== undefined && sb.title === seed.subs[sb.id];
+        });
+      }
 
       function clearDemoDataAction() {
         var snap = JSON.stringify(state);
@@ -5638,24 +6121,56 @@
         if (demoAtt && demoAtt.note === '南开 ch05 中值定理' && demoAtt.status === '课内自学') {
           delete state.attendance['2026-12-01|t3'];
         }
-        state.ledger = [];
-        state.diet = [];
-        state.diary = [];
-        state.sleepHistory = [];
-        state.sleepRec = { start: '--:--', end: '--:--', deep: 0, light: 0, rem: 0, awake: 0, awakenings: 0, debtMin: 0, steps: 0, activeKcal: 0, source: 'empty' };
-        state.focusToday = 0;
-        state.courseFocusMins = { '数学分析': 0, '代数学': 0, '几何学': 0, 'C 程': 0 };
-        state.grades.forEach(function (g) {
-          g.hypo = '';
-          if (g.root && g.root.children) {
-            (function zeroNode(nd) {
-              if (!nd.children || !nd.children.length) nd.score = null;
-              else nd.children.forEach(zeroNode);
+        if (state.backfills && Array.isArray(state.backfills['2026-11-28'])) {
+          state.backfills['2026-11-28'] = state.backfills['2026-11-28'].filter(function (b) {
+            return !(b && b.id === 'bf1' && b.title === '周六出游与午餐');
+          });
+          if (!state.backfills['2026-11-28'].length) delete state.backfills['2026-11-28'];
+        }
+        state.quadTasks = (state.quadTasks || []).filter(function (t) {
+          return !isUntouchedDemoQuadTask(t);
+        });
+        state.ledger = (state.ledger || []).filter(function (x) {
+          var s = x && DEMO_LEDGER_SEEDS[x.id];
+          return !(s && Number(x.amt) === s.amt && x.note === s.note);
+        });
+        state.diet = (state.diet || []).filter(function (x) {
+          var s = x && DEMO_DIET_SEEDS[x.id];
+          return !(s && Number(x.kcal) === s.kcal && x.name === s.name);
+        });
+        state.diary = (state.diary || []).filter(function (x) {
+          return !(x && DEMO_DIARY_SEEDS[x.id] !== undefined && x.text === DEMO_DIARY_SEEDS[x.id]);
+        });
+        if (!state.sleepRec || state.sleepRec.source === 'demo') {
+          state.sleepRec = emptySleepRec();
+          state.sleepRec.debtMin = recalcSleepDebt();
+        }
+        if (!state.demoFocusCleared) {
+          if (!isRecord(state.courseFocusMins)) state.courseFocusMins = {};
+          Object.keys(DEMO_COURSE_FOCUS).forEach(function (k) {
+            if (state.courseFocusMins[k] != null) {
+              state.courseFocusMins[k] = Math.max(0, (Number(state.courseFocusMins[k]) || 0) - DEMO_COURSE_FOCUS[k]);
+            }
+          });
+          state.demoFocusCleared = true;
+        }
+        (state.grades || []).forEach(function (g) {
+          if (g && g.root && g.root.children) {
+            (function clearSeedNode(nd) {
+              if (!nd) return;
+              if (!nd.children || !nd.children.length) {
+                var seedScore = DEMO_GRADE_SCORES[g.id + '|' + nd.id];
+                if (seedScore !== undefined && !nd.userEdited && nd.score != null && Number(nd.score) === seedScore) {
+                  nd.score = null;
+                }
+              } else {
+                nd.children.forEach(clearSeedNode);
+              }
             })(g.root);
           }
         });
         save(); renderAll();
-        toast('已清空示例数据（课表与 15 周计划已保留）', snap);
+        toast('已清空示例数据（课表与个人新增记录已保留）', snap);
       }
 
       document.getElementById('btn-clear-demo').addEventListener('click', clearDemoDataAction);
@@ -5768,6 +6283,68 @@
       }
 
       
+      // Android AlarmManager 对单应用并发闹钟硬上限 MAX_ALARMS_PER_UID = 500；
+      // 此处排程限定 1001..1489（最多 489 条）+ 独立专注闹钟 1500 = 490 条预算，勿盲目调大上限。
+      function buildNativeNotifyItems(nowMs) {
+        var items = [];
+        var nid = 1001;
+        var baseNow = typeof nowMs === 'number' ? nowMs : Date.now();
+        var today0 = new Date(baseNow);
+        today0.setHours(0, 0, 0, 0);
+        for (var dOff = 0; dOff < 21; dOff++) {
+          var dt = new Date(today0.getTime() + dOff * 86400000);
+          var iso = fmtIso(dt);
+          if (!habitDoneAt(state.sleepDone, iso)) {
+            var t2330 = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate(), 23, 30, 0).getTime();
+            if (t2330 > baseNow && nid < 1490) {
+              items.push({ id: nid++, at: t2330, title: '日迹 · 23:30 收尾', body: '准备收尾，00:00 准时入睡', route: 'today' });
+            }
+          }
+          var dayItems = getEffectiveDayItems(iso, { includeSkipped: false, includeDone: false, includeDividers: false, includeBoundary: false })
+            .filter(function (x) { return x.type === 'class' || x.type === 'due'; });
+          dayItems.forEach(function (it) {
+            var tr = parseTimeRange(it.effectiveTime, 45);
+            if (tr.sM == null || nid >= 1490) return;
+            var fireMin = Math.max(0, tr.sM - 10);
+            var fireAt = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate(), Math.floor(fireMin / 60), fireMin % 60, 0).getTime();
+            if (fireAt > baseNow) {
+              items.push({ id: nid++, at: fireAt, title: '10分钟后：' + it.title, body: it.effectiveTime + (it.sub ? (' · ' + it.sub) : ''), route: it.type === 'class' ? 'schedule' : 'today' });
+            }
+          });
+        }
+        return items;
+      }
+
+      function computeNotifySig() {
+        var today0 = new Date();
+        today0.setHours(0, 0, 0, 0);
+        var parts = [];
+        for (var dOff = 0; dOff < 21; dOff++) {
+          var dt = new Date(today0.getTime() + dOff * 86400000);
+          var iso = fmtIso(dt);
+          parts.push(iso + ':sl=' + (habitDoneAt(state.sleepDone, iso) ? '1' : '0'));
+          var dayItems = getEffectiveDayItems(iso, { includeSkipped: false, includeDone: false, includeDividers: false, includeBoundary: false })
+            .filter(function (x) { return x.type === 'class' || x.type === 'due'; });
+          dayItems.forEach(function (it) {
+            parts.push(it.key + '@' + it.effectiveTime + '#' + it.title);
+          });
+        }
+        return parts.join(';');
+      }
+
+      function maybeAutoRescheduleNotify() {
+        if (!state.notifyEnabled) return;
+        var np = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Notify;
+        if (!np) return;
+        if (notifyReschedTimer) clearTimeout(notifyReschedTimer);
+        notifyReschedTimer = setTimeout(function () {
+          notifyReschedTimer = null;
+          var sig = computeNotifySig();
+          if (sig === lastNotifySig) return;
+          scheduleNativeNotifications(true);
+        }, 1200);
+      }
+
       function scheduleNativeNotifications(silent) {
         var np = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Notify;
         if (!np) {
@@ -5782,34 +6359,13 @@
             }
             return Promise.reject(new Error('permission_denied'));
           }
-          var items = [];
-          var nid = 1001;
-          var nowMs = Date.now();
-          var today0 = new Date();
-          today0.setHours(0, 0, 0, 0);
-          for (var dOff = 0; dOff < 21; dOff++) {
-            var dt = new Date(today0.getTime() + dOff * 86400000);
-            var iso = fmtIso(dt);
-            var t2330 = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate(), 23, 30, 0).getTime();
-            if (t2330 > nowMs && nid < 1490) {
-              items.push({ id: nid++, at: t2330, title: '日迹 · 23:30 收尾', body: '准备收尾，00:00 准时入睡', route: 'today' });
-            }
-            var dayItems = getDayItemsForDate(iso).filter(function (x) { return !x.divider && (x.type === 'class' || x.type === 'due'); });
-            dayItems.forEach(function (it) {
-              var sMin = toMin(String(it.t || '').split('–')[0]);
-              if (sMin == null || nid >= 1490) return;
-              var fireMin = Math.max(0, sMin - 10);
-              var fireAt = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate(), Math.floor(fireMin / 60), fireMin % 60, 0).getTime();
-              if (fireAt > nowMs) {
-                items.push({ id: nid++, at: fireAt, title: '10分钟后：' + it.title, body: it.t + (it.sub ? (' · ' + it.sub) : ''), route: it.type === 'class' ? 'schedule' : 'today' });
-              }
-            });
-          }
+          var items = buildNativeNotifyItems(Date.now());
+          lastNotifySig = computeNotifySig();
           return np.schedule({ items: items });
         }).then(function (res) {
           var scheduled = res ? (Number(res.scheduled) || 0) : 0;
           var skipped = (res && typeof res.skipped === 'number') ? res.skipped : 0;
-          if (scheduled > 0) {
+          if (scheduled > 0 && !state.notifyEnabled) {
             state.notifyEnabled = true;
             save();
           }
@@ -5879,26 +6435,31 @@
           'END:VTIMEZONE'
         ];
         var dtstamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+        var exportSeq = Math.max(1, Math.floor((Date.now() - 1700000000000) / 1000));
         var today0 = new Date(); today0.setHours(0, 0, 0, 0);
         for (var dOff = 0; dOff < 14; dOff++) {
           var dt = new Date(today0.getTime() + dOff * 86400000);
           var iso = fmtIso(dt);
           var ymd = dt.getFullYear() + pad2(dt.getMonth() + 1) + pad2(dt.getDate());
-          var dayItems = getDayItemsForDate(iso).filter(function (x) { return !x.divider; });
-          dayItems.forEach(function (it, idx) {
-            var rng = String(it.t || '').split('–');
-            var sM = toMin(rng[0]);
-            var eM = rng[1] ? toMin(rng[1]) : (sM != null ? sM + 45 : null);
-            if (sM == null || eM == null) return;
-            var sStr = pad2(Math.floor(sM / 60)) + pad2(sM % 60) + '00';
-            var eStr = pad2(Math.floor(eM / 60)) + pad2(eM % 60) + '00';
+          var dayItems = getEffectiveDayItems(iso, { includeSkipped: true, includeDone: true, includeDividers: false, includeBoundary: false });
+          dayItems.forEach(function (it) {
+            var tr = parseTimeRange(it.effectiveTime, 45);
+            if (tr.sM == null || tr.rawEndM == null) return;
+            var sStr = pad2(Math.floor(tr.sM / 60)) + pad2(tr.sM % 60) + '00';
+            var eIso = tr.endDayOffset ? addDaysIso(iso, tr.endDayOffset) : iso;
+            var eYmd = eIso.replace(/-/g, '');
+            var eStr = pad2(Math.floor(tr.rawEndM / 60)) + pad2(tr.rawEndM % 60) + '00';
+            var safeUidId = String(it.id || '').replace(/[^A-Za-z0-9_-]/g, '_') || 'item';
             lines.push(
               'BEGIN:VEVENT',
-              'UID:' + ymd + '-' + idx + '@studyos',
+              'UID:' + ymd + '-' + safeUidId + '@studyos',
               'DTSTAMP:' + dtstamp,
+              'SEQUENCE:' + exportSeq,
+              'STATUS:' + (it.skipped ? 'CANCELLED' : 'CONFIRMED'),
+              it.skipped ? 'TRANSP:TRANSPARENT' : null,
               'DTSTART;TZID=Asia/Shanghai:' + ymd + 'T' + sStr,
-              'DTEND;TZID=Asia/Shanghai:' + ymd + 'T' + eStr,
-              icsFold('SUMMARY:' + icsEscape(it.title)),
+              'DTEND;TZID=Asia/Shanghai:' + eYmd + 'T' + eStr,
+              icsFold('SUMMARY:' + icsEscape((it.skipped ? '[已跳过] ' : '') + it.title)),
               it.sub ? icsFold('DESCRIPTION:' + icsEscape(it.sub)) : null,
               'END:VEVENT'
             );

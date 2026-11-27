@@ -1,11 +1,11 @@
 package com.faust275.studyos.widget
 
 import com.faust275.studyos.R
-import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
+import java.time.LocalDate
 import java.time.LocalTime
 
 /**
@@ -14,22 +14,21 @@ import java.time.LocalTime
  */
 class CourseWidgetService : RemoteViewsService() {
     override fun onGetViewFactory(intent: Intent): RemoteViewsFactory {
-        return CourseViewFactory(applicationContext, intent)
+        return CourseViewFactory(applicationContext)
     }
 }
 
 class CourseViewFactory(
-    private val context: Context,
-    intent: Intent
+    private val context: Context
 ) : RemoteViewsService.RemoteViewsFactory {
 
-    private val widgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 0)
     private var courses: List<CourseItem> = emptyList()
 
     override fun onCreate() {}
 
     override fun onDataSetChanged() {
-        courses = WidgetData.load(context)?.courses ?: emptyList()
+        val todayIso = LocalDate.now().toString()
+        courses = WidgetData.load(context)?.coursesFor(todayIso) ?: emptyList()
     }
 
     override fun onDestroy() {
@@ -47,10 +46,9 @@ class CourseViewFactory(
         val isOngoing = c.start.isNotEmpty() && c.end.isNotEmpty() && c.start <= nowHm && nowHm <= c.end
         val isDone = c.end.isNotEmpty() && c.end < nowHm
         rv.setTextViewText(R.id.item_start, if (isOngoing) "▶ ${c.start}" else c.start)
-        val loc = if (c.location.isNotEmpty()) " · ${c.location}" else ""
+        val note = if (c.note.isNotEmpty()) " · ${c.note}" else ""
         val statusSuffix = if (isOngoing) " [上课中]" else if (isDone) " [已结束]" else ""
-        rv.setTextViewText(R.id.item_name, c.name + loc + statusSuffix)
-        // 点击课程项 → 同样打开 App
+        rv.setTextViewText(R.id.item_name, c.name + note + statusSuffix)
         val fill = Intent()
         rv.setOnClickFillInIntent(R.id.item_root, fill)
         return rv

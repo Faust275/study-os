@@ -50,6 +50,9 @@ jobs:
       - name: Check CSS class consistency
         run: npm run check:classes
 
+      - name: Run web regression tests
+        run: npm run test:web
+
       - name: Setup JDK 21
         uses: actions/setup-java@v4
         with:
@@ -70,9 +73,7 @@ jobs:
       - name: Sync web files to Android
         run: |
           npm run sync:www
-          npx cap sync android || npx cap copy android
-          mkdir -p android/app/src/main/assets/public
-          cp -r www/* android/app/src/main/assets/public/
+          npx cap sync android
 
       - name: Restore signing keystore (optional)
         run: |
@@ -96,9 +97,9 @@ jobs:
         run: |
           chmod +x gradlew
           if [ -f app/study-os.keystore ]; then
-            ./gradlew assembleRelease
+            ./gradlew testDebugUnitTest assembleRelease
           else
-            ./gradlew assembleDebug
+            ./gradlew testDebugUnitTest assembleDebug
           fi
 
       - name: Collect APK

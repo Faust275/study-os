@@ -54,7 +54,8 @@ object NotifyScheduler {
     const val ACTION_SNOOZE = "com.faust275.studyos.NOTIFY_SNOOZE"
     const val ACTION_DISMISS = "com.faust275.studyos.NOTIFY_DISMISS"
 
-    // 与前端 scheduleNativeNotifications 的 1001…1489 对齐（上限 490 条，容纳 21 天窗口）
+    // Android 系统限制单应用并发 AlarmManager 闹钟上限 MAX_ALARMS_PER_UID = 500；
+    // 与前端 scheduleNativeNotifications 的 1001…1489 对齐（上限 489 条 + 专注闹钟 1 条 = 490 条预算，勿扩上限）
     const val ID_BASE = 1000
     const val ID_MAX = 1490
     // 专注计时用独立 ID：必须落在 ID_BASE..ID_MAX 之外，否则 schedule()/cancelAll() 会把它一起清掉
@@ -144,9 +145,24 @@ object NotifyScheduler {
 
     fun cancelAll(ctx: Context) {
         val am = alarmManager(ctx) ?: return
+        val cancelled = HashSet<Int>()
+        val raw = loadItems(ctx)
+        if (raw != null) {
+            val arr = try { JSONArray(raw) } catch (_: Exception) { null }
+            if (arr != null) {
+                for (i in 0 until arr.length()) {
+                    val id = arr.optJSONObject(i)?.optInt("id", -1) ?: -1
+                    if (id < ID_BASE || id >= ID_MAX) continue
+                    val pi = pendingIntent(ctx, id, "", "") ?: continue
+                    try { am.cancel(pi); cancelled.add(id) } catch (_: Exception) { /* 忽略 */ }
+                }
+            }
+        }
+        // 固定区间兜底：清理旧版本遗留或异常中断产生的孤儿闹钟（不影响独立专注闹钟 TIMER_ID=1500）
         for (id in ID_BASE until ID_MAX) {
+            if (id in cancelled) continue
             val pi = pendingIntent(ctx, id, "", "") ?: continue
-            try { am.cancel(pi) } catch (e: Exception) { /* 忽略 */ }
+            try { am.cancel(pi) } catch (_: Exception) { /* 忽略 */ }
         }
     }
 
@@ -218,12 +234,6 @@ class NotifyPlugin : Plugin() {
         call.resolve(status())
     }
 
-    /** 老调用方（设置页早期版本）用的名字，保留兼容。 */
-    @PluginMethod
-    fun notifyPermissions(call: PluginCall) {
-        call.resolve(status())
-    }
-
     @PluginMethod
     fun requestPermission(call: PluginCall) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
@@ -266,29 +276,6 @@ class NotifyPlugin : Plugin() {
             call.resolve()
         } catch (e: Exception) {
             call.reject("无法打开通知设置", e)
-        }
-    }
-
-    /** 打开系统「电池优化」列表，让用户把本应用设为「不限制后台」 */
-    @PluginMethod
-    fun openBatterySettings(call: PluginCall) {
-        try {
-            val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(intent)
-            call.resolve()
-        } catch (e: Exception) {
-            // 个别 ROM 没有这个页面，退回应用详情页
-            try {
-                val fallback = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = Uri.parse("package:" + context.packageName)
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
-                context.startActivity(fallback)
-                call.resolve()
-            } catch (e2: Exception) {
-                call.reject("无法打开电池设置", e2)
-            }
         }
     }
 

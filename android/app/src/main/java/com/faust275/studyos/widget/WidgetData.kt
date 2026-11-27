@@ -4,26 +4,88 @@ import android.content.Context
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
-data class CourseItem(val start: String, val end: String, val name: String, val location: String)
+data class CourseItem(val start: String, val end: String, val name: String, val note: String)
+
 data class TodoItem(
     val id: String = "",
     val title: String,
     val due: String,
-    val time: String,
+    val dueDate: String = "",
     val remainDays: Int?,
     val done: Boolean = false
 )
-data class ExamItem(val name: String, val date: String, val start: String, val location: String)
+
+data class ExamItem(val name: String, val date: String)
 
 data class WidgetSnapshot(
     val updatedAt: Long,
     val today: String,
     val weekday: String,
     val courses: List<CourseItem>,
+    val scheduleByDate: Map<String, List<CourseItem>> = emptyMap(),
+    val todos: List<TodoItem> = emptyList(),
     val nextTodo: TodoItem?,
     val nextExam: ExamItem?
-)
+) {
+    /** 若 7 日课表字典中已包含 dateIso，则跨午夜后依然新鲜可用；超出字典范围才视为过期。 */
+    fun isStaleOn(dateIso: String): Boolean {
+        if (scheduleByDate.containsKey(dateIso)) return false
+        return today.isNotEmpty() && today != dateIso
+    }
+
+    /** 获取指定日期的课程列表；若快照已过期且不在 7 日字典内，返回空列表避免拿旧课冒充今日。 */
+    fun coursesFor(dateIso: String): List<CourseItem> {
+        scheduleByDate[dateIso]?.let { return it }
+        return if (!isStaleOn(dateIso)) courses else emptyList()
+    }
+
+    fun weekdayFor(dateIso: String): String {
+        return try {
+            when (LocalDate.parse(dateIso).dayOfWeek) {
+                DayOfWeek.MONDAY -> "周一"
+                DayOfWeek.TUESDAY -> "周二"
+                DayOfWeek.WEDNESDAY -> "周三"
+                DayOfWeek.THURSDAY -> "周四"
+                DayOfWeek.FRIDAY -> "周五"
+                DayOfWeek.SATURDAY -> "周六"
+                DayOfWeek.SUNDAY -> "周日"
+                else -> weekday
+            }
+        } catch (_: Exception) {
+            weekday
+        }
+    }
+
+    fun activeTodoOn(dateIso: String): TodoItem? {
+        if (todos.isNotEmpty()) {
+            // 当天刚在桌面勾选完成的待办保留在原位以支持反悔取消；跨过截止日后自动切到下一条未过期项
+            val valid = todos.filter { it.dueDate.isEmpty() || it.dueDate >= dateIso }
+            val notDone = valid.firstOrNull { !it.done }
+            val firstValid = valid.firstOrNull()
+            return if (today == dateIso && firstValid != null && firstValid.done) firstValid else (notDone ?: firstValid)
+        }
+        val fallback = nextTodo ?: return null
+        if (fallback.dueDate.isNotEmpty() && fallback.dueDate < dateIso && fallback.done) return null
+        return fallback
+    }
+
+    fun remainDaysFor(todo: TodoItem, dateIso: String): Int? {
+        if (todo.dueDate.isNotEmpty()) {
+            return try {
+                ChronoUnit.DAYS.between(LocalDate.parse(dateIso), LocalDate.parse(todo.dueDate))
+                    .toInt()
+                    .coerceAtLeast(0)
+            } catch (_: Exception) {
+                todo.remainDays
+            }
+        }
+        return if (!isStaleOn(dateIso) && today == dateIso) todo.remainDays else null
+    }
+}
 
 /**
  * 桌面小组件后台操作脏标记与变更事务队列 (Mutation Log)
@@ -96,7 +158,7 @@ object WidgetData {
             val file = File(context.filesDir, FILE_NAME)
             if (!file.exists()) return null
             parse(file.readText())
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }
@@ -122,69 +184,103 @@ object WidgetData {
             val file = File(context.filesDir, FILE_NAME)
             if (!file.exists()) return false
             val o = JSONObject(file.readText())
+            var updated = false
             val todoObj = o.optJSONObject("nextTodo")
             if (todoObj != null && (todoObj.optString("id") == todoId || todoId.isEmpty())) {
                 todoObj.put("done", done)
+                updated = true
+            }
+            val todosArr = o.optJSONArray("todos")
+            if (todosArr != null) {
+                for (i in 0 until todosArr.length()) {
+                    val item = todosArr.optJSONObject(i) ?: continue
+                    if (item.optString("id") == todoId) {
+                        item.put("done", done)
+                        updated = true
+                    }
+                }
+            }
+            if (updated) {
                 o.put("updatedAt", System.currentTimeMillis())
                 writeSnapshot(context, o.toString())
-                true
-            } else {
-                false
             }
+            updated
         } catch (_: Exception) {
             false
         }
     }
 
+    private fun parseCourseArray(arr: JSONArray?): List<CourseItem> {
+        if (arr == null) return emptyList()
+        val list = mutableListOf<CourseItem>()
+        for (i in 0 until arr.length()) {
+            val c = arr.optJSONObject(i) ?: continue
+            val note = c.optString("note").ifEmpty { c.optString("location") }
+            list.add(
+                CourseItem(
+                    start = c.optString("start"),
+                    end = c.optString("end"),
+                    name = c.optString("name"),
+                    note = note
+                )
+            )
+        }
+        return list
+    }
+
+    private fun parseTodoObj(t: JSONObject): TodoItem {
+        val rd = if (t.has("remainDays") && !t.isNull("remainDays")) t.optInt("remainDays") else null
+        return TodoItem(
+            id = t.optString("id"),
+            title = t.optString("title"),
+            due = t.optString("due"),
+            dueDate = t.optString("dueDate"),
+            remainDays = rd,
+            done = t.optBoolean("done", false)
+        )
+    }
+
     fun parse(json: String): WidgetSnapshot? {
         return try {
             val o = JSONObject(json)
-            val courses = mutableListOf<CourseItem>()
-            val arr = o.optJSONArray("courses") ?: JSONArray()
-            for (i in 0 until arr.length()) {
-                val c = arr.getJSONObject(i)
-                courses.add(
-                    CourseItem(
-                        c.optString("start"),
-                        c.optString("end"),
-                        c.optString("name"),
-                        c.optString("location")
-                    )
-                )
+            val courses = parseCourseArray(o.optJSONArray("courses"))
+
+            val scheduleByDate = LinkedHashMap<String, List<CourseItem>>()
+            o.optJSONObject("scheduleByDate")?.let { mapObj ->
+                val keys = mapObj.keys()
+                while (keys.hasNext()) {
+                    val k = keys.next()
+                    scheduleByDate[k] = parseCourseArray(mapObj.optJSONArray(k))
+                }
             }
 
-            var todo: TodoItem? = null
-            o.optJSONObject("nextTodo")?.let { t ->
-                val rd = if (t.has("remainDays") && !t.isNull("remainDays")) t.getInt("remainDays") else null
-                todo = TodoItem(
-                    t.optString("id"),
-                    t.optString("title"),
-                    t.optString("due"),
-                    t.optString("time"),
-                    rd,
-                    t.optBoolean("done", false)
-                )
+            val todos = mutableListOf<TodoItem>()
+            o.optJSONArray("todos")?.let { tArr ->
+                for (i in 0 until tArr.length()) {
+                    val item = tArr.optJSONObject(i) ?: continue
+                    todos.add(parseTodoObj(item))
+                }
             }
 
-            var exam: ExamItem? = null
-            o.optJSONObject("nextExam")?.let { e ->
-                exam = ExamItem(
-                    e.optString("name"),
-                    e.optString("date"),
-                    e.optString("start"),
-                    e.optString("location")
+            val nextTodo = o.optJSONObject("nextTodo")?.let { parseTodoObj(it) }
+            val nextExam = o.optJSONObject("nextExam")?.let { e ->
+                ExamItem(
+                    name = e.optString("name"),
+                    date = e.optString("date")
                 )
             }
 
             WidgetSnapshot(
-                o.optLong("updatedAt", 0),
-                o.optString("today"),
-                o.optString("weekday"),
-                courses,
-                todo,
-                exam
+                updatedAt = o.optLong("updatedAt", 0),
+                today = o.optString("today"),
+                weekday = o.optString("weekday"),
+                courses = courses,
+                scheduleByDate = scheduleByDate,
+                todos = todos,
+                nextTodo = nextTodo,
+                nextExam = nextExam
             )
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }

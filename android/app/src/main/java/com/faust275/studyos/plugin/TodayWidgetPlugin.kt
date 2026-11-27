@@ -1,6 +1,5 @@
 package com.faust275.studyos.plugin
 
-import com.faust275.studyos.bridge.DataBridge
 import com.faust275.studyos.widget.WidgetMutations
 import com.getcapacitor.JSArray
 import com.getcapacitor.JSObject
@@ -11,21 +10,6 @@ import com.getcapacitor.annotation.CapacitorPlugin
 
 @CapacitorPlugin(name = "TodayWidget")
 class TodayWidgetPlugin : Plugin() {
-    @PluginMethod
-    fun update(call: PluginCall) {
-        val json = call.getString("json") ?: call.getString("snapshot") ?: ""
-        if (json.isNotEmpty()) {
-            DataBridge(context).pushSnapshot(json)
-        }
-        val ret = JSObject()
-        ret.put("ok", true)
-        call.resolve(ret)
-    }
-
-    @PluginMethod
-    fun pushSnapshot(call: PluginCall) {
-        update(call)
-    }
 
     @PluginMethod
     fun getPendingWidgetMutations(call: PluginCall) {
