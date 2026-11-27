@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 纸墨浅色 · 暖宣纸 (Day) -->
+    <color name="widget_surface">#F6F3EC</color>
+    <color name="widget_stroke">#DDD7CA</color>
+    <color name="widget_todo_bg">#EDE8DD</color>
+    <color name="widget_todo_stroke">#DED8C9</color>
+    <color name="widget_ink">#191C24</color>
+    <color name="widget_ink_soft">#555B6E</color>
+    <color name="widget_ink_faint">#888E9F</color>
+    <color name="widget_ana">#1B5461</color>
+    <color name="widget_alg">#5A4185</color>
+    <color name="widget_due">#A84F28</color>
+    <color name="widget_rest">#C25466</color>
+    <color name="widget_ok">#2B6150</color>
+</resources>

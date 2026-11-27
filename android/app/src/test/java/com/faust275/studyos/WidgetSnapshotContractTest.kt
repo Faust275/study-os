@@ -50,4 +50,13 @@ class WidgetSnapshotContractTest {
         assertTrue(snap.isStaleOn("2026-12-10"))
         assertTrue(snap.coursesFor("2026-12-10").isEmpty())
     }
+
+    @Test
+    fun courseKindParsesExplicitAndInfersFallbackPaperInkThemes() {
+        assertEquals("ana", CourseItem("10:00", "12:25", "分析学I", "", "ana").resolvedKind())
+        assertEquals("alg", CourseItem("13:25", "15:50", "代数学I", "").resolvedKind())
+        assertEquals("due", CourseItem("08:00", "09:35", "写完本周 C 程作业", "").resolvedKind())
+        assertEquals("rest", CourseItem("21:00", "21:30", "校园跑", "").resolvedKind())
+        assertEquals("class", CourseItem("18:50", "20:25", "新工科大学英语", "").resolvedKind())
+    }
 }

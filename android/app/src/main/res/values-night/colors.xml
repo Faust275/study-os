@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 纸墨深色 · 夜砚墨 (Night) -->
+    <color name="widget_surface">#171A21</color>
+    <color name="widget_stroke">#2B303E</color>
+    <color name="widget_todo_bg">#212530</color>
+    <color name="widget_todo_stroke">#313748</color>
+    <color name="widget_ink">#ECEAE4</color>
+    <color name="widget_ink_soft">#A4AAB8</color>
+    <color name="widget_ink_faint">#6E7485</color>
+    <color name="widget_ana">#5CB4C6</color>
+    <color name="widget_alg">#B096E6</color>
+    <color name="widget_due">#E68B60</color>
+    <color name="widget_rest">#EA8496</color>
+    <color name="widget_ok">#58B396</color>
+</resources>

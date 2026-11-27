@@ -1,6 +1,7 @@
 package com.faust275.studyos.widget
 
 import com.faust275.studyos.R
+import com.faust275.studyos.widget.CourseWidgetProvider.Companion.setThemeTextColor
 import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
@@ -45,7 +46,27 @@ class CourseViewFactory(
         val nowHm = String.format("%02d:%02d", now.hour, now.minute)
         val isOngoing = c.start.isNotEmpty() && c.end.isNotEmpty() && c.start <= nowHm && nowHm <= c.end
         val isDone = c.end.isNotEmpty() && c.end < nowHm
+        val dotRes = if (isDone) {
+            R.drawable.widget_dot_done
+        } else {
+            when (c.resolvedKind()) {
+                "ana" -> R.drawable.widget_dot_ana
+                "alg" -> R.drawable.widget_dot_alg
+                "due" -> R.drawable.widget_dot_due
+                "rest" -> R.drawable.widget_dot_rest
+                else -> R.drawable.widget_dot_class
+            }
+        }
+        rv.setImageViewResource(R.id.item_dot, dotRes)
         rv.setTextViewText(R.id.item_start, if (isOngoing) "▶ ${c.start}" else c.start)
+        val startColor = when {
+            isDone -> R.color.widget_ink_faint
+            isOngoing -> R.color.widget_ok
+            else -> R.color.widget_ana
+        }
+        val nameColor = if (isDone) R.color.widget_ink_faint else R.color.widget_ink
+        rv.setThemeTextColor(context, R.id.item_start, startColor)
+        rv.setThemeTextColor(context, R.id.item_name, nameColor)
         val note = if (c.note.isNotEmpty()) " · ${c.note}" else ""
         val statusSuffix = if (isOngoing) " [上课中]" else if (isDone) " [已结束]" else ""
         rv.setTextViewText(R.id.item_name, c.name + note + statusSuffix)

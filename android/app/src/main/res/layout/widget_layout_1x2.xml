@@ -25,9 +25,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ellipsize="end"
+                android:fontFamily="serif"
                 android:singleLine="true"
                 android:text="今日课程"
-                android:textColor="#1f2430"
+                android:textColor="@color/widget_ink"
                 android:textSize="11sp"
                 android:textStyle="bold" />
 
@@ -35,10 +36,11 @@
                 android:id="@+id/widget_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFeatureSettings="tnum"
                 android:paddingStart="4dp"
                 android:singleLine="true"
                 android:text="周六"
-                android:textColor="#9aa0aa"
+                android:textColor="@color/widget_ink_faint"
                 android:textSize="9sp" />
         </LinearLayout>
 
@@ -59,8 +61,9 @@
                 android:paddingEnd="4dp"
                 android:singleLine="true"
                 android:text="待办"
-                android:textColor="#6b73d8"
-                android:textSize="9sp" />
+                android:textColor="@color/widget_due"
+                android:textSize="9sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/todo_title"
@@ -70,7 +73,7 @@
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:text="分析作业"
-                android:textColor="#1f2430"
+                android:textColor="@color/widget_ink"
                 android:textSize="10sp"
                 android:textStyle="bold" />
 
@@ -78,10 +81,11 @@
                 android:id="@+id/todo_remain"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFeatureSettings="tnum"
                 android:paddingStart="4dp"
                 android:singleLine="true"
                 android:text="今天"
-                android:textColor="#f59e0b"
+                android:textColor="@color/widget_due"
                 android:textSize="9sp"
                 android:textStyle="bold" />
         </LinearLayout>

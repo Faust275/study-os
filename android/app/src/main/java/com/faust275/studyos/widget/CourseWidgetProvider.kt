@@ -80,6 +80,14 @@ open class CourseWidgetProvider : AppWidgetProvider() {
         private const val REQ_LIST_TEMPLATE = 1001
         private const val REQ_TOGGLE_TODO = 2001
 
+        internal fun RemoteViews.setThemeTextColor(context: Context, viewId: Int, colorRes: Int) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                setColorStateList(viewId, "setTextColor", colorRes)
+            } else {
+                setTextColor(viewId, context.getColor(colorRes))
+            }
+        }
+
         private fun computeDynamicHeaderTitle(snap: WidgetSnapshot, todayIso: String): String {
             if (snap.isStaleOn(todayIso)) return "打开 App 同步今日课程"
             val dayCourses = snap.coursesFor(todayIso)
@@ -155,6 +163,11 @@ open class CourseWidgetProvider : AppWidgetProvider() {
                 }
                 views.setTextViewText(R.id.todo_title, if (isDone) "✓ ${todo.title}" else todo.title)
                 views.setTextViewText(R.id.todo_remain, if (isDone) "已达成" else remain)
+                val accentRes = if (isDone) R.color.widget_ok else R.color.widget_due
+                val titleRes = if (isDone) R.color.widget_ink_soft else R.color.widget_ink
+                views.setThemeTextColor(context, R.id.todo_label, accentRes)
+                views.setThemeTextColor(context, R.id.todo_remain, accentRes)
+                views.setThemeTextColor(context, R.id.todo_title, titleRes)
 
                 // 绑定免拉起桌面打勾 Intent（显式广播 + 固定 requestCode + IMMUTABLE）
                 if (todo.id.isNotEmpty()) {
@@ -185,10 +198,15 @@ open class CourseWidgetProvider : AppWidgetProvider() {
                 }
                 views.setTextViewText(R.id.todo_title, exam.name)
                 views.setTextViewText(R.id.todo_remain, remain)
+                views.setThemeTextColor(context, R.id.todo_label, R.color.widget_ana)
+                views.setThemeTextColor(context, R.id.todo_remain, R.color.widget_ana)
+                views.setThemeTextColor(context, R.id.todo_title, R.color.widget_ink)
             } else {
                 views.setTextViewText(R.id.todo_label, "待办事项")
                 views.setTextViewText(R.id.todo_title, "暂无待办")
                 views.setTextViewText(R.id.todo_remain, "")
+                views.setThemeTextColor(context, R.id.todo_label, R.color.widget_ink_faint)
+                views.setThemeTextColor(context, R.id.todo_title, R.color.widget_ink_faint)
             }
 
             // 点组件根区域直接落到「今日」，课程列表项落到「课表」

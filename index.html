@@ -133,6 +133,14 @@
     .tint-ok { background: var(--ok-soft); border-color: var(--ok-border); color: var(--ok-ink); }
     .tint-danger { background: var(--danger-soft); border-color: var(--danger-border); color: var(--danger-ink); }
     .tint-warn { background: var(--warn-soft); border-color: var(--warn-border); color: var(--warn-ink); }
+    .tint-class {
+      background: color-mix(in srgb, var(--surface-2) 86%, var(--ink) 4%);
+      border-color: var(--line-strong);
+      color: var(--ink-soft);
+    }
+    .axis-col-weekend {
+      background: color-mix(in srgb, var(--surface-2) 48%, transparent);
+    }
     .modal-mask {
       background: rgba(12, 14, 20, 0.46);
       -webkit-backdrop-filter: blur(5px);
@@ -141,18 +149,258 @@
     .sheet-panel { box-shadow: var(--shadow-float); }
     .app-header { padding-top: var(--safe-t); }
     .app-nav { background: var(--surface-elev); border-color: var(--line); }
-    .app-toast { bottom: calc(5rem + var(--safe-b)); box-shadow: var(--shadow-float); }
+    .app-toast { bottom: calc(5.1rem + var(--safe-b)); box-shadow: var(--shadow-float); }
+    .nav-icon { width: 15px; height: 15px; flex-shrink: 0; }
     @media (max-width: 1023px) {
-      .app-nav { padding-bottom: var(--safe-b); }
+      .app-nav {
+        left: 50% !important;
+        right: auto !important;
+        bottom: calc(0.75rem + var(--safe-b)) !important;
+        transform: translateX(-50%);
+        width: min(calc(100% - 1.75rem), 23.5rem);
+        border: 1px solid var(--line-strong);
+        border-radius: 9999px;
+        padding: 0.25rem;
+        box-shadow: var(--shadow-float);
+        -webkit-backdrop-filter: blur(14px);
+        backdrop-filter: blur(14px);
+      }
+      .nav-capsule-grid {
+        height: 2.75rem !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        gap: 0.2rem;
+      }
+      .nav-btn {
+        height: 100%;
+        border-radius: 9999px;
+        font-weight: 500;
+        transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+      }
+      .nav-btn .nav-dot { display: none; }
+      .nav-btn.nav-item-active {
+        background: var(--ink);
+        color: var(--bg);
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+      }
       .app-body { padding-bottom: calc(6rem + var(--safe-b)); }
+    }
+    @media (min-width: 1024px) {
+      .nav-btn.nav-item-active {
+        background: var(--surface-2);
+        color: var(--ink);
+        font-weight: 700;
+      }
+      .nav-btn.nav-item-active .nav-dot { opacity: 1; }
     }
     @media (max-width: 639px) {
       .sheet-panel { padding-bottom: calc(1.5rem + var(--safe-b)); }
     }
     .num-tab { font-variant-numeric: tabular-nums; }
-    .nav-item-active { color: var(--ink); font-weight: 700; }
-    .nav-item-active .nav-dot { opacity: 1; }
     .day-active { background: var(--ink); color: var(--bg); }
+    .day-live { background: var(--ana-soft); border: 1px solid var(--ana-border); color: var(--ana-ink); font-weight: 600; }
+    .day-dot { width: 4px; height: 4px; border-radius: 9999px; margin: 2px auto 0; background: currentColor; opacity: 0.55; }
+    .today-hero {
+      position: relative;
+      background: linear-gradient(155deg, var(--surface) 0%, color-mix(in srgb, var(--surface-2) 55%, var(--surface)) 100%);
+      border: 1px solid var(--line);
+      border-radius: 1.25rem;
+      padding: 1.15rem 1.2rem 0.9rem;
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+    .today-hero::before {
+      content: "";
+      position: absolute;
+      top: -32px;
+      right: -28px;
+      width: 128px;
+      height: 128px;
+      border-radius: 9999px;
+      background: radial-gradient(circle, var(--ana-soft) 0%, transparent 72%);
+      pointer-events: none;
+    }
+    .hero-date {
+      font-family: var(--font-serif);
+      font-size: 1.65rem;
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .hero-topic-pill {
+      display: inline-block;
+      padding: 0.14rem 0.58rem;
+      border-radius: 9999px;
+      font-size: 11px;
+      background: var(--surface-2);
+      color: var(--ink-soft);
+      max-width: 100%;
+    }
+    .hero-today-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.12rem 0.52rem;
+      border-radius: 9999px;
+      font-size: 10px;
+      font-weight: 600;
+      background: var(--ana-soft);
+      border: 1px solid var(--ana-border);
+      color: var(--ana-ink);
+    }
+    .hero-today-chip.hidden,
+    .now-live-pill.hidden,
+    .tl-fold-bar.hidden,
+    .qa-preset-btn.hidden { display: none; }
+    .hero-ring-box { position: relative; width: 62px; height: 62px; flex-shrink: 0; }
+    .hero-ring-svg { width: 62px; height: 62px; transform: rotate(-90deg); }
+    .hero-ring-track { fill: none; stroke: var(--line); stroke-width: 4.5; }
+    .hero-ring-arc { fill: none; stroke: var(--ana); stroke-width: 4.5; stroke-linecap: round; transition: stroke-dashoffset 0.35s ease, stroke 0.25s ease; }
+    .hero-ring-arc-done { stroke: var(--ok); }
+    .hero-ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; }
+    .hero-day-rail { margin-top: 0.9rem; padding-top: 0.75rem; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 0.25rem; }
+    .now-hero-card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 1.15rem;
+      padding: 1rem 1.1rem 1rem 1.25rem;
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+    .now-hero-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.65rem;
+      bottom: 0.65rem;
+      width: 3.5px;
+      border-radius: 0 4px 4px 0;
+      background: var(--now-bar, var(--ana));
+    }
+    .now-accent-ana { --now-bar: var(--ana); }
+    .now-accent-alg { --now-bar: var(--alg); }
+    .now-accent-due { --now-bar: var(--due); }
+    .now-accent-rest { --now-bar: var(--rest); }
+    .now-accent-class { --now-bar: var(--ink-soft); }
+    .now-live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.1rem 0.48rem;
+      border-radius: 9999px;
+      font-size: 10px;
+      font-weight: 600;
+      background: var(--ana-soft);
+      color: var(--ana-ink);
+    }
+    .tl-list { position: relative; }
+    .tl-row { position: relative; display: flex; align-items: stretch; gap: 0.7rem; padding-bottom: 0.55rem; }
+    .tl-row:last-child { padding-bottom: 0; }
+    .tl-rail { position: relative; width: 16px; flex-shrink: 0; display: flex; justify-content: center; }
+    .tl-rail::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: -0.55rem;
+      left: 50%;
+      width: 1.5px;
+      transform: translateX(-50%);
+      background: var(--line-strong);
+    }
+    .tl-row:last-child .tl-rail::before { bottom: 50%; }
+    .tl-node {
+      position: relative;
+      z-index: 1;
+      margin-top: 0.95rem;
+      width: 9px;
+      height: 9px;
+      border-radius: 9999px;
+      background: var(--ink-faint);
+      box-shadow: 0 0 0 3px var(--bg);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .tl-node-active {
+      width: 11px;
+      height: 11px;
+      margin-top: 0.88rem;
+      box-shadow: 0 0 0 3px var(--bg), 0 0 0 6px var(--ana-soft);
+    }
+    .tl-dot-ana { background: var(--ana); }
+    .tl-dot-alg { background: var(--alg); }
+    .tl-dot-due { background: var(--due); }
+    .tl-dot-rest { background: var(--rest); }
+    .tl-dot-class { background: var(--ink-soft); }
+    .tl-dot-done { background: var(--ok); opacity: 0.65; }
+    .tl-dot-danger { background: var(--danger); }
+    .tl-card {
+      flex: 1;
+      min-width: 0;
+      border-radius: 1rem;
+      border: 1px solid var(--line);
+      overflow: hidden;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    }
+    .tl-card-active {
+      border-color: var(--ana-border) !important;
+      box-shadow: 0 6px 20px -8px rgba(27, 84, 97, 0.22), var(--shadow-card);
+    }
+    .tl-badge {
+      display: inline-block;
+      padding: 0.06rem 0.42rem;
+      border-radius: 9999px;
+      font-size: 10px;
+      font-weight: 600;
+      vertical-align: middle;
+      max-width: 9.5rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .tl-fold-bar {
+      width: 100%;
+      margin-bottom: 0.6rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: 9999px;
+      border: 1px dashed var(--line-strong);
+      background: color-mix(in srgb, var(--surface-2) 65%, transparent);
+      color: var(--ink-soft);
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: opacity 0.15s ease;
+    }
+    .tl-divider {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.2rem 0 0.5rem;
+      font-size: 11px;
+      color: var(--ink-faint);
+    }
+    .qa-preset-btn {
+      padding: 0.18rem 0.55rem;
+      border-radius: 9999px;
+      font-size: 11px;
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+      color: var(--ink-soft);
+      font-variant-numeric: tabular-nums;
+    }
+    .subtab-strip {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .scroll-fade-x {
+      -webkit-mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - 20px), transparent 100%);
+      mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - 20px), transparent 100%);
+      padding-right: 16px;
+    }
     .subtab-active { color: var(--ink); font-weight: 700; border-bottom: 2px solid var(--ink); }
     .overdue-block {
       background: var(--danger-soft) !important;
@@ -160,6 +408,43 @@
       color: var(--danger-ink) !important;
     }
     .done-block { opacity: 0.44; filter: saturate(0.45); }
+    .week-now-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 0;
+      z-index: 6;
+      pointer-events: none;
+      border-top: 1.5px solid color-mix(in srgb, var(--ink) 55%, transparent);
+    }
+    .week-now-dot {
+      position: absolute;
+      left: -3.5px;
+      top: -4px;
+      width: 7px;
+      height: 7px;
+      border-radius: 9999px;
+      background: var(--ink);
+      box-shadow: 0 0 0 2px var(--surface);
+    }
+    .week-now-label {
+      position: absolute;
+      right: 3px;
+      top: -8px;
+      padding: 0 3.5px;
+      border-radius: 4px;
+      border: 1px solid var(--line-strong);
+      font-size: 9px;
+      line-height: 14px;
+      color: var(--ink);
+      background: var(--surface);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .week-now-line.is-near-top .week-now-label {
+      top: 2px;
+    }
     .fade-in { animation: fadeIn 0.16s ease-out; }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(3px); }
@@ -231,8 +516,34 @@
   <main class="max-w-2xl lg:max-w-5xl mx-auto px-5 pt-5">
 
     <!-- ==================== TAB 1: 今天 ==================== -->
-    <section id="view-today" class="tab-view space-y-6 fade-in">
-      <div class="flex items-center justify-between gap-1" id="day-strip"></div>
+    <section id="view-today" class="tab-view space-y-5 fade-in">
+      <!-- Paper & Ink Today Editorial Hero -->
+      <div id="today-hero" class="today-hero">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0 space-y-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span id="hero-kicker" class="text-[11px] txt-soft">第 1 周 · 周六 · 十月十九</span>
+              <button type="button" id="btn-hero-today" class="hero-today-chip hidden">回今天</button>
+            </div>
+            <div id="hero-date" class="hero-date">11月28日</div>
+            <div id="hero-countdown" class="text-xs txt-soft num-tab">正式启动准备就绪</div>
+            <div class="pt-1">
+              <span id="hero-topic" class="hero-topic-pill truncate">南开 ch05 导数应用 · 101 ch04 矩阵</span>
+            </div>
+          </div>
+          <div class="hero-ring-box" aria-label="当日主线完成度">
+            <svg class="hero-ring-svg" viewBox="0 0 60 60" aria-hidden="true">
+              <circle class="hero-ring-track" cx="30" cy="30" r="25"></circle>
+              <circle id="hero-ring-fg" class="hero-ring-arc" cx="30" cy="30" r="25" stroke-dasharray="157.1" stroke-dashoffset="157.1"></circle>
+            </svg>
+            <div class="hero-ring-center">
+              <span id="hero-ring-num" class="text-xs font-bold num-tab txt-main">0/0</span>
+              <span id="hero-ring-sub" class="text-[9px] txt-faint num-tab mt-0.5">进度</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-day-rail" id="day-strip"></div>
+      </div>
 
       <!-- Demo Data Notice -->
       <div id="today-demo-hint" class="hidden px-3.5 py-2 rounded-xl surf-2 text-[11px] txt-soft flex items-center justify-between gap-2">
@@ -245,16 +556,21 @@
         <button type="button" id="btn-goto-sleep" class="txt-main underline shrink-0">查看睡眠</button>
       </div>
 
-      <!-- Now Highlight -->
-      <div class="surf rounded-2xl p-5 border">
-        <div class="flex items-center justify-between text-xs txt-faint mb-2">
-          <span id="now-tag-label">11月28日（周六）正式启动</span>
-          <span id="now-time" class="num-tab">08:20–14:45</span>
-        </div>
-        <div id="now-title" class="text-[15px] font-semibold txt-main leading-snug">周六出游（含在外午饭与通勤）</div>
-        <div class="mt-4 flex flex-wrap items-center gap-2">
-          <button type="button" id="btn-now-focus" class="px-3.5 py-1.5 rounded-full text-xs font-medium transition" style="background:var(--ink);color:var(--bg)">开始专注</button>
-          <a id="btn-now-read" href="https://faust275.github.io/math-course-hub/textbook-analysis-lichengzhang-ch05.html" target="_blank" rel="noopener noreferrer" class="px-3.5 py-1.5 rounded-full surf-2 txt-soft text-xs font-medium transition">打开教材（含批注/时间戳）</a>
+      <!-- Now Highlight Card (Course-Accent Left Bar + Right Actions) -->
+      <div id="now-card" class="now-hero-card now-accent-ana">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="min-w-0 space-y-1">
+            <div class="flex items-center gap-2 text-xs txt-faint">
+              <span id="now-tag-label">11月28日（周六）正式启动</span>
+              <span id="now-time" class="num-tab">08:20–14:45</span>
+            </div>
+            <div id="now-title" class="text-base font-semibold txt-main leading-snug">周六出游（含在外午饭与通勤）</div>
+            <div id="now-sub" class="hidden text-[11px] txt-soft"></div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0 flex-wrap">
+            <button type="button" id="btn-now-focus" class="px-3.5 py-1.5 rounded-full text-xs font-medium transition" style="background:var(--ink);color:var(--bg)">开始专注</button>
+            <a id="btn-now-read" href="https://faust275.github.io/math-course-hub/textbook-analysis-lichengzhang-ch05.html" target="_blank" rel="noopener noreferrer" class="px-3.5 py-1.5 rounded-full surf-2 txt-soft text-xs font-medium transition">看教材 ↗</a>
+          </div>
         </div>
       </div>
 
@@ -303,6 +619,13 @@
           <span class="text-xs font-semibold txt-main">新建待办 / 突发事项</span>
           <button type="button" id="btn-close-quick-add" class="text-xs txt-faint">取消</button>
         </div>
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <button type="button" id="qa-slot-now" data-qa-slot="now" class="qa-preset-btn">此刻 +1h</button>
+          <button type="button" data-qa-slot="08:00–09:35" class="qa-preset-btn">08:00–09:35</button>
+          <button type="button" data-qa-slot="10:00–11:35" class="qa-preset-btn">10:00–11:35</button>
+          <button type="button" data-qa-slot="14:00–15:35" class="qa-preset-btn">14:00–15:35</button>
+          <button type="button" data-qa-slot="19:00–21:00" class="qa-preset-btn">19:00–21:00</button>
+        </div>
         <div class="flex flex-wrap gap-2">
           <input id="qa-time" type="text" value="09:00–11:30" class="w-28 px-3 py-1.5 rounded-lg surf-2 border text-xs num-tab focus:outline-none" style="border-color:var(--line)">
           <input id="qa-title" type="text" placeholder="比如：突发事项 / 拿快递" class="flex-1 min-w-[160px] px-3 py-1.5 rounded-lg surf-2 border text-xs focus:outline-none" style="border-color:var(--line)">
@@ -328,13 +651,13 @@
           <h2 id="schedule-title" class="text-xs font-medium txt-soft">周六安排</h2>
           <span class="text-[11px] txt-faint">点课程记考勤与课内自学 · 过期未做高亮</span>
         </div>
-        <div id="schedule-flow" class="space-y-2"></div>
+        <div id="schedule-flow" class="tl-list"></div>
       </div>
     </section>
 
     <!-- ==================== TAB 2: 清单（整周时间轴 · 立体月历 · 四象限与子任务 · 日记与灵感） ==================== -->
     <section id="view-list" class="tab-view hidden space-y-5 fade-in">
-      <div class="flex items-center gap-5 border-b text-xs overflow-x-auto" style="border-color:var(--line)">
+      <div class="subtab-strip scroll-fade-x border-b text-xs overflow-x-auto no-scrollbar" style="border-color:var(--line)">
         <button type="button" data-list-sub="timetable" class="list-sub-btn pb-2.5 txt-soft subtab-active shrink-0">整周时间轴</button>
         <button type="button" data-list-sub="calendar" class="list-sub-btn pb-2.5 txt-soft shrink-0">月历与档案</button>
         <button type="button" data-list-sub="quadrant" class="list-sub-btn pb-2.5 txt-soft shrink-0">四象限与子任务</button>
@@ -355,8 +678,8 @@
           <div class="flex items-center gap-2 text-[11px] txt-soft">
             <button type="button" id="btn-toggle-week-mode" class="sm:hidden px-2.5 py-1 rounded-full surf-2 border txt-main text-[11px]" style="border-color:var(--line)">切7日缩略</button>
             <button type="button" id="btn-center-today-axis" class="sm:hidden px-2 py-1 rounded-full surf-2 txt-soft text-[11px]">回今日</button>
-            <span class="hidden sm:flex items-center gap-1"><i class="w-2 h-2 rounded-full bg-[#D95338] inline-block"></i>过时未做</span>
-            <span class="hidden sm:flex items-center gap-1"><i class="w-2 h-2 rounded-full bg-stone-400 inline-block"></i>已完成</span>
+            <span class="hidden sm:flex items-center gap-1"><i class="w-2 h-2 rounded-full tl-dot-danger inline-block"></i>过时未做</span>
+            <span class="hidden sm:flex items-center gap-1"><i class="w-2 h-2 rounded-full tl-dot-done inline-block"></i>已完成</span>
           </div>
         </div>
 
@@ -577,7 +900,7 @@
 
     <!-- ==================== TAB 4: 生活（睡眠10维 · 记账 · 饮食 · 多层成绩与What-If · 白皮书） ==================== -->
     <section id="view-life" class="tab-view hidden space-y-5 fade-in">
-      <div class="flex items-center gap-5 border-b text-xs overflow-x-auto" style="border-color:var(--line)">
+      <div class="subtab-strip scroll-fade-x border-b text-xs overflow-x-auto no-scrollbar" style="border-color:var(--line)">
         <button type="button" data-life-sub="sleep" class="life-sub-btn pb-2.5 txt-soft subtab-active shrink-0">睡眠与健康</button>
         <button type="button" data-life-sub="grades" class="life-sub-btn pb-2.5 txt-soft shrink-0">成绩与构成</button>
         <button type="button" data-life-sub="ledger" class="life-sub-btn pb-2.5 txt-soft shrink-0">记账</button>
@@ -711,7 +1034,7 @@
             <button type="button" id="btn-save-new-grade" class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap shrink-0" style="background:var(--ink);color:var(--bg)">添加</button>
           </div>
 
-          <div id="grade-filter-strip" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-1 text-[11px]"></div>
+          <div id="grade-filter-strip" class="scroll-fade-x flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-1 text-[11px]"></div>
         </div>
 
         <div class="text-[11px] txt-faint px-1">默认折叠以容纳整学期多门课 · 点任一课程「展开构成」细调权重与试算</div>
@@ -774,27 +1097,39 @@
 
   </main>
 
-  <!-- Responsive Navigation: Bottom 4-Tab Bar on Phone/Tablet, Fixed Left Sidebar on Desktop -->
-  <nav class="app-nav fixed bottom-0 inset-x-0 lg:inset-y-0 lg:right-auto lg:w-48 z-20 border-t lg:border-t-0 lg:border-r backdrop-blur" aria-label="主导航">
+  <!-- Responsive Navigation: Floating Capsule on Phone/Tablet, Fixed Left Sidebar on Desktop -->
+  <nav class="app-nav fixed bottom-0 inset-x-0 lg:inset-y-0 lg:right-auto lg:w-48 z-20 lg:border-r backdrop-blur" aria-label="主导航">
     <div class="hidden lg:flex flex-col px-5 pt-6 pb-4 border-b" style="border-color:var(--line)">
       <div class="text-base font-bold txt-main brand-serif">日迹</div>
       <div class="text-[11px] txt-faint mt-0.5">26–27 冬学期日程</div>
     </div>
-    <div class="max-w-2xl mx-auto px-4 h-16 grid grid-cols-4 items-center lg:h-auto lg:flex lg:flex-col lg:items-stretch lg:gap-1.5 lg:p-3">
-      <button type="button" data-tab="today" class="nav-btn flex flex-col lg:flex-row lg:justify-between items-center justify-center gap-1 lg:px-3.5 lg:py-2.5 lg:rounded-xl text-xs lg:text-sm txt-faint nav-item-active">
-        <span>今天</span>
+    <div class="nav-capsule-grid max-w-2xl mx-auto px-4 h-16 grid grid-cols-4 items-center lg:h-auto lg:flex lg:flex-col lg:items-stretch lg:gap-1.5 lg:p-3">
+      <button type="button" data-tab="today" class="nav-btn flex lg:justify-between items-center justify-center gap-1.5 lg:px-3.5 lg:py-2.5 lg:rounded-xl text-xs lg:text-sm txt-faint nav-item-active">
+        <span class="flex items-center gap-1.5">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg>
+          <span>今天</span>
+        </span>
         <span class="nav-dot w-1 h-1 lg:w-1.5 lg:h-1.5 rounded-full opacity-0 transition" style="background:var(--ink)"></span>
       </button>
-      <button type="button" data-tab="list" class="nav-btn flex flex-col lg:flex-row lg:justify-between items-center justify-center gap-1 lg:px-3.5 lg:py-2.5 lg:rounded-xl text-xs lg:text-sm txt-faint">
-        <span>清单</span>
+      <button type="button" data-tab="list" class="nav-btn flex lg:justify-between items-center justify-center gap-1.5 lg:px-3.5 lg:py-2.5 lg:rounded-xl text-xs lg:text-sm txt-faint">
+        <span class="flex items-center gap-1.5">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 9h18"/></svg>
+          <span>清单</span>
+        </span>
         <span class="nav-dot w-1 h-1 lg:w-1.5 lg:h-1.5 rounded-full opacity-0 transition" style="background:var(--ink)"></span>
       </button>
-      <button type="button" data-tab="progress" class="nav-btn flex flex-col lg:flex-row lg:justify-between items-center justify-center gap-1 lg:px-3.5 lg:py-2.5 lg:rounded-xl text-xs lg:text-sm txt-faint">
-        <span>进度</span>
+      <button type="button" data-tab="progress" class="nav-btn flex lg:justify-between items-center justify-center gap-1.5 lg:px-3.5 lg:py-2.5 lg:rounded-xl text-xs lg:text-sm txt-faint">
+        <span class="flex items-center gap-1.5">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19h16M7 15l3.5-4 3 2.5L18 8"/></svg>
+          <span>进度</span>
+        </span>
         <span class="nav-dot w-1 h-1 lg:w-1.5 lg:h-1.5 rounded-full opacity-0 transition" style="background:var(--ink)"></span>
       </button>
-      <button type="button" data-tab="life" class="nav-btn flex flex-col lg:flex-row lg:justify-between items-center justify-center gap-1 lg:px-3.5 lg:py-2.5 lg:rounded-xl text-xs lg:text-sm txt-faint">
-        <span>生活</span>
+      <button type="button" data-tab="life" class="nav-btn flex lg:justify-between items-center justify-center gap-1.5 lg:px-3.5 lg:py-2.5 lg:rounded-xl text-xs lg:text-sm txt-faint">
+        <span class="flex items-center gap-1.5">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5s-7-4.35-7-10a4.2 4.2 0 0 1 7-3.1 4.2 4.2 0 0 1 7 3.1c0 5.65-7 10-7 10z"/></svg>
+          <span>生活</span>
+        </span>
         <span class="nav-dot w-1 h-1 lg:w-1.5 lg:h-1.5 rounded-full opacity-0 transition" style="background:var(--ink)"></span>
       </button>
     </div>
@@ -2048,7 +2383,15 @@
       function mapWidgetCourse(it) {
         var tr = parseTimeRange(it.effectiveTime || it.t || '', 45);
         var note = (it.sub && it.sub !== '临时突发待办') ? String(it.sub) : '';
-        return { name: it.title, start: tr.startStr || '', end: tr.endStr || '', note: note };
+        var kind = it.type || '';
+        if (!kind || kind === 'class') {
+          var cn = canonicalCourseName(it.course) || canonicalCourseName(it.title);
+          if (cn === '分析学 I' || cn === '数学分析') kind = 'ana';
+          else if (cn === '代数学 I' || cn === '代数学') kind = 'alg';
+          else if (cn === '程序设计基础与实验' || cn === 'C 程') kind = 'due';
+          else kind = 'class';
+        }
+        return { name: it.title, start: tr.startStr || '', end: tr.endStr || '', note: note, kind: kind };
       }
 
       function pushAndroidWidgetSnapshot() {
@@ -2178,6 +2521,20 @@
         }
       }
 
+      var weekNowAlignTimer = null;
+      var weekNowInterval = null;
+      function syncWeekNowClock() {
+        if (weekNowAlignTimer) { clearTimeout(weekNowAlignTimer); weekNowAlignTimer = null; }
+        if (weekNowInterval) { clearInterval(weekNowInterval); weekNowInterval = null; }
+        var now = new Date();
+        var delay = 60000 - (now.getSeconds() * 1000 + now.getMilliseconds()) + 20;
+        weekNowAlignTimer = setTimeout(function () {
+          weekNowAlignTimer = null;
+          updateWeekNowLine();
+          weekNowInterval = setInterval(updateWeekNowLine, 60000);
+        }, delay);
+      }
+
       setInterval(function () {
         var nc = computeNowContext();
         var rolledOver = (nc.todayIso !== LAST_TODAY_ISO);
@@ -2198,6 +2555,7 @@
           save(); renderAll(); return;
         }
         renderToday();
+        updateWeekNowLine();
       }, 60000);
 
       document.addEventListener('visibilitychange', function () {
@@ -2215,12 +2573,14 @@
             secLeft = Math.max(0, state.timerDurationSec - Math.floor((Date.now() - state.timerStartedAt) / 1000));
             syncTimerUI();
           }
+          updateWeekNowLine();
+          syncWeekNowClock();
           syncWidgetMutations();
           maybeAutoSyncHealth();
         }
       });
 
-      window.addEventListener('focus', function () { if (!document.hidden) syncWidgetMutations(); });
+      window.addEventListener('focus', function () { if (!document.hidden) { syncWidgetMutations(); updateWeekNowLine(); } });
 
       // === IndexedDB Primary Store + localStorage Hot Backup + Daily Auto-Snapshots ===
       var Persist = (function () {
@@ -3143,6 +3503,8 @@
         });
       }
 
+      var showPastTodayIso = '';
+
       function renderToday() {
         var uiIso = syncLegacyWeekDay();
         var curCtx = computeNowContext();
@@ -3150,11 +3512,24 @@
         var wk = WEEKS[state.weekIdx] || WEEKS[0];
         var dm = dayMetaForIso(uiIso);
         var segLabel = inTerm ? wk.label : (uiIso < LAUNCH_ISO ? '启动前' : '计划结束');
+        var fullSub = segLabel + ' · ' + dm.full + (dm.lunar ? (' · ' + dm.lunar) : '');
         document.getElementById('top-date-title').textContent = dm.dateLabel;
-        document.getElementById('top-day-sub').textContent = segLabel + ' · ' + dm.full + (dm.lunar ? (' · ' + dm.lunar) : '');
+        document.getElementById('top-day-sub').textContent = fullSub;
+        document.getElementById('hero-date').textContent = dm.dateLabel;
+        document.getElementById('hero-kicker').textContent = fullSub;
+        document.getElementById('hero-topic').textContent = !inTerm
+          ? (uiIso < LAUNCH_ISO ? '11月28日冬学期正式启动' : '冬春 15 周计划已收官')
+          : (wk.rest ? '春节休整周 · 彻底放松不排课' : (wk.anaShort + ' · ' + wk.algShort));
         document.getElementById('schedule-title').textContent = segLabel + ' · ' + dm.full + '安排';
         var demoHint = document.getElementById('today-demo-hint');
         if (demoHint) demoHint.classList.toggle('hidden', !state.isDemoData);
+
+        var isLiveToday = (!curCtx.preLaunch && uiIso === curCtx.todayIso);
+        var backTodayBtn = document.getElementById('btn-hero-today');
+        if (backTodayBtn) {
+          var targetTodayIso = curCtx.preLaunch ? LAUNCH_ISO : curCtx.todayIso;
+          backTodayBtn.classList.toggle('hidden', uiIso === targetTodayIso);
+        }
 
         // Cross-link: Health threshold gentle hint on Today page
         var r = state.sleepRec;
@@ -3178,14 +3553,92 @@
           var m = dayMetaForIso(iso);
           var on = iso === uiIso;
           var live = (!curCtx.preLaunch && iso === curCtx.todayIso);
-          var cls = on ? 'day-active' : (live ? 'ring-1 ring-[#1E5663]/40 txt-main' : 'txt-soft hover:opacity-80');
-          return '<button type="button" data-day-iso="' + iso + '" class="day-btn flex-1 min-w-0 h-9 rounded-xl text-[10px] font-medium transition ' + cls + '">' +
+          var cls = on ? 'day-active' : (live ? 'day-live' : 'txt-soft hover:opacity-75');
+          var hasAct = !!(state.focusHistory && state.focusHistory[iso] > 0) || (iso === state.focusDate && Number(state.focusToday) > 0);
+          return '<button type="button" data-day-iso="' + iso + '" class="day-btn flex-1 min-w-0 py-1.5 rounded-xl text-[10px] font-medium transition ' + cls + '">' +
             '<span class="block leading-none">' + m.short + '</span>' +
-            '<span class="block leading-none num-tab mt-0.5 opacity-70">' + m.md + '</span></button>';
+            '<span class="block leading-none num-tab mt-1 opacity-75">' + m.md + '</span>' +
+            (hasAct || live ? '<span class="day-dot"></span>' : '<span style="display:block;height:6px"></span>') +
+            '</button>';
         }).join('');
 
         var allItems = getDayItemsForDate(uiIso);
-        var isLiveToday = (!curCtx.preLaunch && uiIso === curCtx.todayIso);
+
+        // Progress Ring & Countdown computation
+        var trackable = allItems.filter(function (it) {
+          if (it.divider || it.id === 'term-boundary' || it.type === 'rest') return false;
+          return !state.skipped[blockKey(uiIso, it.id)];
+        });
+        var doneCnt = trackable.filter(function (it) {
+          var tk = blockKey(uiIso, it.id);
+          if (state.blockDone[tk]) return true;
+          if (it.type === 'class') {
+            var teM = parseTimeRange(state.shifted[tk] || it.t || '', 45).eM;
+            return !!state.attendance[tk] || isPastBlock(uiIso, teM);
+          }
+          return false;
+        }).length;
+        var totalCnt = trackable.length;
+        var ringCirc = 157.1;
+        var ringOffset = (ringCirc * (1 - (totalCnt > 0 ? doneCnt / totalCnt : 0))).toFixed(1);
+        var ringFg = document.getElementById('hero-ring-fg');
+        if (ringFg) {
+          ringFg.setAttribute('stroke-dashoffset', ringOffset);
+          ringFg.classList.toggle('hero-ring-arc-done', totalCnt > 0 && doneCnt >= totalCnt);
+        }
+        document.getElementById('hero-ring-num').textContent = doneCnt + '/' + totalCnt;
+        var dayFocMin = (uiIso === state.focusDate)
+          ? Math.round(Number(state.focusToday) || 0)
+          : Math.round(Number(state.focusHistory && state.focusHistory[uiIso]) || 0);
+        var ringSubTxt = dayFocMin > 0
+          ? ('专注' + dayFocMin + 'm')
+          : (totalCnt > 0 && doneCnt >= totalCnt ? '已完成' : ('完成 ' + (totalCnt > 0 ? Math.round((doneCnt / totalCnt) * 100) : 0) + '%'));
+        document.getElementById('hero-ring-sub').textContent = ringSubTxt;
+        var qaNowBtn = document.getElementById('qa-slot-now');
+        if (qaNowBtn) {
+          var qaNowLive = isLiveToday && curCtx.nowMin < 23 * 60 + 35;
+          qaNowBtn.classList.toggle('hidden', !qaNowLive);
+          if (qaNowLive) {
+            var qaStartMin = Math.max(7 * 60 + 30, Math.ceil(curCtx.nowMin / 5) * 5);
+            qaNowBtn.textContent = (qaStartMin + 60 <= 23 * 60 + 55) ? '此刻 +1h' : '此刻 至 23:55';
+          }
+        }
+
+        var activeNowItem = null;
+        var nextUpcomingMin = null;
+        if (isLiveToday) {
+          allItems.forEach(function (it) {
+            if (it.divider || it.id === 'term-boundary') return;
+            var ik = blockKey(uiIso, it.id);
+            if (state.skipped[ik] || state.blockDone[ik]) return;
+            var itr = parseTimeRange(state.shifted[ik] || it.t || '', 45);
+            if (itr.sM != null && itr.eM != null && curCtx.nowMin >= itr.sM && curCtx.nowMin < itr.eM) {
+              if (!activeNowItem) activeNowItem = { item: it, tr: itr };
+            } else if (itr.sM != null && itr.sM > curCtx.nowMin) {
+              if (nextUpcomingMin === null || itr.sM < nextUpcomingMin) nextUpcomingMin = itr.sM;
+            }
+          });
+        }
+        var cdTxt = '';
+        if (curCtx.preLaunch && uiIso === LAUNCH_ISO) {
+          var dLeft0 = Math.max(1, Math.round((parseIso(LAUNCH_ISO) - parseIso(curCtx.todayIso)) / 86400000));
+          cdTxt = '距 11/28 正式开机还有 ' + dLeft0 + ' 天';
+        } else if (isLiveToday) {
+          if (activeNowItem) {
+            cdTxt = '正在进行 · 距本段结束还有 ' + (activeNowItem.tr.eM - curCtx.nowMin) + ' 分钟';
+          } else if (nextUpcomingMin !== null) {
+            var waitM = nextUpcomingMin - curCtx.nowMin;
+            cdTxt = waitM >= 90
+              ? ('距下一段还有 ' + Math.floor(waitM / 60) + ' 小时 ' + (waitM % 60) + ' 分')
+              : ('距下一段还有 ' + waitM + ' 分钟');
+          } else {
+            cdTxt = '今日主线已收尾 · 留白休整';
+          }
+        } else {
+          cdTxt = inTerm ? ('当日主线 ' + totalCnt + ' 项 · 已完成 ' + doneCnt + ' 项') : segLabel;
+        }
+        document.getElementById('hero-countdown').textContent = cdTxt;
+
         var primary = (isLiveToday ? allItems.find(function (x) {
           if (x.divider) return false;
           var k = blockKey(uiIso, x.id);
@@ -3199,16 +3652,30 @@
 
         if (primary) {
           var pk = blockKey(uiIso, primary.id);
-          var tagLbl = '下一段安排';
+          var ptr = parseTimeRange(state.shifted[pk] || primary.t || '', 45);
+          var pRunning = isLiveToday && !state.skipped[pk] && !state.blockDone[pk] && ptr.sM != null && ptr.eM != null && curCtx.nowMin >= ptr.sM && curCtx.nowMin < ptr.eM;
+          var tagLbl = pRunning ? '此刻进行中' : '下一段安排';
           if (uiIso === LAUNCH_ISO && curCtx.preLaunch) {
             var dLeft = Math.max(1, Math.round((parseIso(LAUNCH_ISO) - parseIso(curCtx.todayIso)) / 86400000));
             tagLbl = '距 11 月 28 日正式启动还有 ' + dLeft + ' 天（预览中）';
-          } else if (uiIso === LAUNCH_ISO && isLiveToday) {
+          } else if (uiIso === LAUNCH_ISO && isLiveToday && !pRunning) {
             tagLbl = '11月28日（周六）正式启动';
           }
-          document.getElementById('now-tag-label').textContent = tagLbl;
+          var tagEl = document.getElementById('now-tag-label');
+          tagEl.textContent = tagLbl;
+          tagEl.className = pRunning ? 'now-live-pill' : '';
           document.getElementById('now-time').textContent = state.shifted[pk] || primary.t;
           document.getElementById('now-title').textContent = primary.title;
+          var nowSubEl = document.getElementById('now-sub');
+          if (nowSubEl) {
+            nowSubEl.textContent = primary.sub || '';
+            nowSubEl.classList.toggle('hidden', !primary.sub);
+          }
+          var nowCardEl = document.getElementById('now-card');
+          if (nowCardEl) {
+            var nowAccentMap = { ana: 'now-accent-ana', alg: 'now-accent-alg', due: 'now-accent-due', rest: 'now-accent-rest', class: 'now-accent-class' };
+            nowCardEl.className = 'now-hero-card ' + (nowAccentMap[primary.type] || 'now-accent-ana');
+          }
           var readBtn = document.getElementById('btn-now-read');
           var primaryHubHref = primary.hub ? safeHref(HUB + primary.hub) : '';
           if (primaryHubHref) { readBtn.href = primaryHubHref; readBtn.classList.remove('hidden'); }
@@ -3287,36 +3754,80 @@
             '<span class="text-xs shrink-0 ' + (done ? 'txt-faint' : 'txt-soft') + '">' + (done ? '交完了' : esc(x.dueText)) + '</span></button>';
         }).join('');
 
-        var dotColor = { ana: 'bg-[#1E5663]', alg: 'bg-[#5B4386]', due: 'bg-[#A6512B]', rest: 'bg-rose-400', class: 'bg-stone-400' };
-        document.getElementById('schedule-flow').innerHTML = allItems.map(function (item) {
+        var dotColor = { ana: 'tl-dot-ana', alg: 'tl-dot-alg', due: 'tl-dot-due', rest: 'tl-dot-rest', class: 'tl-dot-class' };
+        var foldSplitIdx = 0;
+        var foldedRealCnt = 0;
+        if (isLiveToday) {
+          var firstCurrentIdx = -1;
+          for (var fi = 0; fi < allItems.length; fi++) {
+            var fItem = allItems[fi];
+            if (fItem.divider) continue;
+            var fk = blockKey(uiIso, fItem.id);
+            var fDone = !!state.blockDone[fk];
+            var fSkip = !!state.skipped[fk];
+            var fEndM = parseTimeRange(state.shifted[fk] || fItem.t || '', 45).eM;
+            var fOverdue = (fItem.type !== 'class' && fItem.type !== 'rest') && !fDone && !fSkip && isPastBlock(uiIso, fEndM);
+            var fUnrecordedAtt = !!fItem.attendable && !fDone && !fSkip && !state.attendance[fk];
+            var fEnded = fEndM != null && fEndM <= curCtx.nowMin;
+            if (!fEnded || fOverdue || fUnrecordedAtt || state.expandedItem === fk) {
+              firstCurrentIdx = fi;
+              break;
+            }
+            foldedRealCnt++;
+          }
+          if (firstCurrentIdx > 0 && foldedRealCnt >= 2) {
+            foldSplitIdx = firstCurrentIdx;
+          } else {
+            foldedRealCnt = 0;
+          }
+        }
+        var pastExpanded = (showPastTodayIso === uiIso);
+        var visibleScheduleItems = (foldSplitIdx > 0 && !pastExpanded) ? allItems.slice(foldSplitIdx) : allItems;
+        var foldBarHtml = foldSplitIdx > 0
+          ? ('<button type="button" id="btn-toggle-past-today" class="tl-fold-bar">' +
+            '<span>' + (pastExpanded ? ('已结束 ' + foldedRealCnt + ' 项安排') : ('已收起 ' + foldedRealCnt + ' 项已结束安排')) + '</span>' +
+            '<span>' + (pastExpanded ? '收起 ▴' : '展开 ▾') + '</span></button>')
+          : '';
+
+        document.getElementById('schedule-flow').innerHTML = foldBarHtml + visibleScheduleItems.map(function (item) {
           if (item.divider) {
-            return '<div class="py-2 flex items-center gap-3 text-[11px] txt-faint"><span class="flex-1 h-px" style="background:var(--line)"></span><span>' + esc(item.divider) + '</span><span class="flex-1 h-px" style="background:var(--line)"></span></div>';
+            return '<div class="tl-divider"><span class="tl-rail" aria-hidden="true"></span><span class="flex-1 flex items-center gap-2.5"><span class="h-px flex-1" style="background:var(--line)"></span><span>' + esc(item.divider) + '</span><span class="h-px flex-1" style="background:var(--line)"></span></span></div>';
           }
           var k = blockKey(uiIso, item.id);
           var done = !!state.blockDone[k];
           var skip = !!state.skipped[k];
           var open = state.expandedItem === k;
           var displayTime = state.shifted[k] || item.t;
-          var endM = parseTimeRange(displayTime, 45).eM;
+          var trRange = parseTimeRange(displayTime, 45);
+          var endM = trRange.eM;
           var overdue = (item.type !== 'class' && item.type !== 'rest') && !done && !skip && isPastBlock(uiIso, endM);
+          var isNowActive = isLiveToday && !done && !skip && trRange.sM != null && endM != null && curCtx.nowMin >= trRange.sM && curCtx.nowMin < endM;
           var att = state.attendance[k];
 
           var cardCls = 'surf';
           if (done || skip) cardCls = 'surf done-block';
           else if (overdue) cardCls = 'overdue-block';
+          else if (isNowActive) cardCls = 'surf tl-card-active';
+          var nodeCls = (done || skip)
+            ? 'tl-dot-done'
+            : (overdue ? 'tl-dot-danger' : (dotColor[item.type] || 'tl-dot-class'));
+          if (isNowActive) nodeCls += ' tl-node-active';
           var hubHref = item.hub ? safeHref(HUB + item.hub) : '';
 
-          return '<div class="rounded-2xl border overflow-hidden transition ' + cardCls + '" style="' + (overdue ? '' : 'border-color:var(--line)') + '">' +
+          return '<div class="tl-row">' +
+            '<div class="tl-rail" aria-hidden="true"><span class="tl-node ' + nodeCls + '"></span></div>' +
+            '<div class="tl-card ' + cardCls + '">' +
             '<button type="button" data-itemkey="' + k + '" class="sched-row w-full px-4 py-3 text-left flex items-center justify-between gap-3 transition">' +
-            '<div class="flex items-center gap-3 min-w-0">' +
-            '<span class="w-1.5 h-1.5 rounded-full shrink-0 ' + (overdue ? 'bg-[#D95338]' : (dotColor[item.type] || 'bg-stone-400')) + '"></span>' +
-            '<div class="min-w-0"><div class="text-sm truncate ' + ((done || skip) ? 'line-through' : '') + '">' + esc(item.title) +
-            (overdue ? ' <span class="ml-1.5 text-[10px] px-1.5 py-0.5 rounded bg-[#D95338] text-white font-normal">未完成</span>' : '') +
-            (att ? ' <span class="ml-1.5 text-[10px] px-1.5 py-0.5 rounded surf-2 txt-soft font-normal">' + esc(att.status) + (att.note ? '·' + esc(att.note) : '') + '</span>' : '') +
+            '<div class="min-w-0 flex-1">' +
+            '<div class="flex items-center gap-1.5 min-w-0">' +
+            '<span class="text-sm font-serif-ink font-medium truncate ' + ((done || skip) ? 'line-through' : '') + '">' + esc(item.title) + '</span>' +
+            (isNowActive ? '<span class="tl-badge tint-ana">进行中</span>' : '') +
+            (overdue ? '<span class="tl-badge tint-danger">未完成</span>' : '') +
+            (att ? '<span class="tl-badge surf-2 txt-soft">' + esc(att.status) + (att.note ? '·' + esc(att.note) : '') + '</span>' : '') +
             '</div>' +
             (item.sub ? '<div class="text-[11px] txt-faint mt-0.5">' + esc(item.sub) + '</div>' : '') +
-            '</div></div>' +
-            '<span class="num-tab text-xs opacity-70 shrink-0">' + esc(displayTime) + '</span></button>' +
+            '</div>' +
+            '<span class="num-tab text-xs txt-soft shrink-0">' + esc(displayTime) + '</span></button>' +
             (open ? (
               '<div class="px-4 pb-3 pt-2 border-t space-y-2 text-xs" style="border-color:var(--line)">' +
               '<div class="flex items-center gap-2 flex-wrap">' +
@@ -3338,7 +3849,7 @@
               ) : '') +
               '</div>'
             ) : '') +
-            '</div>';
+            '</div></div>';
         }).join('');
 
         var mpWrap = document.getElementById('makeup-pool-wrap');
@@ -3648,17 +4159,57 @@
         btn.classList.toggle('opacity-50', reviewed);
       }
 
+      var WEEK_START_M = 7 * 60 + 30;
+      var WEEK_END_M = 23 * 60 + 40;
+      var WEEK_PX_PER_MIN = 0.85;
+      var WEEK_TOTAL_H = Math.round((WEEK_END_M - WEEK_START_M) * WEEK_PX_PER_MIN);
+
+      function renderNowLine(iso, nc) {
+        if (!nc || nc.preLaunch || iso !== nc.todayIso) return '';
+        if (nc.nowMin < WEEK_START_M || nc.nowMin >= WEEK_END_M) return '';
+        var top = Math.round((nc.nowMin - WEEK_START_M) * WEEK_PX_PER_MIN);
+        var hh = pad2(Math.floor(nc.nowMin / 60));
+        var mm = pad2(nc.nowMin % 60);
+        return '<div class="week-now-line' + (top < 14 ? ' is-near-top' : '') +
+          '" data-week-now="' + nc.todayIso + '" style="top:' + top + 'px" aria-hidden="true">' +
+          '<span class="week-now-dot"></span>' +
+          '<span class="week-now-label">' + hh + ':' + mm + '</span>' +
+          '</div>';
+      }
+
+      function updateWeekNowLine() {
+        if (state.tab !== 'list' || state.listSub !== 'timetable') return;
+        var wrap = document.getElementById('week-axis-wrap');
+        if (!wrap || typeof wrap.querySelector !== 'function') return;
+        var nc = computeNowContext();
+        var inRange = !nc.preLaunch && nc.nowMin >= WEEK_START_M && nc.nowMin < WEEK_END_M;
+        var target = inRange ? wrap.querySelector('[data-axis-date="' + nc.todayIso + '"]') : null;
+        var line = wrap.querySelector('[data-week-now]');
+        if (!target) {
+          if (line) renderWeekAxis();
+          return;
+        }
+        if (!line || line.getAttribute('data-week-now') !== nc.todayIso) {
+          renderWeekAxis();
+          return;
+        }
+        var top = Math.round((nc.nowMin - WEEK_START_M) * WEEK_PX_PER_MIN);
+        line.style.top = top + 'px';
+        line.classList.toggle('is-near-top', top < 14);
+        var label = typeof line.querySelector === 'function' ? line.querySelector('.week-now-label') : null;
+        if (label) {
+          label.textContent = pad2(Math.floor(nc.nowMin / 60)) + ':' + pad2(nc.nowMin % 60);
+        }
+      }
+
       function renderWeekAxis() {
         var uiIso = syncLegacyWeekDay();
+        var nowCtx = computeNowContext();
         var wk = WEEKS[state.weekIdx] || WEEKS[0];
         var segDates = datesBetween(wk.startIso, wk.endIso);
         document.getElementById('week-axis-title').textContent = wk.label + ' · ' + wk.dates;
         document.getElementById('week-axis-sub').textContent = wk.rest ? '春节休整周' : (wk.anaShort + ' · ' + wk.algShort + (segDates.length !== 7 ? ' · ' + segDates.length + ' 天' : ''));
 
-        var START_M = 7 * 60 + 30;
-        var END_M = 23 * 60 + 40;
-        var PX_PER_MIN = 0.85;
-        var TOTAL_H = Math.round((END_M - START_M) * PX_PER_MIN);
         var HOURS = [8, 10, 12, 14, 16, 18, 20, 22];
 
         var blockColor = {
@@ -3666,7 +4217,7 @@
           alg: 'tint-alg',
           due: 'tint-due',
           rest: 'tint-rest',
-          class: 'surf-2 txt-soft'
+          class: 'tint-class'
         };
 
         var isMobile = window.matchMedia && window.matchMedia('(max-width: 639px)').matches;
@@ -3674,12 +4225,12 @@
         if (modeBtn) modeBtn.textContent = state.weekAxisCompact ? '切3日' : '切整周';
 
         var axisLabels = HOURS.map(function (h) {
-          var top = Math.round((h * 60 - START_M) * PX_PER_MIN);
+          var top = Math.round((h * 60 - WEEK_START_M) * WEEK_PX_PER_MIN);
           return '<div class="absolute left-0 right-1 text-right text-[10px] num-tab txt-faint -translate-y-1/2" style="top:' + top + 'px">' + (h < 10 ? '0' : '') + h + ':00</div>';
         }).join('');
 
         var gridLines = HOURS.map(function (h) {
-          var top = Math.round((h * 60 - START_M) * PX_PER_MIN);
+          var top = Math.round((h * 60 - WEEK_START_M) * WEEK_PX_PER_MIN);
           return '<div class="absolute left-0 right-0 border-t pointer-events-none" style="top:' + top + 'px;border-color:var(--line);opacity:0.45"></div>';
         }).join('');
 
@@ -3693,9 +4244,9 @@
             .sort(function (a, b) { return a.sM - b.sM; });
 
           return parsed.map(function (entry, i) {
-            var top = Math.max(0, Math.round((entry.sM - START_M) * PX_PER_MIN));
-            var naturalH = Math.round((entry.eM - entry.sM) * PX_PER_MIN) - 2;
-            var nextTop = (i + 1 < parsed.length) ? Math.round((parsed[i + 1].sM - START_M) * PX_PER_MIN) : TOTAL_H;
+            var top = Math.max(0, Math.round((entry.sM - WEEK_START_M) * WEEK_PX_PER_MIN));
+            var naturalH = Math.round((entry.eM - entry.sM) * WEEK_PX_PER_MIN) - 2;
+            var nextTop = (i + 1 < parsed.length) ? Math.round((parsed[i + 1].sM - WEEK_START_M) * WEEK_PX_PER_MIN) : WEEK_TOTAL_H;
             var maxAllowedH = Math.max(16, nextTop - top - 3);
             var height = Math.min(Math.max(18, naturalH), maxAllowedH);
 
@@ -3713,7 +4264,13 @@
                 '<div class="text-[9px] font-semibold leading-tight truncate">' + esc(ch1) + '</div></button>';
             }
 
-            return '<button type="button" data-wblock="' + entry.k + '" class="wblock-btn absolute left-0.5 right-0.5 rounded-lg border px-1.5 py-0.5 text-left overflow-hidden transition hover:brightness-95 ' + cls + '" style="top:' + top + 'px;height:' + height + 'px">' +
+            var nowBadgePad = '';
+            if (!nowCtx.preLaunch && iso === nowCtx.todayIso && nowCtx.nowMin >= WEEK_START_M && nowCtx.nowMin < WEEK_END_M) {
+              var curLineTop = Math.round((nowCtx.nowMin - WEEK_START_M) * WEEK_PX_PER_MIN);
+              if (Math.abs(curLineTop - (top + 8)) <= 14) nowBadgePad = ';padding-right:36px';
+            }
+
+            return '<button type="button" data-wblock="' + entry.k + '" class="wblock-btn absolute left-0.5 right-0.5 rounded-lg border px-1.5 py-0.5 text-left overflow-hidden transition hover:brightness-95 ' + cls + '" style="top:' + top + 'px;height:' + height + 'px' + nowBadgePad + '">' +
               '<div class="text-[10px] font-semibold leading-tight truncate">' + esc(entry.item.title) + '</div>' +
               (height >= 34 ? '<div class="text-[9px] opacity-75 num-tab">' + entry.startStr + (overdue ? ' · 未做' : '') + '</div>' : '') +
               '</button>';
@@ -3726,15 +4283,16 @@
           var cols3d = axisDates.map(function (iso) {
             var m = dayMetaForIso(iso);
             var isFocus = (iso === uiIso);
+            var isWknd = weekdayMon0(iso) >= 5;
             var inTerm = isInTermIso(iso);
             var head = '<div class="text-[11px]">' + m.full + (iso === LAUNCH_ISO ? ' · 启' : '') + '</div>' +
               '<div class="text-[10px] num-tab opacity-70">' + m.md + '</div>';
             var headEl = inTerm
               ? '<button type="button" data-axis-focus="' + iso + '" class="axis-focus-btn w-full border-b transition ' + (isFocus ? 'font-bold txt-main' : 'txt-soft') + '" style="height:' + HEADER_H + 'px;border-color:var(--line);display:flex;flex-direction:column;justify-content:center">' + head + '</button>'
               : '<div class="border-b txt-faint" style="height:' + HEADER_H + 'px;border-color:var(--line);display:flex;flex-direction:column;justify-content:center;opacity:.45">' + head + '</div>';
-            return '<div class="flex-1 min-w-0 flex flex-col border-l" style="border-color:var(--line);' + (isFocus ? 'background:color-mix(in srgb, var(--ink) 4%, transparent)' : '') + '">' +
+            return '<div class="flex-1 min-w-0 flex flex-col border-l' + (isWknd && !isFocus ? ' axis-col-weekend' : '') + '" data-axis-date="' + iso + '" style="border-color:var(--line);' + (isFocus ? 'background:color-mix(in srgb, var(--ink) 4%, transparent)' : '') + '">' +
               headEl +
-              '<div class="relative mt-2" style="height:' + TOTAL_H + 'px">' + gridLines + renderDayBlocks(iso, false) + '</div></div>';
+              '<div class="relative mt-2" style="height:' + WEEK_TOTAL_H + 'px">' + gridLines + renderDayBlocks(iso, false) + renderNowLine(iso, nowCtx) + '</div></div>';
           }).join('');
           var label = isInTermIso(uiIso) ? wk.label : (uiIso < LAUNCH_ISO ? '启动前' : '计划结束');
           document.getElementById('week-axis-wrap').innerHTML =
@@ -3746,7 +4304,7 @@
             '<div class="flex items-stretch">' +
             '<div class="shrink-0 w-[42px] border-r" style="border-color:var(--line)">' +
             '<div class="border-b" style="height:' + HEADER_H + 'px;border-color:var(--line)"></div>' +
-            '<div class="relative mt-2" style="height:' + TOTAL_H + 'px">' + axisLabels + '</div></div>' +
+            '<div class="relative mt-2" style="height:' + WEEK_TOTAL_H + 'px">' + axisLabels + '</div></div>' +
             cols3d + '</div>';
         } else {
           // Desktop: every real date in the segment; mobile compact toggle: same range with 2-char blocks
@@ -3759,20 +4317,22 @@
               var m = dayMetaForIso(iso);
               var on = (iso === uiIso);
               var isStart = (iso === LAUNCH_ISO);
-              return '<div class="border-l" style="flex:1 0 ' + colW + 'px;min-width:' + colW + 'px;border-color:var(--line)">' +
+              var isWknd = weekdayMon0(iso) >= 5;
+              return '<div class="border-l' + (isWknd ? ' axis-col-weekend' : '') + '" style="flex:1 0 ' + colW + 'px;min-width:' + colW + 'px;border-color:var(--line)">' +
                 '<button type="button" data-axis-focus="' + iso + '" class="axis-focus-btn w-full text-center ' + (on ? 'font-bold txt-main' : 'txt-soft') + '" style="height:' + HEADER_H + 'px;display:flex;flex-direction:column;justify-content:center">' +
                 '<span class="text-[11px]">' + (compact ? m.short : m.full) + (isStart ? '·启' : '') + '</span>' +
                 '<span class="text-[9px] num-tab opacity-70">' + m.md + '</span></button></div>';
             }).join('') + '</div>';
           var colsHtml = dates.map(function (iso) {
-            return '<div class="relative border-l" style="flex:1 0 ' + colW + 'px;min-width:' + colW + 'px;height:' + TOTAL_H + 'px;border-color:var(--line)">' + gridLines + renderDayBlocks(iso, compact) + '</div>';
+            var isWknd = weekdayMon0(iso) >= 5;
+            return '<div class="relative border-l' + (isWknd ? ' axis-col-weekend' : '') + '" data-axis-date="' + iso + '" style="flex:1 0 ' + colW + 'px;min-width:' + colW + 'px;height:' + WEEK_TOTAL_H + 'px;border-color:var(--line)">' + gridLines + renderDayBlocks(iso, compact) + renderNowLine(iso, nowCtx) + '</div>';
           }).join('');
           document.getElementById('week-axis-wrap').innerHTML =
             '<div class="overflow-x-auto no-scrollbar">' +
             '<div style="min-width:' + (40 + dates.length * colW) + 'px">' +
             headerHtml +
             '<div class="flex pt-2">' +
-            '<div class="relative shrink-0" style="width:40px;height:' + TOTAL_H + 'px">' + axisLabels + '</div>' +
+            '<div class="relative shrink-0" style="width:40px;height:' + WEEK_TOTAL_H + 'px">' + axisLabels + '</div>' +
             colsHtml + '</div></div></div>';
         }
 
@@ -4561,8 +5121,7 @@
       function pushOverlayHistoryState() {
         // 仅在 Web/PWA 注册 history 哨兵，APK 统一走 Capacitor App backButton
         if (window.Capacitor) return;
-        if (ignorePopTimer) { clearTimeout(ignorePopTimer); ignorePopTimer = null; }
-        ignoringOverlayPop = false;
+        // 重开弹层时仍要吞掉上一条 cleanup 触发的 popstate，避免误关新弹层
         if (typeof history === 'undefined' || typeof history.pushState !== 'function') return;
         if (!webOverlayPushed) {
           try { history.pushState({ studyOsOverlay: true }, ''); webOverlayPushed = true; } catch (e) {}
@@ -4908,7 +5467,40 @@
         var dayBtn = e.target.closest('.day-btn');
         if (dayBtn) {
           var dIso = dayBtn.getAttribute('data-day-iso');
-          if (dIso) setUiIsoTo(dIso);
+          if (dIso) { setUiIsoTo(dIso); save(); renderAll(); }
+          return;
+        }
+
+        var heroTodayBtn = e.target.closest('#btn-hero-today');
+        if (heroTodayBtn) {
+          var hNc = computeNowContext();
+          setUiIsoTo(hNc.preLaunch ? LAUNCH_ISO : hNc.todayIso, { follow: true });
+          save(); renderAll(); toast('已回到今日');
+          return;
+        }
+
+        var pastFoldBtn = e.target.closest('#btn-toggle-past-today');
+        if (pastFoldBtn) {
+          showPastTodayIso = (showPastTodayIso === state.uiIso) ? '' : state.uiIso;
+          renderToday();
+          return;
+        }
+
+        var qaSlotBtn = e.target.closest('.qa-preset-btn');
+        if (qaSlotBtn) {
+          var slotVal = qaSlotBtn.getAttribute('data-qa-slot');
+          if (slotVal === 'now') {
+            var qNc = computeNowContext();
+            var sMin = Math.max(7 * 60 + 30, Math.ceil(qNc.nowMin / 5) * 5);
+            if (!qNc.preLaunch && sMin >= 23 * 60 + 35) {
+              toast('今日已近午夜，请切到明天或直接填写时段');
+              return;
+            }
+            var eMin = Math.min(23 * 60 + 55, sMin + 60);
+            slotVal = pad2(Math.floor(sMin / 60)) + ':' + pad2(sMin % 60) + '–' + pad2(Math.floor(eMin / 60)) + ':' + pad2(eMin % 60);
+          }
+          document.getElementById('qa-time').value = slotVal;
+          document.getElementById('qa-title').focus();
           return;
         }
 
@@ -6146,7 +6738,7 @@
         }
         if (state.backfills && Array.isArray(state.backfills['2026-11-28'])) {
           state.backfills['2026-11-28'] = state.backfills['2026-11-28'].filter(function (b) {
-            return !(b && b.id === 'bf1' && b.title === '周六出游与午餐');
+            return !(b && b.id === 'bf1' && b.t === '09:00–13:30' && b.title === '周六出游与午餐');
           });
           if (!state.backfills['2026-11-28'].length) delete state.backfills['2026-11-28'];
         }
@@ -6508,6 +7100,7 @@
 
       switchTab(state.tab || 'today', true);
       renderAll();
+      syncWeekNowClock();
       Persist.hydrateNewer(function (newer) {
         state = migrateState(newer);
         var ncHyd = computeNowContext();

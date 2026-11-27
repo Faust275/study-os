@@ -8,7 +8,26 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
-data class CourseItem(val start: String, val end: String, val name: String, val note: String)
+data class CourseItem(
+    val start: String,
+    val end: String,
+    val name: String,
+    val note: String,
+    val kind: String = ""
+) {
+    fun resolvedKind(): String {
+        when (kind) {
+            "ana", "alg", "due", "rest", "class" -> return kind
+        }
+        return when {
+            name.contains("分析") || name.contains("数分") -> "ana"
+            name.contains("代数") || name.contains("高代") -> "alg"
+            name.contains("作业") || name.contains("C程") || name.contains("C 程") || name.contains("周志") || name.contains("备课") -> "due"
+            name.contains("跑") || name.contains("琴") || name.contains("出游") || name.contains("电影") || name.contains("休") -> "rest"
+            else -> "class"
+        }
+    }
+}
 
 data class TodoItem(
     val id: String = "",
@@ -221,7 +240,8 @@ object WidgetData {
                     start = c.optString("start"),
                     end = c.optString("end"),
                     name = c.optString("name"),
-                    note = note
+                    note = note,
+                    kind = c.optString("kind")
                 )
             )
         }
