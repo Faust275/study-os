@@ -476,6 +476,290 @@
       .snap-card-84 { flex: 0 0 84%; scroll-snap-align: center; }
     }
   </style>
+  <style id="ink-wash-skin">
+    html:not(.dark) {
+      --bg: #F4F0E6;
+      --surface: #FCF9F2;
+      --surface-2: #EDE7DA;
+      --surface-elev: rgba(252, 249, 242, 0.88);
+      --line: #DED5C5;
+      --line-strong: #CFC4B2;
+      --ink: #191A1F;
+      --ink-soft: #55555F;
+      --ink-faint: #8A857A;
+      --shadow-card: 0 1px 1px rgba(25, 28, 36, 0.035), 0 20px 40px -34px rgba(25, 28, 36, 0.30);
+      --shadow-float: 0 16px 38px -14px rgba(25, 28, 36, 0.26);
+      --font-serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", Georgia, serif;
+    }
+    html:not(.dark) body {
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(110% 55% at 94% -6%, rgba(27, 84, 97, 0.11), transparent 58%),
+        radial-gradient(85% 48% at -8% 42%, rgba(25, 28, 36, 0.05), transparent 66%),
+        radial-gradient(90% 42% at 50% 106%, rgba(168, 79, 40, 0.055), transparent 70%);
+      background-attachment: fixed;
+    }
+    html:not(.dark) body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.042;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.88' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+    }
+    html:not(.dark) .app-header {
+      background: rgba(246, 243, 236, 0.86) !important;
+      border-color: rgba(207, 196, 178, 0.68) !important;
+      box-shadow: 0 1px 0 rgba(25, 28, 36, 0.035);
+    }
+    html:not(.dark) .app-nav {
+      background: rgba(246, 243, 236, 0.9) !important;
+      border-color: rgba(207, 196, 178, 0.9) !important;
+    }
+    html:not(.dark) #top-date-title,
+    html:not(.dark) #top-day-sub { letter-spacing: 0.045em; }
+    html:not(.dark) .today-hero {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(158deg, #FFFDF6 0%, #F1E6D3 100%);
+      border-color: rgba(190, 175, 150, 0.8);
+      border-radius: 26px;
+      box-shadow: none;
+      clip-path: polygon(0.10% 7.00%,0.25% 4.20%,0.80% 1.90%,1.90% 0.80%,3.40% 0.30%,5.00% 0.85%,7.50% 0.30%,10.00% 0.71%,12.50% 1.31%,15.00% 0.32%,17.50% 1.59%,20.00% 1.40%,22.50% 1.64%,25.00% 0.95%,27.50% 0.91%,30.00% 1.65%,32.50% 1.31%,35.00% 1.12%,37.50% 1.29%,40.00% 1.34%,42.50% 0.23%,45.00% 0.24%,47.50% 0.39%,50.00% 1.05%,52.50% 1.81%,55.00% 0.82%,57.50% 0.61%,60.00% 1.77%,62.50% 0.35%,65.00% 0.95%,67.50% 0.34%,70.00% 1.12%,72.50% 0.20%,75.00% 1.09%,77.50% 1.74%,80.00% 0.33%,82.50% 0.15%,85.00% 0.72%,87.50% 0.25%,90.00% 1.30%,92.50% 0.90%,95.00% 1.31%,96.60% 0.30%,98.10% 0.80%,99.20% 1.90%,99.75% 4.20%,99.90% 7.00%,99.33% 9.00%,99.42% 14.00%,99.77% 19.00%,99.74% 24.00%,99.55% 29.00%,99.19% 34.00%,99.70% 39.00%,99.31% 44.00%,99.83% 49.00%,99.12% 54.00%,98.96% 59.00%,99.45% 64.00%,99.65% 69.00%,99.58% 74.00%,99.06% 79.00%,99.03% 84.00%,99.23% 89.00%,99.90% 93.00%,99.75% 95.80%,99.20% 98.10%,98.10% 99.30%,96.60% 99.70%,95.00% 99.19%,92.50% 98.79%,90.00% 99.23%,87.50% 98.10%,85.00% 99.26%,82.50% 98.46%,80.00% 98.93%,77.50% 98.62%,75.00% 99.29%,72.50% 98.37%,70.00% 98.60%,67.50% 99.51%,65.00% 99.33%,62.50% 98.43%,60.00% 98.71%,57.50% 99.73%,55.00% 99.09%,52.50% 98.84%,50.00% 98.36%,47.50% 98.14%,45.00% 99.22%,42.50% 99.61%,40.00% 98.42%,37.50% 99.39%,35.00% 98.41%,32.50% 98.20%,30.00% 98.12%,27.50% 98.57%,25.00% 99.01%,22.50% 99.30%,20.00% 98.14%,17.50% 99.56%,15.00% 99.84%,12.50% 98.35%,10.00% 99.41%,7.50% 99.83%,5.00% 98.26%,3.40% 99.70%,1.90% 99.30%,0.80% 98.10%,0.25% 95.80%,0.10% 93.00%,0.81% 91.00%,0.16% 86.00%,0.62% 81.00%,0.92% 76.00%,0.21% 71.00%,0.20% 66.00%,0.46% 61.00%,0.43% 56.00%,0.98% 51.00%,0.33% 46.00%,0.44% 41.00%,0.11% 36.00%,0.69% 31.00%,0.76% 26.00%,0.95% 21.00%,1.02% 16.00%,0.48% 11.00%);
+    }
+    html:not(.dark) .today-hero::before { display: none; }
+    html:not(.dark) .today-hero::after {
+      content: "迹";
+      position: absolute;
+      z-index: -1;
+      right: -96px;
+      bottom: -158px;
+      font-family: var(--font-serif);
+      font-size: 310px;
+      font-weight: 700;
+      line-height: 1;
+      color: rgba(27, 84, 97, 0.045);
+      transform: rotate(-3deg);
+      pointer-events: none;
+      user-select: none;
+    }
+    html:not(.dark) .today-hero > * { position: relative; z-index: 1; }
+    html:not(.dark) #hero-kicker { letter-spacing: 0.055em; }
+    html:not(.dark) #hero-kicker::before {
+      content: "日";
+      display: inline-grid;
+      place-items: center;
+      width: 17px;
+      height: 17px;
+      margin-right: 4px;
+      border-radius: 4px;
+      background: #B4452F;
+      color: #FFF8EF;
+      font-family: var(--font-serif);
+      font-size: 10px;
+      line-height: 1;
+      transform: rotate(-3deg) translateY(-1px);
+      box-shadow: 0 1px 2px rgba(122, 53, 22, 0.25);
+    }
+    html:not(.dark) #hero-date { font-size: 2.12rem; letter-spacing: 0.015em; }
+    html:not(.dark) #hero-date::after {
+      content: "";
+      display: block;
+      width: 126px;
+      height: 8px;
+      margin-top: 1px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='10' viewBox='0 0 160 10'%3E%3Cpath d='M2 6 C 34 2 70 8 100 4 S 142 4 158 6' fill='none' stroke='%23191C24' stroke-width='2.1' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat left center / contain;
+      opacity: 0.34;
+    }
+    html:not(.dark) .hero-topic-pill {
+      background: rgba(255, 254, 250, 0.55) !important;
+      border: 1px solid rgba(207, 196, 178, 0.62);
+    }
+    html:not(.dark) .hero-day-rail { border-top: 0 !important; position: relative; }
+    html:not(.dark) .hero-day-rail::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 7px;
+      opacity: 0.5;
+      pointer-events: none;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 10' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cfilter id='n' x='-5%25' y='-50%25' width='110%25' height='200%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.03 0.8' numOctaves='3' seed='37'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1 0 0 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='0 0.4 0.7 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Cmask id='m' mask-type='alpha'%3E%3Crect width='900' height='10' fill='white' filter='url(%23n)'/%3E%3C/mask%3E%3C/defs%3E%3Cpath d='M6 6.0 C 216.0 2.2, 495.0 7.8, 675.0 5.0 C 792.0 3.2, 837.0 6.2, 894 4.6' fill='none' stroke='%2323262C' stroke-width='4.2' stroke-linecap='round' mask='url(%23m)'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+    }
+    html:not(.dark) .hero-ring-track { stroke: rgba(25, 28, 36, 0.12); }
+    html:not(.dark) #today-health-hint {
+      background: rgba(255, 254, 250, 0.48) !important;
+      border: 1px solid rgba(207, 196, 178, 0.55) !important;
+      border-left: 2px solid rgba(168, 79, 40, 0.55) !important;
+      border-radius: 4px 14px 14px 4px !important;
+      box-shadow: none !important;
+    }
+    html:not(.dark) .now-hero-card {
+      background: linear-gradient(158deg, rgba(255, 254, 250, 0.97) 0%, rgba(248, 243, 233, 0.94) 100%) !important;
+      border-color: rgba(207, 196, 178, 0.78) !important;
+      border-radius: 22px !important;
+      box-shadow: 0 1px 1px rgba(25, 28, 36, 0.03), 0 22px 40px -36px rgba(25, 28, 36, 0.32) !important;
+    }
+    html:not(.dark) .now-hero-card::before {
+      width: 3px !important;
+      background: linear-gradient(180deg, transparent 0%, var(--now-bar) 14%, var(--now-bar) 86%, transparent 100%) !important;
+      opacity: 0.9;
+    }
+    html:not(.dark) #now-title { font-size: 1.1rem; letter-spacing: 0.015em; }
+    html:not(.dark) #btn-now-focus {
+      border-radius: 10px;
+      letter-spacing: 0.05em;
+      box-shadow: 0 5px 12px -9px rgba(25, 28, 36, 0.9);
+    }
+    html:not(.dark) #view-today h2 {
+      font-family: var(--font-serif);
+      letter-spacing: 0.1em;
+      font-weight: 600;
+    }
+    html:not(.dark) #view-today h2::before {
+      content: "";
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      margin-right: 6px;
+      border-radius: 999px;
+      background: var(--ana);
+      opacity: 0.65;
+      vertical-align: 1px;
+    }
+    html:not(.dark) #due-list {
+      background: rgba(255, 254, 250, 0.78) !important;
+      border-color: rgba(207, 196, 178, 0.76) !important;
+      box-shadow: none !important;
+    }
+    html:not(.dark) #view-progress h1,
+    html:not(.dark) #view-progress h2 {
+      font-family: var(--font-serif);
+      letter-spacing: 0.045em;
+    }
+    html:not(.dark) #view-progress .surf {
+      background: linear-gradient(158deg, rgba(255, 251, 242, 0.99) 0%, rgba(247, 238, 224, 0.97) 100%) !important;
+      border-color: rgba(199, 183, 156, 0.62) !important;
+      box-shadow: 0 1px 1px rgba(25, 28, 36, 0.03), 0 24px 46px -42px rgba(25, 28, 36, 0.30) !important;
+    }
+    html:not(.dark) #quota-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 22px;
+      clip-path: polygon(0.10% 7.00%,0.25% 4.20%,0.80% 1.90%,1.90% 0.80%,3.40% 0.30%,5.00% 0.80%,7.50% 0.60%,10.00% 0.38%,12.50% 1.47%,15.00% 0.76%,17.50% 0.94%,20.00% 0.94%,22.50% 0.63%,25.00% 1.53%,27.50% 0.59%,30.00% 1.57%,32.50% 1.66%,35.00% 0.88%,37.50% 0.47%,40.00% 0.06%,42.50% 1.10%,45.00% 1.73%,47.50% 0.50%,50.00% 1.84%,52.50% 1.46%,55.00% 0.78%,57.50% 0.50%,60.00% 0.11%,62.50% 0.30%,65.00% 1.72%,67.50% 1.71%,70.00% 1.07%,72.50% 1.13%,75.00% 0.78%,77.50% 0.98%,80.00% 0.90%,82.50% 0.63%,85.00% 0.72%,87.50% 1.27%,90.00% 0.79%,92.50% 1.61%,95.00% 1.53%,96.60% 0.30%,98.10% 0.80%,99.20% 1.90%,99.75% 4.20%,99.90% 7.00%,99.24% 9.00%,99.35% 14.00%,99.30% 19.00%,99.21% 24.00%,98.92% 29.00%,99.02% 34.00%,98.87% 39.00%,99.79% 44.00%,99.42% 49.00%,99.74% 54.00%,99.61% 59.00%,99.59% 64.00%,99.05% 69.00%,99.50% 74.00%,99.75% 79.00%,98.99% 84.00%,98.88% 89.00%,99.90% 93.00%,99.75% 95.80%,99.20% 98.10%,98.10% 99.30%,96.60% 99.70%,95.00% 98.64%,92.50% 99.01%,90.00% 99.46%,87.50% 99.71%,85.00% 98.91%,82.50% 99.81%,80.00% 99.35%,77.50% 98.31%,75.00% 99.13%,72.50% 99.64%,70.00% 99.83%,67.50% 98.09%,65.00% 99.46%,62.50% 99.17%,60.00% 99.44%,57.50% 98.34%,55.00% 98.16%,52.50% 99.30%,50.00% 99.01%,47.50% 98.61%,45.00% 99.51%,42.50% 98.80%,40.00% 99.82%,37.50% 98.85%,35.00% 99.77%,32.50% 99.26%,30.00% 98.26%,27.50% 98.43%,25.00% 98.93%,22.50% 98.16%,20.00% 98.42%,17.50% 98.15%,15.00% 98.97%,12.50% 99.65%,10.00% 99.80%,7.50% 99.64%,5.00% 98.59%,3.40% 99.70%,1.90% 99.30%,0.80% 98.10%,0.25% 95.80%,0.10% 93.00%,0.40% 91.00%,0.41% 86.00%,0.25% 81.00%,0.14% 76.00%,0.29% 71.00%,0.22% 66.00%,0.49% 61.00%,0.33% 56.00%,1.03% 51.00%,0.54% 46.00%,0.47% 41.00%,0.97% 36.00%,0.39% 31.00%,1.00% 26.00%,0.57% 21.00%,0.63% 16.00%,0.68% 11.00%);
+    }
+    html:not(.dark) #quota-card::before {
+      content: "额";
+      position: absolute;
+      z-index: -1;
+      right: -76px;
+      bottom: -138px;
+      font-family: var(--font-serif);
+      font-size: 280px;
+      font-weight: 700;
+      line-height: 1;
+      color: rgba(27, 84, 97, 0.04);
+      transform: rotate(-3deg);
+      pointer-events: none;
+      user-select: none;
+    }
+    html:not(.dark) #quota-card > * { position: relative; z-index: 1; }
+    html:not(.dark) #quota-card h1 { font-size: 18px; font-weight: 700; }
+    html:not(.dark) #quota-card h1::before {
+      content: "日";
+      display: inline-grid;
+      place-items: center;
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+      border-radius: 4px;
+      background: #B4452F;
+      color: #FFF8EF;
+      font-family: var(--font-serif);
+      font-size: 10px;
+      line-height: 1;
+      transform: rotate(-3deg) translateY(-1px);
+      box-shadow: 0 1px 2px rgba(122, 53, 22, 0.25);
+    }
+    html:not(.dark) #quota-card h1::after {
+      content: "";
+      display: block;
+      width: 118px;
+      height: 9px;
+      margin-top: 4px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 18' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cfilter id='n' x='-5%25' y='-50%25' width='110%25' height='200%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012 0.5' numOctaves='2' seed='11'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1 0 0 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='0 0.12 0.42 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Cmask id='m' mask-type='alpha'%3E%3Crect width='600' height='18' fill='white' filter='url(%23n)'/%3E%3C/mask%3E%3C/defs%3E%3Cpath d='M6 10.8 C 144.0 4.0, 330.0 14.0, 450.0 9.0 C 528.0 5.8, 558.0 11.2, 594 8.3' fill='none' stroke='%2323262C' stroke-width='8' stroke-linecap='round' mask='url(%23m)'/%3E%3C/svg%3E") no-repeat left center / 100% 100%;
+      opacity: 0.58;
+      pointer-events: none;
+      -webkit-mask-image: linear-gradient(90deg, #000 0, #000 78%, transparent 100%);
+      mask-image: linear-gradient(90deg, #000 0, #000 78%, transparent 100%);
+    }
+    html:not(.dark) #quota-plans-list .qdot-btn.text-white {
+      background: linear-gradient(150deg, #B23A2A, #9C2F21 55%, #8A261A 100%) !important;
+      color: transparent !important;
+      border: 0 !important;
+      border-radius: 2px !important;
+      width: 24px !important;
+      height: 24px !important;
+      transform: rotate(-7deg);
+      clip-path: polygon(5% 3%,28% 0%,55% 2.5%,78% 0%,96% 2%,100% 26%,97.5% 48%,100% 72%,96% 97%,70% 99%,46% 96.5%,22% 99%,2.5% 96%,0% 70%,2% 46%,0% 22%);
+      box-shadow: 0 0 0 2.5px rgba(178, 58, 42, 0.10), inset 0 0 0 1.4px rgba(252, 244, 230, 0.60);
+      font-size: 0 !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    html:not(.dark) #quota-plans-list .qdot-btn.text-white::after {
+      content: "完";
+      color: #FCF4E6;
+      font-family: var(--font-serif);
+      font-size: 11.5px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    html:not(.dark) .ink-sheet-wrap { position: relative; isolation: isolate; }
+    html:not(.dark) .ink-sheet-wrap::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      border-radius: 22px;
+      border: 1px solid rgba(178, 157, 123, 0.7);
+      transform: rotate(1.4deg) translate(9px, 14px);
+      background: linear-gradient(158deg, #F1E5CC 0%, #E2D2B2 100%);
+    }
+    html:not(.dark) .ink-bookear,
+    html:not(.dark) .ink-bookear-line { display: none; }
+    @media (min-width: 768px) {
+      html:not(.dark) .ink-bookear {
+        display: block;
+        position: fixed;
+        right: 12px;
+        top: 136px;
+        writing-mode: vertical-rl;
+        font-family: var(--font-serif);
+        font-size: 11px;
+        letter-spacing: 0.34em;
+        color: rgba(25, 26, 36, 0.34);
+        z-index: 60;
+        pointer-events: none;
+      }
+      html:not(.dark) .ink-bookear-line {
+        display: block;
+        position: fixed;
+        right: 31px;
+        top: 132px;
+        height: 248px;
+        width: 1px;
+        background: linear-gradient(180deg, rgba(168, 63, 40, 0.35), rgba(168, 63, 40, 0.06));
+        z-index: 60;
+        pointer-events: none;
+      }
+    }
+  </style>
   <meta id="meta-theme-color" name="theme-color" content="#F6F3EC">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -483,12 +767,33 @@
   <link rel="manifest" href="./manifest.json">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="./icon-192.png">
+<style id="diet-axis-style">
+  .diet-axis { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:2px 0 0; }
+  .diet-col { display:flex; flex-direction:column; align-items:center; }
+  .diet-col .kcal { font-size:10px; line-height:1.4; color:var(--ink-soft); font-variant-numeric:tabular-nums; margin-bottom:3px; min-height:14px; }
+  .diet-col .barwrap { width:100%; height:86px; display:flex; align-items:flex-end; justify-content:center; border-top:1px dashed var(--line); }
+  .diet-col .bar { width:26px; max-height:100%; background:var(--ink); opacity:.82; border-radius:1px 1px 0 0; }
+  .diet-col.empty .bar { background:transparent; border:1px dashed var(--line); opacity:1; height:34% !important; }
+  .diet-col .mt { font-size:10px; color:var(--ink-soft); margin-top:6px; }
+  .diet-col .mt b { font-weight:600; }
+  .diet-col .mt span { color:var(--ink-faint); font-size:9px; margin-left:3px; }
+  .diet-cap { font-size:9.5px; line-height:1.6; color:var(--ink-faint); }
+  .diet-meal-pick { display:flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  .diet-meal-btn { font-size:11px; padding:5px 9px; color:var(--ink-soft); background:transparent; }
+  .diet-meal-btn + .diet-meal-btn { border-left:1px solid var(--line); }
+  .diet-meal-btn.on { background:var(--ink); color:var(--bg); }
+  .diet-grp { padding-top:8px; }
+  .diet-grp + .diet-grp { border-top:1px solid var(--line); margin-top:6px; }
+  .diet-grp-h { display:flex; justify-content:space-between; align-items:baseline; font-size:10px; color:var(--ink-faint); letter-spacing:.06em; }
+  .diet-grp-h b { font-weight:600; color:var(--ink-soft); font-variant-numeric:tabular-nums; }
+  .diet-row { padding:7px 0 0; display:flex; align-items:center; justify-content:space-between; font-size:12px; }
+</style>
 </head>
 <body class="app-body min-h-screen lg:pb-10 lg:pl-48">
 
   <!-- Quiet Top Bar -->
   <header class="app-header sticky top-0 z-20 backdrop-blur border-b" style="background: color-mix(in srgb, var(--bg) 90%, transparent); border-color: var(--line);">
-    <div class="max-w-2xl lg:max-w-5xl mx-auto px-4 sm:px-5 py-2 min-h-[54px] flex items-center justify-between gap-2">
+    <div class="max-w-2xl lg:max-w-5xl mx-auto px-5 py-2 min-h-[54px] flex items-center justify-between gap-2">
       <div class="flex flex-col sm:flex-row sm:items-baseline sm:gap-2 min-w-0">
         <span id="top-date-title" class="text-[15px] sm:text-base font-bold txt-main leading-tight shrink-0">11月28日</span>
         <span id="top-day-sub" class="text-[11px] sm:text-xs txt-soft truncate leading-tight">第 1 周 · 周六 · 十月十九</span>
@@ -782,13 +1087,16 @@
 
     <!-- ==================== TAB 3: 进度（周期额度 · OKR含GPA联动 · 双图统计 · 15周） ==================== -->
     <section id="view-progress" class="tab-view hidden space-y-6 fade-in">
-      <div class="surf rounded-2xl border p-5 space-y-4">
+      <div id="quota-card" class="surf rounded-2xl border p-5 space-y-4">
         <div class="flex items-baseline justify-between">
           <div>
             <h1 class="text-[15px] font-semibold txt-main">本周额度计划</h1>
             <p class="text-[11px] txt-faint mt-0.5">按原版周期额度与偏离度追踪，点圆点打卡</p>
           </div>
-          <span id="quota-week-label" class="text-xs txt-soft">第 1 周</span>
+          <span class="text-right shrink-0 leading-tight">
+            <span id="quota-week-label" class="text-xs txt-soft whitespace-nowrap">第 1 周</span>
+            <span id="quota-week-dates" class="block text-[10px] txt-faint num-tab whitespace-nowrap mt-0.5">11.28–12.04</span>
+          </span>
         </div>
         <div id="quota-plans-list" class="space-y-3.5"></div>
       </div>
@@ -1074,12 +1382,19 @@
             <span id="diet-day-label" class="text-xs font-medium txt-main">今日饮食</span>
             <span id="diet-kcal-total" class="text-xs num-tab txt-soft">0 / 2100 kcal</span>
           </div>
-          <div class="flex flex-wrap gap-2">
+          <div id="diet-axis" class="diet-axis"></div>
+          <div class="diet-cap">虚线＝每餐约 700 kcal 的参考；空柱表示这一餐还没记。</div>
+          <div class="flex flex-wrap gap-2 items-center">
+            <div id="diet-meal-pick" class="diet-meal-pick" role="group" aria-label="选择餐次">
+              <button type="button" class="diet-meal-btn" id="diet-meal-breakfast" data-meal="breakfast">早</button>
+              <button type="button" class="diet-meal-btn" id="diet-meal-lunch" data-meal="lunch">午</button>
+              <button type="button" class="diet-meal-btn" id="diet-meal-dinner" data-meal="dinner">晚</button>
+            </div>
             <input id="diet-name" type="text" placeholder="吃了什么，如：鸡腿饭" class="flex-1 min-w-[130px] text-xs surf-2 border rounded-lg px-2.5 py-1.5 focus:outline-none" style="border-color:var(--line)">
             <input id="diet-kcal" type="number" placeholder="千卡" class="w-20 shrink-0 text-xs surf-2 border rounded-lg px-2.5 py-1.5 num-tab focus:outline-none" style="border-color:var(--line)">
             <button type="button" id="btn-add-diet" class="px-3 py-1.5 rounded-lg text-xs shrink-0 whitespace-nowrap" style="background:var(--ink);color:var(--bg)">记录</button>
           </div>
-          <div id="diet-list" class="divide-y" style="border-color:var(--line)"></div>
+          <div id="diet-list"></div>
         </div>
       </div>
 
@@ -4528,7 +4843,8 @@
       /* Progress: Quota + OKR (with live GPA KR!) + Course Focus & Ledger Breakdown Charts */
       function renderProgress() {
         var wk = WEEKS[state.weekIdx] || WEEKS[0];
-        document.getElementById('quota-week-label').textContent = wk.label + ' · ' + wk.dates;
+        document.getElementById('quota-week-label').textContent = wk.label;
+        document.getElementById('quota-week-dates').textContent = wk.dates;
 
         var wkDates = datesBetween(wk.startIso, wk.endIso);
         document.getElementById('quota-plans-list').innerHTML = QUOTA_DEFS.map(function (q) {
@@ -4865,6 +5181,30 @@
           '<p>生活方面，累计支出 <strong class="txt-main num-tab">¥ ' + spend.toFixed(2) + '</strong>，今日饮食 <strong class="txt-main num-tab">' + kcal + '</strong> 千卡，昨夜睡眠 <strong class="txt-main num-tab">' + Math.floor(total / 60) + 'h' + (total % 60) + 'm</strong>（深睡 ' + r.deep + 'm，步数 ' + r.steps.toLocaleString() + ' 步）。</p>';
       }
 
+      var dietMealSel = null;
+      var DIET_MEALS = [
+        { k: 'breakfast', t: '早饭', time: '07:30' },
+        { k: 'lunch', t: '午饭', time: '12:10' },
+        { k: 'dinner', t: '晚饭', time: '18:30' }
+      ];
+      function defaultDietMeal() { var h = new Date().getHours(); return h < 10 ? 'breakfast' : (h < 15 ? 'lunch' : 'dinner'); }
+      function dietMealOf(d) {
+        var m = d && d.meal;
+        if (m === 'breakfast' || m === 'lunch' || m === 'dinner') return m;
+        var n = String((d && d.name) || '');
+        if (/早|早餐|breakfast/i.test(n)) return 'breakfast';
+        if (/午|午餐|lunch/i.test(n)) return 'lunch';
+        if (/晚|晚餐|夜宵|dinner|supper/i.test(n)) return 'dinner';
+        var t = parseInt(String((d && d.id) || '').replace(/\D/g, ''), 10);
+        if (t > 1e12) { var h = new Date(t).getHours(); if (h < 10) return 'breakfast'; if (h < 15) return 'lunch'; return 'dinner'; }
+        return 'lunch';
+      }
+      function syncDietMealBtns() {
+        DIET_MEALS.forEach(function (m) {
+          var b = document.getElementById('diet-meal-' + m.k);
+          if (b) b.classList.toggle('on', m.k === dietMealSel);
+        });
+      }
       function renderLife() {
         document.querySelectorAll('.life-sub-btn').forEach(function (b) {
           b.classList.toggle('subtab-active', b.getAttribute('data-life-sub') === state.lifeSub);
@@ -5053,12 +5393,30 @@
         var dietIsToday = state.uiIso === LAST_TODAY_ISO;
         document.getElementById('diet-day-label').textContent = dietIsToday ? '今日饮食' : (state.uiIso.slice(5).replace(/^0/, '').replace('-', '月') + '日饮食');
         document.getElementById('diet-kcal-total').textContent = kcal + ' / 2100 kcal';
-        document.getElementById('diet-list').innerHTML = dietDay.map(function (d) {
-          return '<div class="py-2.5 flex items-center justify-between text-xs">' +
-            '<span class="txt-main">' + esc(d.name) + '</span>' +
-            '<div class="flex items-center gap-3"><span class="num-tab txt-soft">' + Number(d.kcal || 0) + ' kcal</span>' +
-            '<button type="button" data-del-diet="' + esc(d.id) + '" class="del-diet txt-faint">删</button></div></div>';
+        if (!dietMealSel) dietMealSel = defaultDietMeal();
+        syncDietMealBtns();
+        var dietByMeal = { breakfast: [], lunch: [], dinner: [] };
+        dietDay.forEach(function (d) { dietByMeal[dietMealOf(d)].push(d); });
+        document.getElementById('diet-axis').innerHTML = DIET_MEALS.map(function (m) {
+          var list = dietByMeal[m.k];
+          var sum = list.reduce(function (s, x) { return s + (Number(x.kcal) || 0); }, 0);
+          var pct = Math.max(0, Math.min(100, sum / 700 * 100));
+          return '<div class="diet-col' + (sum ? '' : ' empty') + '">' +
+            '<div class="kcal">' + (sum ? sum : '\u2014') + '</div>' +
+            '<div class="barwrap"><div class="bar" style="height:' + pct + '%"></div></div>' +
+            '<div class="mt"><b>' + m.t + '</b><span>' + m.time + '</span></div></div>';
         }).join('');
+        document.getElementById('diet-list').innerHTML = DIET_MEALS.map(function (m) {
+          var list = dietByMeal[m.k];
+          if (!list.length) return '';
+          return '<div class="diet-grp"><div class="diet-grp-h"><span>' + m.t + '</span></div>' +
+            list.map(function (d) {
+              var dn = String(d.name || '').replace(/^(早饭|午饭|晚饭)\s*[·:：-]\s*/, '');
+              return '<div class="diet-row"><span class="txt-main">' + esc(dn) + '</span>' +
+                '<div class="flex items-center gap-3"><span class="num-tab txt-soft">' + Number(d.kcal || 0) + ' kcal</span>' +
+                '<button type="button" data-del-diet="' + esc(d.id) + '" class="del-diet txt-faint">删</button></div></div>';
+            }).join('') + '</div>';
+        }).join('') || '<div class="text-xs txt-faint text-center py-3">这天还没有记录</div>';
 
         renderWhitepaper();
       }
@@ -6594,12 +6952,17 @@
         var name = (document.getElementById('diet-name').value || '').trim();
         var kcal = parseInt(document.getElementById('diet-kcal').value, 10);
         if (!name || isNaN(kcal) || kcal <= 0) return;
-        state.diet.push({ id: 'dt' + Date.now(), name: name, kcal: kcal, isoDate: state.uiIso });
+        state.diet.push({ id: 'dt' + Date.now(), name: name, kcal: kcal, isoDate: state.uiIso, meal: dietMealSel || defaultDietMeal() });
         document.getElementById('diet-name').value = '';
         document.getElementById('diet-kcal').value = '';
         save();
         renderLife();
         toast('已记录');
+      });
+
+      DIET_MEALS.forEach(function (m) {
+        var b = document.getElementById('diet-meal-' + m.k);
+        if (b) b.addEventListener('click', function () { dietMealSel = m.k; syncDietMealBtns(); });
       });
 
       document.getElementById('btn-open-settings').addEventListener('click', function () { openOverlay('settings-modal'); refreshBackupReminder(); });
@@ -7118,7 +7481,40 @@
         restoreTimerSession();
         runNativeBootTasks();
       });
-    })();
+
+      (function () {
+  function stack(el) {
+    if (!el || !el.parentNode) return;
+    if (el.parentNode.classList && el.parentNode.classList.contains('ink-sheet-wrap')) return;
+    var wrap = document.createElement('div');
+    wrap.className = 'ink-sheet-wrap';
+    el.parentNode.insertBefore(wrap, el);
+    wrap.appendChild(el);
+  }
+  stack(document.getElementById('today-hero'));
+  stack(document.getElementById('quota-card'));
+
+  var ear = document.createElement('div');
+  ear.className = 'ink-bookear';
+  ear.setAttribute('aria-hidden', 'true');
+  var line = document.createElement('div');
+  line.className = 'ink-bookear-line';
+  line.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(ear);
+  document.body.appendChild(line);
+
+  var kicker = document.getElementById('hero-kicker');
+  function syncEar() {
+    if (!kicker) return;
+    var parts = kicker.textContent.split('·').map(function (s) { return s.trim(); }).filter(Boolean);
+    ear.textContent = '日迹' + (parts[0] ? ' · ' + parts[0] : '') + (parts[2] ? ' · ' + parts[2] : '');
+  }
+  syncEar();
+  if (kicker && window.MutationObserver) {
+    new MutationObserver(syncEar).observe(kicker, { childList: true, characterData: true, subtree: true });
+  }
+})();
+      })();
   </script>
 <script>
 if ('serviceWorker' in navigator && !window.Capacitor) {

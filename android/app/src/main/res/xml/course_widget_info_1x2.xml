@@ -6,4 +6,7 @@
     android:initialLayout="@layout/widget_layout_1x2"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
-    android:previewImage="@mipmap/ic_launcher" />
+    android:description="@string/widget_desc_1x2"
+    android:targetCellWidth="2"
+    android:targetCellHeight="1"
+    android:previewImage="@drawable/widget_preview_1x2" />

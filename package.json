@@ -1,6 +1,6 @@
 {
   "name": "study-os",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "private": true,
   "description": "日迹 (Study OS) · 面向单学期的课表、学习闭环与健康追踪 PWA + Capacitor Android APK",
   "scripts": {

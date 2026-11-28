@@ -1,9 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#F7F6F3"/>
-  <rect x="28" y="28" width="456" height="456" rx="92" fill="none" stroke="#E5E1D8" stroke-width="10"/>
-  <rect x="116" y="108" width="280" height="296" rx="34" fill="#FFFFFF" stroke="#2F5D50" stroke-width="18"/>
-  <line x1="172" y1="184" x2="340" y2="184" stroke="#2F5D50" stroke-width="18" stroke-linecap="round"/>
-  <line x1="172" y1="248" x2="304" y2="248" stroke="#6B7280" stroke-width="16" stroke-linecap="round"/>
-  <line x1="172" y1="312" x2="262" y2="312" stroke="#6B7280" stroke-width="16" stroke-linecap="round"/>
-  <circle cx="332" cy="312" r="24" fill="#2F5D50"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <title>日迹</title>
+  <rect width="1024" height="1024" fill="#F6F3EC"/>
+  <rect x="293.5" y="259" width="437" height="506" rx="50.6" fill="none" stroke="#191C24" stroke-width="50.6"/>
+  <path d="M312.4 512H711.6" stroke="#1B5461" stroke-width="50.6" stroke-linecap="round"/>
+  <circle cx="645.4" cy="385.5" r="36.8" fill="#1B5461"/>
+  <circle cx="645.4" cy="638.5" r="36.8" fill="#A84F28"/>
 </svg>
